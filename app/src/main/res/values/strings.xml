@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Wandz</string>
+    <string name="welcomewizard">WelcomeWizard</string>
 </resources>
