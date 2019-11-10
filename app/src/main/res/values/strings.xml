@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Wandz</string>
     <string name="welcomewizard">WelcomeWizard</string>
+    <string name="enter_wizardworld">Enter WizardWorld</string>
+    <string name="name_wizard">name wizard</string>
+    <string name="name">Name</string>
+    <string name="your_name">Your Wizard Name</string>
+    <string name="enter">Enter</string>
 </resources>
