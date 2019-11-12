@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="wizardBlue">#5169B1</color>
+    <color name="wizardDarkBlue">#34336F</color>
+    <color name="wizardPink">#FEA4F8</color>
+    <color name="wizardWhite">#FFFFFF</color>
+    <color name="wizardGrey">#353535</color>
 </resources>

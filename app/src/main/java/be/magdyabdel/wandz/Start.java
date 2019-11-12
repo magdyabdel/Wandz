@@ -1,13 +1,13 @@
 package be.magdyabdel.wandz;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class Start extends AppCompatActivity implements View.OnClickListener{
 
@@ -17,7 +17,7 @@ public class Start extends AppCompatActivity implements View.OnClickListener{
         setContentView(R.layout.activity_start);
 
         ImageView imageView = findViewById(R.id.wizard);
-        imageView.setImageResource(R.drawable.welcome_wizard);
+        imageView.setImageResource(R.drawable.ic_welcome_wizard);
 
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/MagicSchoolOne.ttf");
         Button button = findViewById(R.id.button);

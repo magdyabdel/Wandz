@@ -10,9 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
+            android:name=".LearnGesture"
+            android:screenOrientation="portrait"></activity>
+        <activity
             android:name=".ChooseName"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".Start"
             android:screenOrientation="portrait">

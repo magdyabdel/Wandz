@@ -1,17 +1,16 @@
 package be.magdyabdel.wandz;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ChooseName extends AppCompatActivity implements View.OnClickListener{
 
@@ -23,7 +22,7 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.activity_choose_your_name);
 
         ImageView imageView = findViewById(R.id.wizard);
-        imageView.setImageResource(R.drawable.ic_name_wizard);
+        imageView.setImageResource(R.drawable.ic_name_wizard_black_wand);
 
         Typeface textviewTypeFace = Typeface.createFromAsset(getAssets(), "fonts/MagicSchoolOne.ttf");
         TextView textView = findViewById(R.id.choose_name);
@@ -49,8 +48,9 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
             case R.id.button:
 
                 if(!name.equals("")){
-                    Intent intent = new Intent(this, ChooseName.class);
+                    Intent intent = new Intent(this, LearnGesture.class);
                     startActivity(intent);
+                    finish();
                 }
                 else{
                     Toast toast = Toast.makeText(this, "Fill in your name before entering!", Toast.LENGTH_SHORT);
