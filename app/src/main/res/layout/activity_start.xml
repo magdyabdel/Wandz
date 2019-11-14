@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/wizardWhite"
     tools:context=".Start">
 
     <ImageView
@@ -32,9 +31,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
+        android:fontFamily="@font/magic_school_one"
         android:text="@string/enter_wizardworld"
         android:textAllCaps="false"
-        android:textColor="@color/wizardGrey"
+        android:textColor="@color/wizardBlue"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

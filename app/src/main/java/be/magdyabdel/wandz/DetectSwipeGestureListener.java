@@ -5,10 +5,13 @@ import android.view.MotionEvent;
 
 public class DetectSwipeGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-    private static int MIN_SWIPE_DISTANCE_X = 200;
+    private static int MIN_SWIPE_DISTANCE_X = 100;
     private static int MAX_SWIPE_DISTANCE_X = 1000;
+    private static int MIN_SWIPE_DISTANCE_Y = 100;
+    private static int MAX_SWIPE_DISTANCE_Y = 1000;
 
     private LearnGesture activity = null;
+
 
     public LearnGesture getActivity() {
         return activity;
@@ -16,6 +19,11 @@ public class DetectSwipeGestureListener extends GestureDetector.SimpleOnGestureL
 
     public void setActivity(LearnGesture activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return true;
     }
 
     @Override
@@ -38,7 +46,7 @@ public class DetectSwipeGestureListener extends GestureDetector.SimpleOnGestureL
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        this.activity.changeGestureImage(0);
+        this.activity.changeGestureImage(5);
         return true;
     }
 

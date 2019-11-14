@@ -1,49 +1,56 @@
 package be.magdyabdel.wandz;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
-public class LearnGesture extends AppCompatActivity implements View.OnClickListener {
+import com.google.android.material.navigation.NavigationView;
+
+public class LearnGesture extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private ImageView imageView;
     private GestureDetectorCompat gestureDetectorCompat = null;
     private int[] gestureImages = new int[]{R.drawable.ic_gesture_horizontal_right, R.drawable.ic_gesture_horizontal_left,
-            R.drawable.ic_gesture_vertical_down, R.drawable.ic_gesture_vertical_up};
+            R.drawable.ic_gesture_vertical_down, R.drawable.ic_gesture_vertical_up, R.drawable.ic_gesture_round};
     private int currentGestureImage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_learn_gesture);
+        setContentView(R.layout.activity_navigation_drawer_learn_gesture);
 
         imageView = findViewById(R.id.view_gestures);
         imageView.setImageResource(R.drawable.ic_gesture_horizontal_right);
 
-        Typeface textviewTypeFace = Typeface.createFromAsset(getAssets(), "fonts/MagicSchoolOne.ttf");
-        TextView textView = findViewById(R.id.textView);
-        textView.setTypeface(textviewTypeFace);
-        textView.setText("Choose a gesture and practice with your wand!");
-        DetectSwipeGestureListener gestureListener = new DetectSwipeGestureListener();
-        gestureListener.setActivity(this);
-        gestureDetectorCompat = new GestureDetectorCompat(this, gestureListener);
-    }
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        gestureDetectorCompat.onTouchEvent(event);
-        return true;
+        Button next = findViewById(R.id.next);
+        next.setOnClickListener(this);
+        Button previous = findViewById(R.id.previous);
+        previous.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.previous:
+                changeGestureImage(1);
+                break;
+            case R.id.next:
+                changeGestureImage(-1);
+                break;
+            default:
+                break;
+        }
     }
 
     public void changeGestureImage(int direction) {
@@ -59,10 +66,39 @@ public class LearnGesture extends AppCompatActivity implements View.OnClickListe
                 currentGestureImage = gestureImages.length - 1;
             }
         } else {
-            Toast toast = Toast.makeText(this, "Swipe to left or right to change the gesture!", Toast.LENGTH_SHORT);
-            toast.show();
         }
         imageView.setImageResource(gestureImages[currentGestureImage]);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.profile) {
+            // Handle the camera action
+        } else if (id == R.id.single_player) {
+
+        } else if (id == R.id.multi_player) {
+
+        } else if (id == R.id.exit) {
+
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 }

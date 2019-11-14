@@ -1,13 +1,11 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,15 +22,7 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
         ImageView imageView = findViewById(R.id.wizard);
         imageView.setImageResource(R.drawable.ic_name_wizard_black_wand);
 
-        Typeface textviewTypeFace = Typeface.createFromAsset(getAssets(), "fonts/MagicSchoolOne.ttf");
-        TextView textView = findViewById(R.id.choose_name);
-        textView.setTypeface(textviewTypeFace);
-        textView.setText("Choose Your Name");
-
-        Typeface buttonTypeFace = Typeface.createFromAsset(getAssets(), "fonts/MagicSchoolOne.ttf");
         Button button = findViewById(R.id.button);
-        button.setTypeface(buttonTypeFace);
-        button.setText("Enter!");
         button.setOnClickListener(this);
 
         editText = findViewById(R.id.name_field);
