@@ -10,14 +10,14 @@ public class DetectSwipeGestureListener extends GestureDetector.SimpleOnGestureL
     private static int MIN_SWIPE_DISTANCE_Y = 100;
     private static int MAX_SWIPE_DISTANCE_Y = 1000;
 
-    private LearnGesture activity = null;
+    private Trainingmode activity = null;
 
 
-    public LearnGesture getActivity() {
+    public Trainingmode getActivity() {
         return activity;
     }
 
-    public void setActivity(LearnGesture activity) {
+    public void setActivity(Trainingmode activity) {
         this.activity = activity;
     }
 

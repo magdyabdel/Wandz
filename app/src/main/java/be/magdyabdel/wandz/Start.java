@@ -18,7 +18,7 @@ public class Start extends AppCompatActivity implements View.OnClickListener{
         ImageView imageView = findViewById(R.id.wizard);
         imageView.setImageResource(R.drawable.ic_welcome_wizard);
 
-        Button button = findViewById(R.id.button);
+        Button button = findViewById(R.id.enter);
         button.setOnClickListener(this);
     }
 
@@ -26,7 +26,7 @@ public class Start extends AppCompatActivity implements View.OnClickListener{
     public void onClick(View view) {
 
         switch (view.getId()){
-            case R.id.button:
+            case R.id.enter:
                 Intent intent = new Intent(this, ChooseName.class);
                 startActivity(intent);
                 finish();

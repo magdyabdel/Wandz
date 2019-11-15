@@ -11,8 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".MasterActivity"></activity>
+        <activity android:name=".Profile" />
+        <activity android:name=".MyWand" />
+        <activity android:name=".Multiplayer" />
         <activity
-            android:name=".LearnGesture"
+            android:name=".Trainingmode"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ChooseName"

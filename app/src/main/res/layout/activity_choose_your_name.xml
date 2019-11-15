@@ -64,32 +64,34 @@
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/choose_name"></EditText>
+        app:layout_constraintTop_toBottomOf="@+id/choose_name">
+
+    </EditText>
 
     <TextView
         android:id="@+id/choose_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/magic_school_one"
+        android:fontFamily="@font/quite_magical"
         android:text="@string/choose_your_name"
         android:textColor="@color/wizardWhite"
         android:textSize="50sp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/enter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
-        android:fontFamily="@font/magic_school_one"
+        android:fontFamily="@font/quite_magical"
         android:text="@string/enter"
         android:textAllCaps="false"
-
         android:textColor="@color/wizardWhite"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"

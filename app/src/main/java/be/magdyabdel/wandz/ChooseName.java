@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ChooseName extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editText;
+    private AppData appData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,23 +23,26 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
         ImageView imageView = findViewById(R.id.wizard);
         imageView.setImageResource(R.drawable.ic_name_wizard_black_wand);
 
-        Button button = findViewById(R.id.button);
+        Button button = findViewById(R.id.enter);
         button.setOnClickListener(this);
 
         editText = findViewById(R.id.name_field);
+        appData = new AppData();
     }
 
     @Override
     public void onClick(View view) {
 
         String name = editText.getText().toString();
-        //Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
 
         switch (view.getId()){
-            case R.id.button:
+            case R.id.enter:
 
                 if(!name.equals("")){
-                    Intent intent = new Intent(this, LearnGesture.class);
+                    appData.addName(name);
+                    appData.setName_player(name);
+                    Intent intent = new Intent(this, Trainingmode.class);
+                    intent.putExtra("data", appData);
                     startActivity(intent);
                     finish();
                 }
