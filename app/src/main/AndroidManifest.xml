@@ -14,11 +14,9 @@
         <activity
             android:name=".LearnGesture"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ChooseName"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".Start"
             android:screenOrientation="portrait">
@@ -28,7 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

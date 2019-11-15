@@ -7,31 +7,25 @@
         <item
             android:id="@+id/profile"
             android:title="@string/menu_home" />
-    </group>
 
-    <group android:id="@+id/line3">
         <item
             android:id="@+id/single_player"
             android:title="@string/menu_gallery" />
-    </group>
 
-    <group android:id="@+id/line4">
         <item
             android:id="@+id/multi_player"
             android:icon="@drawable/ic_multiplayer"
             android:title="@string/multiplayer" />
-    </group>
-    <group android:id="@+id/line5">
+
         <item
             android:id="@+id/connections"
             android:icon="@drawable/ic_multiplayer"
             android:title="@string/connections" />
-    </group>
-    <group android:id="@+id/line6">
+
         <item
             android:id="@+id/exit"
             android:title="@string/menu_tools" />
-    </group>
 
+    </group>
 
 </menu>

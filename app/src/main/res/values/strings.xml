@@ -29,4 +29,5 @@
     <string name="next">Next</string>
     <string name="connections">Connections</string>
     <string name="choose_a_gesture_and_practice_with_your_wand">Choose a gesture and practice with your wand!</string>
+    <string name="singleplayer">Singleplayer</string>
 </resources>
