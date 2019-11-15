@@ -1,10 +1,14 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +18,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 public class Multiplayer extends AppCompatActivity implements View.OnClickListener {
 
     private AppData appData;
+    private DrawerLayout drawer;
+    private ProgressBar offensiveProgressBar;
+    private ProgressBar defensiveProgressBar;
+    private ProgressBar utilityProgressBar;
+    private Button offensiveButton;
+    private Button defensiveButton;
+    private Button utilityButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +62,32 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         appData = (AppData) getIntent().getSerializableExtra("data");
         TextView yourNameTextView = findViewById(R.id.your_name);
         yourNameTextView.setText(appData.getName_player());
+
+        drawer = findViewById(R.id.drawer_layout);
+        offensiveProgressBar = findViewById(R.id.offensive_progressBar);
+        defensiveProgressBar = findViewById(R.id.defensive_progressBar);
+        utilityProgressBar = findViewById(R.id.utility_progressBar);
+        offensiveButton = findViewById(R.id.offensive_button);
+        defensiveButton = findViewById(R.id.defensive_button);
+        utilityButton = findViewById(R.id.utility_button);
+
+        offensiveButton.setOnClickListener(this);
+        defensiveButton.setOnClickListener(this);
+        utilityButton.setOnClickListener(this);
+
     }
 
     @Override
     public void onClick(View view) {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        drawer = findViewById(R.id.drawer_layout);
+        offensiveProgressBar = findViewById(R.id.offensive_progressBar);
+        defensiveProgressBar = findViewById(R.id.defensive_progressBar);
+        utilityProgressBar = findViewById(R.id.utility_progressBar);
+        offensiveButton = findViewById(R.id.offensive_button);
+        defensiveButton = findViewById(R.id.defensive_button);
+        utilityButton = findViewById(R.id.utility_button);
+
         Intent intent = null;
         switch (view.getId()) {
             /******* Navigation Drawer *******/
@@ -86,6 +118,82 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 break;
             /******* Navigation Drawer *******/
 
+            case R.id.offensive_button:
+                ProgressBarAnimation anim = new ProgressBarAnimation(offensiveProgressBar, 0, 100);
+                anim.setDuration(10000);
+                anim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        offensiveButton.setClickable(false);
+                        offensiveButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.wizardWhite)));
+                        offensiveButton.setTextColor(getResources().getColor(R.color.wizardBlue));
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        offensiveButton.setClickable(true);
+                        offensiveButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.wizardBlue)));
+                        offensiveButton.setTextColor(getResources().getColor(R.color.wizardDarkBlue));
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                offensiveProgressBar.startAnimation(anim);
+                break;
+            case R.id.defensive_button:
+                ProgressBarAnimation anim2 = new ProgressBarAnimation(defensiveProgressBar, 0, 100);
+                anim2.setDuration(1000);
+                anim2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        defensiveButton.setClickable(false);
+                        defensiveButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.wizardWhite)));
+                        defensiveButton.setTextColor(getResources().getColor(R.color.wizardBlue));
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        defensiveButton.setClickable(true);
+                        defensiveButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.wizardBlue)));
+                        defensiveButton.setTextColor(getResources().getColor(R.color.wizardDarkBlue));
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                defensiveProgressBar.startAnimation(anim2);
+                break;
+            case R.id.utility_button:
+                ProgressBarAnimation anim3 = new ProgressBarAnimation(utilityProgressBar, 0, 100);
+                anim3.setDuration(2000);
+                anim3.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        utilityButton.setClickable(false);
+                        utilityButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.wizardWhite)));
+                        utilityButton.setTextColor(getResources().getColor(R.color.wizardBlue));
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        utilityButton.setClickable(true);
+                        utilityButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.wizardBlue)));
+                        utilityButton.setTextColor(getResources().getColor(R.color.wizardDarkBlue));
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                utilityProgressBar.startAnimation(anim3);
+                break;
             default:
                 break;
         }

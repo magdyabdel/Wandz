@@ -32,4 +32,11 @@
     <string name="singleplayer">Singleplayer</string>
     <string name="my_wand">My Wand</string>
     <string name="training_mode">Training Mode</string>
+    <string name="shoot">Shoot!</string>
+    <string name="mode">mode</string>
+    <string name="health">Health</string>
+    <string name="strength">Strength</string>
+    <string name="game_mode">Game Mode</string>
+    <string name="score">Score</string>
+    <string name="my_score">my_score</string>
 </resources>
