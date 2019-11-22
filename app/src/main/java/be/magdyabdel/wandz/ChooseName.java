@@ -41,7 +41,7 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
                 if(!name.equals("")){
                     appData.addName(name);
                     appData.setName_player(name);
-                    Intent intent = new Intent(this, Trainingmode.class);
+                    Intent intent = new Intent(this, ChangeProfileIcon.class);
                     intent.putExtra("data", appData);
                     startActivity(intent);
                     finish();

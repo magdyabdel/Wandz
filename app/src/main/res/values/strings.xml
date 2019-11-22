@@ -39,4 +39,15 @@
     <string name="game_mode">Game Mode</string>
     <string name="score">Score</string>
     <string name="my_score">my_score</string>
+    <string name="cape_color">Cape Color</string>
+    <string name="right"><![CDATA[>]]></string>
+    <string name="left"><![CDATA[<]]></string>
+    <string name="hat_color">Hat Color</string>
+    <string name="outfit_color">Outfit Color</string>
+    <string name="skin_color">Skin Color</string>
+    <string name="hair_color">Hair Color</string>
+    <string name="gender">Gender</string>
+    <string name="ready">Ready</string>
+    <string name="eye_color">Eye Color</string>
+    <string name="randomize">Random</string>
 </resources>

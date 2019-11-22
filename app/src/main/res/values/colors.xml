@@ -8,4 +8,6 @@
     <color name="wizardPink">#FEA4F8</color>
     <color name="wizardWhite">#FFFFFF</color>
     <color name="wizardGrey">#353535</color>
+    <color name="wizardTransparent">#00FFFFFF</color>
+
 </resources>
