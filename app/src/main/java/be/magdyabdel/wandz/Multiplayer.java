@@ -40,6 +40,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         ImageView profileImageView = findViewById(R.id.profile);
         profileImageView.setOnClickListener(this);
 
+        TextView yourNameTextView = findViewById(R.id.your_name);
+        yourNameTextView.setOnClickListener(this);
+
         TextView trainingmodeTextView = findViewById(R.id.training_mode);
         trainingmodeTextView.setOnClickListener(this);
 
@@ -60,8 +63,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         /******* Navigation Drawer *******/
 
         appData = (AppData) getIntent().getSerializableExtra("data");
-        TextView yourNameTextView = findViewById(R.id.your_name);
         yourNameTextView.setText(appData.getName_player());
+        appData.setProfileImage(this, profileImageView, -1);
+
+        ImageView profile_image = findViewById(R.id.profile_image);
+        appData.setProfileImage(this, profile_image, -1);
+        TextView multiplayer_name = findViewById(R.id.multiplayer_name);
+        multiplayer_name.setText((appData.getName_player()));
 
         drawer = findViewById(R.id.drawer_layout);
         offensiveProgressBar = findViewById(R.id.offensive_progressBar);
@@ -74,6 +82,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         offensiveButton.setOnClickListener(this);
         defensiveButton.setOnClickListener(this);
         utilityButton.setOnClickListener(this);
+
 
     }
 
@@ -92,27 +101,20 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         switch (view.getId()) {
             /******* Navigation Drawer *******/
             case R.id.profile:
-                intent = new Intent(this, Profile.class);
+            case R.id.your_name:
+                intent = new Intent(this, ChangeProfileIcon.class);
                 break;
             case R.id.training_mode:
-                intent = new Intent(this, Trainingmode.class);
-                break;
             case R.id.training_mode_image:
                 intent = new Intent(this, Trainingmode.class);
                 break;
             case R.id.multiplayer:
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                }
-                break;
             case R.id.multiplayer_image:
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 }
                 break;
             case R.id.my_wand:
-                intent = new Intent(this, MyWand.class);
-                break;
             case R.id.my_wand_image:
                 intent = new Intent(this, MyWand.class);
                 break;

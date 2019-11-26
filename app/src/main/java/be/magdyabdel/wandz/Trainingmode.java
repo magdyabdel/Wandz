@@ -34,6 +34,8 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
 
         ImageView profileImageView = findViewById(R.id.profile);
         profileImageView.setOnClickListener(this);
+        TextView yourNameTextView = findViewById(R.id.your_name);
+        yourNameTextView.setOnClickListener(this);
 
         TextView trainingmodeTextView = findViewById(R.id.training_mode);
         trainingmodeTextView.setOnClickListener(this);
@@ -64,9 +66,8 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         imageView.setImageResource(R.drawable.ic_gesture_horizontal_right);
 
         appData = (AppData) getIntent().getSerializableExtra("data");
-
-        TextView yourNameTextView = findViewById(R.id.your_name);
         yourNameTextView.setText(appData.getName_player());
+        appData.setProfileImage(this, profileImageView, -1);
 
     }
 
@@ -75,29 +76,23 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         Intent intent = null;
         switch (view.getId()) {
+
             /******* Navigation Drawer *******/
             case R.id.profile:
-                intent = new Intent(this, Profile.class);
+            case R.id.your_name:
+                intent = new Intent(this, ChangeProfileIcon.class);
                 break;
             case R.id.training_mode:
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                }
-                break;
             case R.id.training_mode_image:
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 }
                 break;
             case R.id.multiplayer:
-                intent = new Intent(this, Multiplayer.class);
-                break;
             case R.id.multiplayer_image:
                 intent = new Intent(this, Multiplayer.class);
                 break;
             case R.id.my_wand:
-                intent = new Intent(this, MyWand.class);
-                break;
             case R.id.my_wand_image:
                 intent = new Intent(this, MyWand.class);
                 break;

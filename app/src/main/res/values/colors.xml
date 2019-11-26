@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorAccent">#D81B60</color>
     <color name="wizardBlue">#5169B1</color>
     <color name="wizardDarkBlue">#34336F</color>
@@ -9,5 +9,7 @@
     <color name="wizardWhite">#FFFFFF</color>
     <color name="wizardGrey">#353535</color>
     <color name="wizardTransparent">#00FFFFFF</color>
+    <color name="wizardBlack">#000000</color>
+
 
 </resources>
