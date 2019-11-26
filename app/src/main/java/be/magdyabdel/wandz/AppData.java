@@ -56,9 +56,12 @@ public class AppData implements Serializable {
     public void setProfileImage(Context context, ImageView profile, int id) {
 
         String[] outfitColors = context.getResources().getStringArray(R.array.outfit_array);
+        String[] outfitColorsTwo = context.getResources().getStringArray(R.array.outfit_array_two);
         String[] skinColors = context.getResources().getStringArray(R.array.skin_array);
+        String[] skinDetailColors = context.getResources().getStringArray(R.array.skin_details);
         String[] hairColors = context.getResources().getStringArray(R.array.hair_array);
         String[] eyeColors = context.getResources().getStringArray(R.array.eye_array);
+
 
         VectorChildFinder vector = new VectorChildFinder(context, R.drawable.ic_profile, profile);
         com.devs.vectorchildfinder.VectorDrawableCompat.VFullPath cape_path_light = vector.findPathByName("cape_light");
@@ -91,14 +94,14 @@ public class AppData implements Serializable {
             switch (id) {
                 case R.id.outfit_left:
 
-                    outfit_color_array_id = outfit_color_array_id - 2;
+                    outfit_color_array_id--;
                     if (outfit_color_array_id < 0) {
-                        outfit_color_array_id = outfitColors.length - 2;
+                        outfit_color_array_id = outfitColors.length - 1;
                     }
                     break;
                 case R.id.outfit_right:
 
-                    outfit_color_array_id = outfit_color_array_id + 2;
+                    outfit_color_array_id++;
                     if (outfit_color_array_id >= outfitColors.length) {
                         outfit_color_array_id = 0;
                     }
@@ -119,14 +122,14 @@ public class AppData implements Serializable {
                     break;
                 case R.id.skin_left:
 
-                    skin_color_array_id = skin_color_array_id - 2;
+                    skin_color_array_id--;
                     if (skin_color_array_id < 0) {
-                        skin_color_array_id = skinColors.length - 2;
+                        skin_color_array_id = skinColors.length - 1;
                     }
                     break;
                 case R.id.skin_right:
 
-                    skin_color_array_id = skin_color_array_id + 2;
+                    skin_color_array_id++;
                     if (skin_color_array_id >= skinColors.length) {
                         skin_color_array_id = 0;
                     }
@@ -146,10 +149,10 @@ public class AppData implements Serializable {
                     }
                     break;
                 case R.id.random:
-                    outfit_color_array_id = new Random().nextInt((outfitColors.length - 1) / 2) * 2;
-                    skin_color_array_id = new Random().nextInt((skinColors.length - 1) / 2) * 2;
-                    hair_color_array_id = new Random().nextInt((hairColors.length));
-                    eye_color_array_id = new Random().nextInt((eyeColors.length - 1));
+                    outfit_color_array_id = new Random().nextInt(outfitColors.length);
+                    skin_color_array_id = new Random().nextInt(skinColors.length);
+                    hair_color_array_id = new Random().nextInt(hairColors.length);
+                    eye_color_array_id = new Random().nextInt(eyeColors.length);
 
                     break;
 
@@ -160,9 +163,9 @@ public class AppData implements Serializable {
 
         cape_path_light.setFillColor(Color.parseColor(outfitColors[outfit_color_array_id]));
         hat_path_light.setFillColor(Color.parseColor(outfitColors[outfit_color_array_id]));
-        cape_path_dark1.setFillColor(Color.parseColor(outfitColors[outfit_color_array_id + 1]));
-        cape_path_dark2.setFillColor(Color.parseColor(outfitColors[outfit_color_array_id + 1]));
-        hat_path_dark.setFillColor(Color.parseColor(outfitColors[outfit_color_array_id + 1]));
+        cape_path_dark1.setFillColor(Color.parseColor(outfitColorsTwo[outfit_color_array_id]));
+        cape_path_dark2.setFillColor(Color.parseColor(outfitColorsTwo[outfit_color_array_id]));
+        hat_path_dark.setFillColor(Color.parseColor(outfitColorsTwo[outfit_color_array_id]));
 
         hair_path1.setFillColor(Color.parseColor(hairColors[hair_color_array_id]));
         hair_path2.setFillColor(Color.parseColor(hairColors[hair_color_array_id]));
@@ -172,14 +175,14 @@ public class AppData implements Serializable {
         skin_path2.setFillColor(Color.parseColor(skinColors[skin_color_array_id]));
         skin_path3.setFillColor(Color.parseColor(skinColors[skin_color_array_id]));
 
-        details_path1.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path2.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path3.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path4.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path5.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path6.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path7.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
-        details_path8.setFillColor(Color.parseColor(skinColors[skin_color_array_id + 1]));
+        details_path1.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path2.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path3.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path4.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path5.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path6.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path7.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
+        details_path8.setFillColor(Color.parseColor(skinDetailColors[skin_color_array_id]));
 
         eye_path_left.setFillColor(Color.parseColor(eyeColors[eye_color_array_id]));
         eye_path_right.setFillColor(Color.parseColor(eyeColors[eye_color_array_id]));

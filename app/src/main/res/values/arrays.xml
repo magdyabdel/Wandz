@@ -3,45 +3,54 @@
 
     <string-array name="outfit_array">
         <item>#8D87FF</item>
-        <item>#7100CE</item>
         <item>#30CC90</item>
-        <item>#259B6C</item>
         <item>#FF87E5</item>
-        <item>#BC64A9</item>
         <item>#E2C758</item>
-        <item>#AD9843</item>
         <item>#C147D3</item>
-        <item>#9E3AAD</item>
         <item>#AA96AA</item>
-        <item>#685D68</item>
         <item>#EB1A1A</item>
-        <item>#A70000</item>
         <item>#FCFCFC</item>
         <item>#000000</item>
-        <item>#000000</item>
-        <item>#FCFCFC</item>
+    </string-array>
 
+    <string-array name="outfit_array_two">
+        <item>#7100CE</item>
+        <item>#259B6C</item>
+        <item>#BC64A9</item>
+        <item>#AD9843</item>
+        <item>#9E3AAD</item>
+        <item>#685D68</item>
+        <item>#A70000</item>
+        <item>#000000</item>
+        <item>#FCFCFC</item>
     </string-array>
 
     <string-array name="skin_array">
         <item>#EDD5BB</item>
-        <item>#AA9986</item>
         <item>#CDA476</item>
-        <item>#9E7C5B</item>
         <item>#B08656</item>
-        <item>#7C5F3E</item>
         <item>#755431</item>
-        <item>#3F2D1A</item>
         <item>#553A1F</item>
-        <item>#21160C</item>
         <item>#EDBBBD</item>
+        <item>#000000</item>
+    </string-array>
+
+    <string-array name="skin_details">
+        <item>#AA9986</item>
+        <item>#9E7C5B</item>
+        <item>#7C5F3E</item>
+        <item>#3F2D1A</item>
+        <item>#21160C</item>
         <item>#BA9395</item>
+        <item>#FFFFFF</item>
     </string-array>
 
     <string-array name="hair_array">
+        <item>#000000</item>
         <item>#341E13</item>
         <item>#6D3C02</item>
         <item>#9A4B00</item>
+        <item>#B89883</item>
         <item>#D7CB67</item>
         <item>#EBD83E</item>
         <item>#AD4347</item>
