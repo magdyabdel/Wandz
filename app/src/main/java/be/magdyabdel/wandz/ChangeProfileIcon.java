@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ChangeProfileIcon extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageView profile;
-    private AppData appData;
+    private ImageView profile_image;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +46,12 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
         Button random = findViewById(R.id.random);
         random.setOnClickListener(this);
 
-        profile = findViewById(R.id.profile_vector);
+        profile_image = findViewById(R.id.profile_vector);
 
-        appData = (AppData) getIntent().getSerializableExtra("data");
+        profile = (Profile) getIntent().getSerializableExtra("profile");
         TextView yourNameTextView = findViewById(R.id.name);
-        yourNameTextView.setText(appData.getName_player());
-        appData.setProfileImage(this, profile, -1);
+        yourNameTextView.setText(profile.getName());
+        profile.setProfileImage(this, profile_image);
     }
 
     @Override
@@ -59,11 +59,12 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
 
         if (view.getId() == R.id.ready) {
             Intent intent = new Intent(this, Trainingmode.class);
-            intent.putExtra("data", appData);
+            intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
         } else {
-            appData.setProfileImage(this, profile, view.getId());
+            profile.changeProfileByButton(view.getId());
+            profile.setProfileImage(this, profile_image);
         }
 
     }

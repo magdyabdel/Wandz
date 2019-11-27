@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ChooseName extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editText;
-    private AppData appData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,6 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
         button.setOnClickListener(this);
 
         editText = findViewById(R.id.name_field);
-        appData = new AppData();
     }
 
     @Override
@@ -39,20 +37,16 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
             case R.id.enter:
 
                 if(!name.equals("")){
-                    appData.addName(name);
-                    appData.setName_player(name);
+                    Profile profile = new Profile(-1, name, 0000);
                     Intent intent = new Intent(this, ChangeProfileIcon.class);
-                    intent.putExtra("data", appData);
+                    intent.putExtra("profile", profile);
                     startActivity(intent);
                     finish();
                 }
                 else{
                     Toast toast = Toast.makeText(this, "Fill in your name before entering!", Toast.LENGTH_SHORT);
-
                     toast.show();
-
                 }
-
 
                 break;
             default:

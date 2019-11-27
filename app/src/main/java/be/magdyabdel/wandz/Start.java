@@ -29,7 +29,6 @@ public class Start extends AppCompatActivity implements View.OnClickListener{
             case R.id.enter:
                 Intent intent = new Intent(this, ChooseName.class);
                 startActivity(intent);
-                finish();
                 break;
             default:
                 break;

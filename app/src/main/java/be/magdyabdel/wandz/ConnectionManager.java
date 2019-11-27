@@ -65,27 +65,4 @@ public class ConnectionManager {
             }
         return dataList;
     }
-
-    public int join(String username){
-        if(!joined) {
-            sendData("JOIN " + username.replaceAll(" ", "_"));
-            joined = true;
-            return 0; //Okay no errors
-        }else{
-            return 1; //Already joined
-        }
-    }
-
-    public int leave(){
-        if(joined){
-            sendData("LEAVE");
-            return 0; //Okay no errors
-        }else{
-            return 1; //Error, not joined
-        }
-    }
-
-    public int confirm_hit(){
-        return 0;
-    }
 }

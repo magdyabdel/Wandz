@@ -19,7 +19,7 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
             R.drawable.ic_gesture_vertical_down, R.drawable.ic_gesture_vertical_up, R.drawable.ic_gesture_round};
     private int currentGestureImage = 0;
 
-    private AppData appData;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +53,9 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         imageView = findViewById(R.id.view_gestures);
         imageView.setImageResource(R.drawable.ic_gesture_horizontal_right);
 
-        appData = (AppData) getIntent().getSerializableExtra("data");
-        yourNameTextView.setText(appData.getName_player());
-        appData.setProfileImage(this, profileImageView, -1);
-
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+        yourNameTextView.setText(profile.getName());
+        profile.setProfileImage(this, profileImageView);
     }
 
     @Override
@@ -76,7 +75,7 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.multiplayer:
-                intent = new Intent(this, Multiplayer.class);
+                intent = new Intent(this, MultiplayerConnect.class);
                 break;
             case R.id.my_wand:
                 intent = new Intent(this, MyWand.class);
@@ -95,7 +94,7 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         }
 
         if (intent != null) {
-            intent.putExtra("data", appData);
+            intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
         }

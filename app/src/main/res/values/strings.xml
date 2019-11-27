@@ -52,4 +52,6 @@
     <string name="randomize">Random</string>
     <string name="leave_the_game">Leave The Game</string>
     <string name="join_the_game">Join The Game</string>
+    <string name="name_player">Name_Player</string>
+    <string name="connecting_to_the_server">Connecting To The Server</string>
 </resources>

@@ -125,9 +125,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     private void sendTest() {
-                if (connect) {
-                    connectionManager.sendData("JOIN " + appData.getName_player());
-                }
+        if (connect) {
+            connectionManager.sendData("JOIN " + appData.getName_player());
+        }
     }
 
     private void gameMethod() {
@@ -159,18 +159,22 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                         Iterator<String> iterator = data.iterator();
                         while (iterator.hasNext()) {
 
-                           final String command = iterator.next();
+                            final String command = iterator.next();
 
 
                             Log.i("servershit", command);
 
-                            runOnUiThread(new Runnable() {
-                                @Override
+                            new Thread(new Runnable() {
                                 public void run() {
-                                    TextView gamemode = findViewById(R.id.game_mode_value);
-                                    gamemode.setText(command);
+                                    // a potentially time consuming task
+                                    final TextView gameMode = findViewById(R.id.game_mode_value);
+                                    gameMode.post(new Runnable() {
+                                        public void run() {
+                                            gameMode.setText(command);
+                                        }
+                                    });
                                 }
-                            });
+                            }).start();
 
                         }
 
