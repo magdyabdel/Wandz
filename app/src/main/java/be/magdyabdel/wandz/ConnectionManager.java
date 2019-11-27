@@ -14,6 +14,8 @@ public class ConnectionManager {
     private int port;
     Socket socket;
 
+    private boolean joined = false;
+
     public ConnectionManager(String ip, int port){
         this.ip = ip;
         this.port = port;
@@ -62,5 +64,28 @@ public class ConnectionManager {
                 System.out.println("Error reading data from client.");
             }
         return dataList;
+    }
+
+    public int join(String username){
+        if(!joined) {
+            sendData("JOIN " + username.replaceAll(" ", "_"));
+            joined = true;
+            return 0; //Okay no errors
+        }else{
+            return 1; //Already joined
+        }
+    }
+
+    public int leave(){
+        if(joined){
+            sendData("LEAVE");
+            return 0; //Okay no errors
+        }else{
+            return 1; //Error, not joined
+        }
+    }
+
+    public int confirm_hit(){
+        return 0;
     }
 }

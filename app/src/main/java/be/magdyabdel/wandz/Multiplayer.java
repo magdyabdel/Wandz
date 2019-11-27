@@ -125,15 +125,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     private void sendTest() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
                 if (connect) {
                     connectionManager.sendData("JOIN " + appData.getName_player());
                 }
-            }
-        });
-        thread.start();
     }
 
     private void gameMethod() {
@@ -161,11 +155,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     Log.i("servershit", "connected");
                     Looper.prepare();
                     while (connect) {
-                        final ArrayList<String> data = connectionManager.readAllData();
-                        Iterator iterator = data.iterator();
+                        ArrayList<String> data = connectionManager.readAllData();
+                        Iterator<String> iterator = data.iterator();
                         while (iterator.hasNext()) {
 
-                            final String command = (String) iterator.next();
+                           final String command = iterator.next();
+
+
                             Log.i("servershit", command);
 
                             runOnUiThread(new Runnable() {
