@@ -14,6 +14,8 @@ public class AppData implements Serializable {
 
     private String name_player;
     private ArrayList<String> names;
+    private String id;
+
     private int outfit_color_array_id;
     private int skin_color_array_id;
     private int hair_color_array_id;
@@ -187,4 +189,13 @@ public class AppData implements Serializable {
         eye_path_left.setFillColor(Color.parseColor(eyeColors[eye_color_array_id]));
         eye_path_right.setFillColor(Color.parseColor(eyeColors[eye_color_array_id]));
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }

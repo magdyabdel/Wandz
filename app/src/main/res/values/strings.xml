@@ -50,4 +50,6 @@
     <string name="ready">Ready</string>
     <string name="eye_color">Eye Color</string>
     <string name="randomize">Random</string>
+    <string name="leave_the_game">Leave The Game</string>
+    <string name="join_the_game">Join The Game</string>
 </resources>

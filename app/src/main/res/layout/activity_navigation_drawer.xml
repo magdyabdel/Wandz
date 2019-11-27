@@ -34,128 +34,158 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_percent="0.6" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.3" />
+                    app:layout_constraintGuide_percent="0.5" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.75" />
+                    app:layout_constraintGuide_percent="0.7" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.4" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.8" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.05" />
 
                 <ImageView
                     android:id="@+id/profile"
-                    android:layout_width="135dp"
-                    android:layout_height="121dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
                     android:contentDescription="@string/nav_header_desc"
                     android:paddingTop="@dimen/nav_header_vertical_spacing"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline4"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_profile_wizard" />
-
-                <TextView
-                    android:id="@+id/training_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:fontFamily="@font/quite_magical"
-                    android:onClick="onClick"
-                    android:text="@string/training_mode"
-                    android:textColor="@color/wizardDarkBlue"
-                    android:textSize="30sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/guideline2" />
-
-                <ImageView
-                    android:id="@+id/training_mode_image"
-                    android:layout_width="50dp"
-                    android:layout_height="41dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/training_mode"
-                    tools:src="@tools:sample/avatars" />
-
-                <TextView
-                    android:id="@+id/multiplayer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:fontFamily="@font/quite_magical"
-                    android:onClick="onClick"
-                    android:text="@string/multiplayer"
-                    android:textColor="@color/wizardDarkBlue"
-                    android:textSize="30sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.503"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/guideline1" />
-
-                <ImageView
-                    android:id="@+id/multiplayer_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="130dp"
-                    android:onClick="onClick"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.505"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/multiplayer"
-                    app:srcCompat="@drawable/ic_multiplayer" />
-
-                <TextView
-                    android:id="@+id/my_wand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:fontFamily="@font/quite_magical"
-                    android:onClick="onClick"
-                    android:textColor="@color/wizardDarkBlue"
-                    android:textSize="30sp"
-                    android:text="@string/my_wand"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/guideline3" />
-
-                <ImageView
-                    android:id="@+id/my_wand_image"
-                    android:layout_width="50dp"
-                    android:layout_height="41dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/my_wand"
-                    tools:src="@tools:sample/avatars" />
+                    app:layout_constraintTop_toTopOf="@+id/guideline6"
+                    app:srcCompat="@drawable/ic_profile" />
 
                 <TextView
                     android:id="@+id/your_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="@font/quite_magical"
                     android:onClick="onClick"
-                    android:textColor="@color/wizardDarkBlue"
                     android:text="@string/your_name"
+                    android:textColor="@color/wizardDarkBlue"
                     android:textSize="30sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/profile" />
+                    app:layout_constraintTop_toTopOf="@+id/guideline4" />
+
+                <Button
+                    android:id="@+id/leave"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/leave_the_game"
+                    android:fontFamily="@font/quite_magical"
+                    android:textSize="30sp"
+                    android:textColor="@color/wizardDarkBlue"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.6"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline5" />
+
+                <Button
+                    android:id="@+id/join"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/quite_magical"
+                    android:text="@string/join_the_game"
+                    android:textColor="@color/wizardDarkBlue"
+                    android:textSize="30sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline5" />
+
+                <Button
+                    android:id="@+id/my_wand"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/quite_magical"
+                    android:text="@string/my_wand"
+                    android:textColor="@color/wizardDarkBlue"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline3" />
+
+                <Button
+                    android:id="@+id/multiplayer"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/quite_magical"
+                    android:text="@string/multiplayer"
+                    android:textColor="@color/wizardDarkBlue"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline1" />
+
+                <Button
+                    android:id="@+id/training_mode"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:fontFamily="@font/quite_magical"
+                    android:text="@string/training_mode"
+                    android:textColor="@color/wizardDarkBlue"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

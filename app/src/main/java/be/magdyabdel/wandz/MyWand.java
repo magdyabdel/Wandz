@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,34 +22,20 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
         /******* Navigation Drawer *******/
         setContentView(R.layout.activity_navigation_drawer);
-
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.activity_my_wand);
         stub.inflate();
 
         ImageView profileImageView = findViewById(R.id.profile);
         profileImageView.setOnClickListener(this);
-
         TextView yourNameTextView = findViewById(R.id.your_name);
         yourNameTextView.setOnClickListener(this);
-
-        TextView trainingmodeTextView = findViewById(R.id.training_mode);
-        trainingmodeTextView.setOnClickListener(this);
-
-        ImageView trainingmodeImageView = findViewById(R.id.training_mode_image);
-        trainingmodeImageView.setOnClickListener(this);
-
-        TextView multiplayerTextView = findViewById(R.id.multiplayer);
-        multiplayerTextView.setOnClickListener(this);
-
-        ImageView multiplayerImageView = findViewById(R.id.multiplayer_image);
-        multiplayerImageView.setOnClickListener(this);
-
-        TextView myWandTextView = findViewById(R.id.my_wand);
-        myWandTextView.setOnClickListener(this);
-
-        ImageView myWandImageView = findViewById(R.id.my_wand_image);
-        myWandImageView.setOnClickListener(this);
+        Button trainingmode = findViewById(R.id.training_mode);
+        trainingmode.setOnClickListener(this);
+        Button multiplayer = findViewById(R.id.multiplayer);
+        multiplayer.setOnClickListener(this);
+        Button myWand = findViewById(R.id.my_wand);
+        myWand.setOnClickListener(this);
         /******* Navigation Drawer *******/
 
         appData = (AppData) getIntent().getSerializableExtra("data");
@@ -68,21 +55,10 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
             case R.id.training_mode:
                 intent = new Intent(this, Trainingmode.class);
                 break;
-            case R.id.training_mode_image:
-                intent = new Intent(this, Trainingmode.class);
-                break;
             case R.id.multiplayer:
                 intent = new Intent(this, Multiplayer.class);
                 break;
-            case R.id.multiplayer_image:
-                intent = new Intent(this, Multiplayer.class);
-                break;
             case R.id.my_wand:
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                }
-                break;
-            case R.id.my_wand_image:
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 }

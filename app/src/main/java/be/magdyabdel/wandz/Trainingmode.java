@@ -36,24 +36,12 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         profileImageView.setOnClickListener(this);
         TextView yourNameTextView = findViewById(R.id.your_name);
         yourNameTextView.setOnClickListener(this);
-
-        TextView trainingmodeTextView = findViewById(R.id.training_mode);
-        trainingmodeTextView.setOnClickListener(this);
-
-        ImageView trainingmodeImageView = findViewById(R.id.training_mode_image);
-        trainingmodeImageView.setOnClickListener(this);
-
-        TextView multiplayerTextView = findViewById(R.id.multiplayer);
-        multiplayerTextView.setOnClickListener(this);
-
-        ImageView multiplayerImageView = findViewById(R.id.multiplayer_image);
-        multiplayerImageView.setOnClickListener(this);
-
-        TextView myWandTextView = findViewById(R.id.my_wand);
-        myWandTextView.setOnClickListener(this);
-
-        ImageView myWandImageView = findViewById(R.id.my_wand_image);
-        myWandImageView.setOnClickListener(this);
+        Button trainingmode = findViewById(R.id.training_mode);
+        trainingmode.setOnClickListener(this);
+        Button multiplayer = findViewById(R.id.multiplayer);
+        multiplayer.setOnClickListener(this);
+        Button myWand = findViewById(R.id.my_wand);
+        myWand.setOnClickListener(this);
         /******* Navigation Drawer *******/
 
         Button next = findViewById(R.id.next);
@@ -83,17 +71,14 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
                 intent = new Intent(this, ChangeProfileIcon.class);
                 break;
             case R.id.training_mode:
-            case R.id.training_mode_image:
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 }
                 break;
             case R.id.multiplayer:
-            case R.id.multiplayer_image:
                 intent = new Intent(this, Multiplayer.class);
                 break;
             case R.id.my_wand:
-            case R.id.my_wand_image:
                 intent = new Intent(this, MyWand.class);
                 break;
             /******* Navigation Drawer *******/

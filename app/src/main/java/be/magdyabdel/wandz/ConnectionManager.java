@@ -1,4 +1,4 @@
-package be.magdyabdel.wandz.ConnectionManager;
+package be.magdyabdel.wandz;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
