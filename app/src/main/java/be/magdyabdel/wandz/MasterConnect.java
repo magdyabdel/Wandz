@@ -16,12 +16,10 @@ import java.util.Iterator;
 
 import static android.view.View.GONE;
 
-public class MultiplayerConnect extends AppCompatActivity implements View.OnClickListener {
+public class MasterConnect extends AppCompatActivity implements View.OnClickListener {
 
     private ArrayList<Profile> profiles;
     private ProfileAdapter adapter;
-    private Button join;
-    private Button leave;
     private ConnectionManager connectionManager;
     private Profile profile;
     private TextView connect_server;
@@ -31,7 +29,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_multiplayer_connect);
+        setContentView(R.layout.activity_master_connect);
 
         profiles = new ArrayList<>();
         RecyclerView recyclerview = findViewById(R.id.recycleViewer);
@@ -43,12 +41,6 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         game_mode = findViewById(R.id.game_mode_value);
         game_status = findViewById(R.id.game_status);
 
-        join = findViewById(R.id.join);
-        join.setOnClickListener(this);
-        leave = findViewById(R.id.leave);
-        leave.setOnClickListener(this);
-        leave.setClickable(false);
-
         profile = (Profile) getIntent().getSerializableExtra("profile");
         connectionManager = new ConnectionManager("51.83.69.116", 6789);
         try {
@@ -57,6 +49,9 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Button menu = findViewById(R.id.menu);
+        menu.setOnClickListener(this);
 
     }
 
@@ -99,28 +94,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.join:
-                if (connect_server.getVisibility() == GONE) {
-                    if (!connectionManager.getJoined()) {
-                        WriteThread writeThread = new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers());
-                        writeThread.start();
-                    }
-                    join.setClickable(false);
-                    join.setVisibility(View.GONE);
-                    leave.setVisibility(View.VISIBLE);
-                    leave.setClickable(true);
-                }
-                break;
-            case R.id.leave:
-                if (connectionManager.getJoined()) {
-                    WriteThread writeThread = new WriteThread("LEAVE");
-                    writeThread.start();
-                }
-                join.setClickable(true);
-                join.setVisibility(View.VISIBLE);
-                leave.setVisibility(GONE);
-                leave.setClickable(false);
-                break;
+
             case R.id.menu:
                 if (connectionManager.getJoined()) {
                     WriteThread writeThread = new WriteThread("LEAVE");
@@ -135,6 +109,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 break;
         }
     }
+
 
     class ReadThread extends Thread {
 
@@ -238,6 +213,24 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            while (profile.getId() == -1) { //TODO:timeout
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            connect_server.setVisibility(View.VISIBLE);
+                        }
+                    });
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+            }
+
+            WriteThread writeThread = new WriteThread("JOIN " + profile.getName().replace(" ", "_") + "(master) " + profile.getLayoutNumbers());
+            writeThread.start();
+
+            connectionManager.setJoined(true);
 
             while (connectionManager.getConnected()) {
                 connectionManager.sendData("KEEPALIVE");

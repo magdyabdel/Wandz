@@ -42,6 +42,8 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         multiplayer.setOnClickListener(this);
         Button myWand = findViewById(R.id.my_wand);
         myWand.setOnClickListener(this);
+        Button menu = findViewById(R.id.menu);
+        menu.setOnClickListener(this);
         /******* Navigation Drawer *******/
 
         Button next = findViewById(R.id.next);
@@ -87,6 +89,9 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.next:
                 changeGestureImage(-1);
+                break;
+            case R.id.menu:
+                intent = new Intent(this, Menu.class);
                 break;
 
             default:

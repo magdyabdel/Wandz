@@ -2,8 +2,6 @@ package be.magdyabdel.wandz;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -14,12 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 public class Multiplayer extends AppCompatActivity implements View.OnClickListener {
 
-    private AppData appData;
+    private Profile profile;
     private DrawerLayout drawer;
     private Button utilityButton;
     private ConnectionManager connectionManager;
@@ -54,14 +49,14 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         join.setVisibility(View.VISIBLE);
         /******* Navigation Drawer *******/
 
-        appData = (AppData) getIntent().getSerializableExtra("data");
-        yourNameTextView.setText(appData.getName_player());
-        appData.setProfileImage(this, profileImageView, -1);
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+        yourNameTextView.setText(profile.getName());
+        profile.setProfileImage(this, profileImageView);
 
         ImageView profile_image = findViewById(R.id.profile_image);
-        appData.setProfileImage(this, profile_image, -1);
+        profile.setProfileImage(this, profile_image);
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
-        multiplayer_name.setText((appData.getName_player()));
+        multiplayer_name.setText(profile.getName());
 
         drawer = findViewById(R.id.drawer_layout);
         utilityButton = findViewById(R.id.utility_button);
@@ -95,11 +90,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             /******* Navigation Drawer *******/
 
             case R.id.utility_button:
-                sendTest();
                 break;
             case R.id.join:
-
-                gameMethod();
                 break;
             case R.id.leave:
                 connect = false;
@@ -118,81 +110,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         }
 
         if (intent != null) {
-            intent.putExtra("data", appData);
+            intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
         }
-    }
-
-    private void sendTest() {
-        if (connect) {
-            connectionManager.sendData("JOIN " + appData.getName_player());
-        }
-    }
-
-    private void gameMethod() {
-
-        Button leave = findViewById(R.id.leave);
-        leave.setClickable(true);
-        leave.setVisibility(View.VISIBLE);
-        Button join = findViewById(R.id.join);
-        join.setClickable(false);
-        join.setVisibility(View.GONE);
-
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    connectionManager = new ConnectionManager("51.83.69.116", 6789);
-                    while (connectionManager.connect() != 0) {
-                        //TODO: implement timeout
-                    }
-                    connect = true;
-                    Log.i("servershit", "connected");
-                    Looper.prepare();
-                    while (connect) {
-                        ArrayList<String> data = connectionManager.readAllData();
-                        Iterator<String> iterator = data.iterator();
-                        while (iterator.hasNext()) {
-
-                            final String command = iterator.next();
-
-
-                            Log.i("servershit", command);
-
-                            new Thread(new Runnable() {
-                                public void run() {
-                                    // a potentially time consuming task
-                                    final TextView gameMode = findViewById(R.id.game_mode_value);
-                                    gameMode.post(new Runnable() {
-                                        public void run() {
-                                            gameMode.setText(command);
-                                        }
-                                    });
-                                }
-                            }).start();
-
-                        }
-
-                        Log.i("servershit", "KEEPALIVE");
-                        connectionManager.sendData("KEEPALIVE");
-
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-
-
     }
 }

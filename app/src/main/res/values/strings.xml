@@ -54,4 +54,14 @@
     <string name="join_the_game">Join The Game</string>
     <string name="name_player">Name_Player</string>
     <string name="connecting_to_the_server">Connecting To The Server</string>
+    <string name="game_status">Game Status</string>
+    <string name="players_joined_already">Players Joined Already</string>
+    <string name="welcome">Welcome!</string>
+    <string name="setup_your_wand">Setup Your Wand</string>
+    <string name="enter_multiplayer_world">Enter Multiplayer World</string>
+    <string name="enter_training_world">Enter Training World</string>
+    <string name="feel_the_magic">Feel The Magic!</string>
+    <string name="change_profile">Change Your Profile</string>
+    <string name="back_to_menu">Back To Menu</string>
+    <string name="click_here_if_you_re_the_gamemaster">Click Here If You\'re The GameMaster</string>
 </resources>

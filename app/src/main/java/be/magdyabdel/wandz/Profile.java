@@ -11,18 +11,19 @@ import java.util.Random;
 
 public class Profile implements Serializable {
 
-    String[] outfitColors;
-    String[] outfitColorsTwo;
-    String[] skinColors;
-    String[] skinDetailColors;
-    String[] hairColors;
-    String[] eyeColors;
+    private String[] outfitColors;
+    private String[] outfitColorsTwo;
+    private String[] skinColors;
+    private String[] skinDetailColors;
+    private String[] hairColors;
+    private String[] eyeColors;
     private String name;
     private int id = -1;
     private int outfit_color_array_id = 0;
     private int skin_color_array_id = 0;
     private int hair_color_array_id = 0;
     private int eye_color_array_id = 0;
+    private int health = 1000;
 
     public Profile(int id, String name, int layoutNumbers) {
         this.name = name;

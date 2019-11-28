@@ -47,7 +47,6 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
         random.setOnClickListener(this);
 
         profile_image = findViewById(R.id.profile_vector);
-
         profile = (Profile) getIntent().getSerializableExtra("profile");
         TextView yourNameTextView = findViewById(R.id.name);
         yourNameTextView.setText(profile.getName());
@@ -58,7 +57,7 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
     public void onClick(View view) {
 
         if (view.getId() == R.id.ready) {
-            Intent intent = new Intent(this, Trainingmode.class);
+            Intent intent = new Intent(this, Menu.class);
             intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
@@ -66,7 +65,5 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
             profile.changeProfileByButton(view.getId());
             profile.setProfileImage(this, profile_image);
         }
-
     }
-
 }

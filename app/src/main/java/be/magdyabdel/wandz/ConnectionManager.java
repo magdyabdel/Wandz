@@ -12,15 +12,14 @@ public class ConnectionManager {
 
     private String ip;
     private int port;
-    Socket socket;
-
-    private boolean joined = false;
+    private Socket socket;
+    private Boolean connected = false;
+    private Boolean joined = false;
 
     public ConnectionManager(String ip, int port){
         this.ip = ip;
         this.port = port;
     }
-
 
     public int connect(){
         try {
@@ -33,8 +32,6 @@ public class ConnectionManager {
 
         return 0; //No errors, everything ok
     }
-
-
 
     public int sendData(String data){
         if(socket!=null) {
@@ -64,5 +61,21 @@ public class ConnectionManager {
                 System.out.println("Error reading data from client.");
             }
         return dataList;
+    }
+
+    public Boolean getConnected() {
+        return connected;
+    }
+
+    public void setConnected(Boolean connected) {
+        this.connected = connected;
+    }
+
+    public Boolean getJoined() {
+        return joined;
+    }
+
+    public void setJoined(Boolean joined) {
+        this.joined = joined;
     }
 }

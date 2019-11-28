@@ -42,12 +42,11 @@
         android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
     <Button
-        android:id="@+id/join"
+        android:id="@+id/start"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -55,7 +54,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/quite_magical"
-        android:text="@string/join_the_game"
+        android:text="Start The Game"
         android:textColor="@color/wizardBlue"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline1"
@@ -64,7 +63,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
     <Button
-        android:id="@+id/leave"
+        android:id="@+id/stop"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -146,7 +145,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline1" />
+        app:layout_constraintTop_toBottomOf="@+id/start" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
