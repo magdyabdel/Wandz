@@ -37,7 +37,6 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
     BLEService mService;
     boolean mBound = false;
 
-
     ImageView bad;
     ImageView good;
 
@@ -100,7 +99,6 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         profile.setProfileImage(this, profileImageView);
 
         Intent intent1 = new Intent(this, BLEService.class);
-        startService(intent1);
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("GestureUpdate")); //broadcast receiver
         v = (Vibrator) getSystemService(getApplicationContext().VIBRATOR_SERVICE);
@@ -109,6 +107,7 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         good.setVisibility(View.GONE);
         bad = findViewById(R.id.rood);
         bad.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -160,10 +159,6 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
 
     public void changeGestureImage(int direction) {
         if (direction == 1) {
-            Toast toast;
-            toast = Toast.makeText(getApplicationContext(),"Gesture " + mService.getGesture(), Toast.LENGTH_SHORT);
-            toast.show();
-
             currentGestureImage++;
             if (currentGestureImage >= gestureImages.length) {
                 currentGestureImage = 0;

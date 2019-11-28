@@ -1,7 +1,11 @@
 package be.magdyabdel.wandz;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -20,6 +24,32 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private ConnectionManager connectionManager;
     private boolean connect = false;
 
+    /**
+     *  Variables for bluetooth binding
+     **/
+    BLEService mService;
+    boolean mBound = false;
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            mService.sendWizardID(profile.getId()); //Send the ID of the player to the wand
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +91,12 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         drawer = findViewById(R.id.drawer_layout);
         utilityButton = findViewById(R.id.utility_button);
         utilityButton.setOnClickListener(this);
+
+        /**
+         * bind to the bluetooth service and send the ID
+         **/
+        Intent intent1 = new Intent(this, BLEService.class);
+        bindService(intent1, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override

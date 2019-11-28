@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT32;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8;
 
 public class BLEService extends Service {
@@ -34,6 +35,7 @@ public class BLEService extends Service {
     int deviceIndexInput;
     ArrayList<BluetoothGattCharacteristic> acceleroChars = new ArrayList<>();
     BluetoothGattCharacteristic spell;
+    BluetoothGattCharacteristic wizardID;
     int charIndex = 0;
     /*data for the DTW*/
     Float[] waarden;
@@ -178,49 +180,7 @@ public class BLEService extends Service {
         return lT;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
-    }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        return Service.START_REDELIVER_INTENT;
-    }
-
-    /*public void create(){
-        training = 0;
-        position = 0;
-        dummy = 0;
-        aantal = 0;
-        waarden = new Float[3];
-        dtw = new DTW();
-        data = new Trainingdata();
-        rlist = new ArrayList<>(); //initialise recognition list
-        trainingsets = new ArrayList[10]; //initialise array of training sets
-        for (int i = 0; i < 10; i++) {
-            trainingsets[i] = new ArrayList<>();
-        }
-        gravity = new float[]{0, 0, 0};
-    }*/
-
-    public void onCreate() {
-        training = 0;
-        position = 0;
-        dummy = 0;
-        aantal = 0;
-        waarden = new Float[3];
-        dtw = new DTW();
-        data = new Trainingdata();
-        rlist = new ArrayList<>(); //initialise recognition list
-        trainingsets = new ArrayList[10]; //initialise array of training sets
-        for (int i = 0; i < 10; i++) {
-            trainingsets[i] = new ArrayList<>();
-        }
-        gravity = new float[]{0, 0, 0};
-    }
 
     public void connect(ArrayList<BluetoothDevice> devices, int device) {
         devicesDiscovered = devices;
@@ -273,8 +233,11 @@ public class BLEService extends Service {
                 } else if (UUID.fromString("00004ad3-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
                     acceleroChars.add(gattCharacteristic);
                 } else if (UUID.fromString("00004ad4-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
-                    spell = gattCharacteristic;
-                }
+                spell = gattCharacteristic;
+                 }
+                 else if (UUID.fromString("00004ad5-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
+                wizardID = gattCharacteristic;
+                 }
 
                 final String charUuid = gattCharacteristic.getUuid().toString();
                 System.out.println("Characteristic discovered for service: " + charUuid);
@@ -412,8 +375,31 @@ public class BLEService extends Service {
         }
     }
 
-    public byte getGesture(){
-        return gesture;
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_REDELIVER_INTENT;
+    }
+
+    public void onCreate() {
+        training = 0;
+        position = 0;
+        dummy = 0;
+        aantal = 0;
+        waarden = new Float[3];
+        dtw = new DTW();
+        data = new Trainingdata();
+        rlist = new ArrayList<>(); //initialise recognition list
+        trainingsets = new ArrayList[10]; //initialise array of training sets
+        for (int i = 0; i < 10; i++) {
+            trainingsets[i] = new ArrayList<>();
+        }
+        gravity = new float[]{0, 0, 0};
     }
 
     private  void sendMessageToActivity(byte b) {
@@ -422,6 +408,10 @@ public class BLEService extends Service {
         intent.putExtra("gesture", b);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
+    }
+    public void sendWizardID(int ID){
+        wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
+        boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
     }
 }
 
