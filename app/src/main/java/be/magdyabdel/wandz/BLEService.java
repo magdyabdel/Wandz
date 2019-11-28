@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -46,6 +47,8 @@ public class BLEService extends Service {
     private List<Float[]> rlist;
     private DTW dtw;
     private Trainingdata data;
+    byte gesture = 0;
+
     // Device connect call back
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
 
@@ -296,7 +299,6 @@ public class BLEService extends Service {
             float[][] sample = primitive(rlist);
             double[] error = {100.0, 100.0, 100.0};
             double minimum = 10;
-            byte gesture = 0;
             int index;
             for (int i = 0; i < 10; i++) {
                 float[][] training = data.getTrainingset1()[i];
@@ -339,10 +341,12 @@ public class BLEService extends Service {
             }
 
             if (gesturerecognised) {
+                sendMessageToActivity(gesture);
                 spell.setValue(gesture, FORMAT_UINT8, 0); //true if succes
                 boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if succes
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
+                sendMessageToActivity((byte) 0);
                 // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
             // toast.show();
@@ -407,20 +411,17 @@ public class BLEService extends Service {
             return BLEService.this;
         }
     }
-    /*
 
-    public static final Parcelable.Creator<BLEparcelable> CREATOR
-            = new Parcelable.Creator<BLEparcelable>() {
-        public BLEparcelable createFromParcel(Parcel in) {
-            return new BLEparcelable(in);
-        }
+    public byte getGesture(){
+        return gesture;
+    }
 
-        public BLEparcelable[] newArray(int size) {
-            return new BLEparcelable[size];
-        }
-    };
-    private BLEparcelable(Parcel parcel) {
-        bluetoothGatt = parcel.readValue();
-    }*/
+    private  void sendMessageToActivity(byte b) {
+        Intent intent = new Intent("GestureUpdate");
+        // You can also include some extra data.
+        intent.putExtra("gesture", b);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        Log.i("message", "message is send");
+    }
 }
 

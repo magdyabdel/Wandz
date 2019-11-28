@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#00FC00</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorAccent">#D81B60</color>
     <color name="wizardBlue">#5169B1</color>
@@ -10,6 +10,8 @@
     <color name="wizardGrey">#353535</color>
     <color name="wizardTransparent">#00FFFFFF</color>
     <color name="wizardBlack">#000000</color>
+    <color name="goodGesture">#00FF21</color>
+    <color name="badGesture">#FF0000</color>
 
 
 </resources>

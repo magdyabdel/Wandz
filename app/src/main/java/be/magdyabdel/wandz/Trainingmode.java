@@ -1,25 +1,65 @@
 package be.magdyabdel.wandz;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class Trainingmode extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView imageView;
-    private int[] gestureImages = new int[]{R.drawable.ic_gesture_horizontal_right, R.drawable.ic_gesture_horizontal_left,
-            R.drawable.ic_gesture_vertical_down, R.drawable.ic_gesture_vertical_up, R.drawable.ic_gesture_round};
+    private int[] gestureImages = new int[]{R.drawable.ic_gesture_horizontal_right, R.drawable.ic_gesture_vertical_up, R.drawable.ic_gesture_round};
     private int currentGestureImage = 0;
+    Vibrator v;
+
 
     private Profile profile;
+
+    BLEService mService;
+    boolean mBound = false;
+
+
+    ImageView bad;
+    ImageView good;
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +98,17 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         profile = (Profile) getIntent().getSerializableExtra("profile");
         yourNameTextView.setText(profile.getName());
         profile.setProfileImage(this, profileImageView);
+
+        Intent intent1 = new Intent(this, BLEService.class);
+        startService(intent1);
+        bindService(intent1, connection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("GestureUpdate")); //broadcast receiver
+        v = (Vibrator) getSystemService(getApplicationContext().VIBRATOR_SERVICE);
+
+        good = findViewById(R.id.groen);
+        good.setVisibility(View.GONE);
+        bad = findViewById(R.id.rood);
+        bad.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -100,6 +151,8 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
 
         if (intent != null) {
             intent.putExtra("profile", profile);
+            unbindService(connection); //unbind bluetooth service
+            mBound = false;
             startActivity(intent);
             finish();
         }
@@ -107,6 +160,10 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
 
     public void changeGestureImage(int direction) {
         if (direction == 1) {
+            Toast toast;
+            toast = Toast.makeText(getApplicationContext(),"Gesture " + mService.getGesture(), Toast.LENGTH_SHORT);
+            toast.show();
+
             currentGestureImage++;
             if (currentGestureImage >= gestureImages.length) {
                 currentGestureImage = 0;
@@ -131,5 +188,30 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
             super.onBackPressed();
         }
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            Log.i("yess", "jaaaaaaa");
+            Byte gest = intent.getByteExtra("gesture",(byte)0);
+            if(gest == (currentGestureImage+1)){
+                good.setVisibility(View.VISIBLE);
+                bad.setVisibility(View.INVISIBLE);
+            }
+            else{
+                // Vibrate for 500 milliseconds
+                bad.setVisibility(View.VISIBLE);
+                good.setVisibility(View.INVISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    //deprecated in API 26
+                    v.vibrate(500);
+                }
+                //Toast.makeText(getApplicationContext(), gest, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
 }

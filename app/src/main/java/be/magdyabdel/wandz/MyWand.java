@@ -58,6 +58,7 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
     BLEService mService;
     boolean mBound = false;
+
     private Profile profile;
     // Stops scanning after 5 seconds.
     private Handler mHandler = new Handler();
@@ -224,6 +225,8 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
         if (intent != null) {
             intent.putExtra("profile", profile);
+            unbindService(connection); //unbind bluetooth service
+            mBound = false;
             startActivity(intent);
             finish();
         }
