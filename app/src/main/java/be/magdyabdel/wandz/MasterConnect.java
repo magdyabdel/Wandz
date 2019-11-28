@@ -20,6 +20,8 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
 
     private ArrayList<Profile> profiles;
     private ProfileAdapter adapter;
+    private Button start;
+    private Button stop;
     private ConnectionManager connectionManager;
     private Profile profile;
     private TextView connect_server;
@@ -29,7 +31,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_master_connect);
+        setContentView(R.layout.activity_multiplayer_connect);
 
         profiles = new ArrayList<>();
         RecyclerView recyclerview = findViewById(R.id.recycleViewer);
@@ -41,14 +43,17 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         game_mode = findViewById(R.id.game_mode_value);
         game_status = findViewById(R.id.game_status);
 
+        start = findViewById(R.id.join);
+        start.setOnClickListener(this);
+        stop = findViewById(R.id.leave);
+        stop.setOnClickListener(this);
+        stop.setClickable(false);
+
         profile = (Profile) getIntent().getSerializableExtra("profile");
         connectionManager = new ConnectionManager("51.83.69.116", 6789);
-        try {
-            ConnectionThread connectionThread = new ConnectionThread();
-            connectionThread.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        ConnectionThread connectionThread = new ConnectionThread();
+        connectionThread.start();
 
         Button menu = findViewById(R.id.menu);
         menu.setOnClickListener(this);
@@ -94,14 +99,39 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.start:
+                if (connect_server.getVisibility() == GONE) {
+                    start.setClickable(false);
+                    start.setVisibility(View.GONE);
+                    stop.setVisibility(View.VISIBLE);
+                    stop.setClickable(true);
+                }
+                break;
+            case R.id.stop:
+                if (connectionManager.getJoined()) {
+                    WriteThread writeThread2 = new WriteThread("STOP");
+                    writeThread2.start();
+                }
+                start.setClickable(true);
+                start.setVisibility(View.VISIBLE);
+                stop.setVisibility(GONE);
+                stop.setClickable(false);
 
+                break;
             case R.id.menu:
                 if (connectionManager.getJoined()) {
-                    WriteThread writeThread = new WriteThread("LEAVE");
-                    writeThread.start();
+                    WriteThread writeThread3 = new WriteThread("LEAVE");
+                    writeThread3.start();
+                }
+                while (connectionManager.getJoined()) { //TODO:Timeout
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
                 }
                 profile.setId(-1);
                 connectionManager.setConnected(false);
+
                 Intent intent = new Intent(this, Menu.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);
@@ -110,10 +140,8 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         }
     }
 
-
     class ReadThread extends Thread {
-
-        ReadThread() throws InterruptedException {
+        ReadThread() {
         }
 
         @Override
@@ -149,9 +177,15 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                             break;
                         case "PLAYERJOINED":
                             addProfile(Integer.parseInt(splittedCommand[2]), splittedCommand[1], Integer.parseInt(splittedCommand[3]));
+                            if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
+                                connectionManager.setJoined(true);
+                            }
                             break;
                         case "PLAYERLEAVE":
                             removeProfile(Integer.parseInt(splittedCommand[2]));
+                            if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
+                                connectionManager.setJoined(false);
+                            }
                             break;
                     }
                 }
@@ -178,8 +212,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
     }
 
     class ConnectionThread extends Thread {
-
-        ConnectionThread() throws InterruptedException {
+        ConnectionThread() {
         }
 
         @Override
@@ -207,30 +240,13 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
 
             connectionManager.setConnected(true);
 
-            try {
-                ReadThread readThread = new ReadThread();
-                readThread.start();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            ReadThread readThread = new ReadThread();
+            readThread.start();
+
+            if (!connectionManager.getJoined()) {
+                WriteThread writeThread = new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers());
+                writeThread.start();
             }
-
-            while (profile.getId() == -1) { //TODO:timeout
-                try {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            connect_server.setVisibility(View.VISIBLE);
-                        }
-                    });
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
-            }
-
-            WriteThread writeThread = new WriteThread("JOIN " + profile.getName().replace(" ", "_") + "(master) " + profile.getLayoutNumbers());
-            writeThread.start();
-
-            connectionManager.setJoined(true);
 
             while (connectionManager.getConnected()) {
                 connectionManager.sendData("KEEPALIVE");

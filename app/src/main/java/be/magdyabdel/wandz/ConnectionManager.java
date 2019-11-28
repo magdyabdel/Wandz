@@ -15,6 +15,9 @@ public class ConnectionManager {
     private Socket socket;
     private Boolean connected = false;
     private Boolean joined = false;
+    private Boolean start = false;
+
+
 
     public ConnectionManager(String ip, int port){
         this.ip = ip;
@@ -77,5 +80,13 @@ public class ConnectionManager {
 
     public void setJoined(Boolean joined) {
         this.joined = joined;
+    }
+
+    public Boolean getStart() {
+        return start;
+    }
+
+    public void setStart(Boolean start) {
+        this.start = start;
     }
 }
