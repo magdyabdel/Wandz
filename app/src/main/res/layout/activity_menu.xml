@@ -172,6 +172,7 @@
         android:fontFamily="@font/quite_magical"
         android:onClick="onClick"
         android:text="@string/click_here_if_you_re_the_gamemaster"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

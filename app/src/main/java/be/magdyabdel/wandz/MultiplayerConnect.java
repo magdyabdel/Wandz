@@ -27,6 +27,9 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     private TextView connect_server;
     private TextView game_mode;
     private TextView game_status;
+    private Boolean busy = false;
+    private Boolean connected = false;
+    private Boolean joined = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +60,8 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
         Button menu = findViewById(R.id.menu);
         menu.setOnClickListener(this);
-
     }
+
 
     private void addProfile(int ids, String names, int layoutNumberss) {
 
@@ -100,41 +103,62 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.join:
-                if (connect_server.getVisibility() == GONE) {
-                    if (!connectionManager.getJoined()) {
+
+                if (connected) {
+                    if (!joined) {
                         WriteThread writeThread = new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers());
                         writeThread.start();
+
+                        while (!joined) { //TODO:Timeout
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                            }
+                        }
+
+                        join.setClickable(false);
+                        join.setVisibility(View.GONE);
+                        leave.setVisibility(View.VISIBLE);
+                        leave.setClickable(true);
                     }
-                    join.setClickable(false);
-                    join.setVisibility(View.GONE);
-                    leave.setVisibility(View.VISIBLE);
-                    leave.setClickable(true);
                 }
+
                 break;
             case R.id.leave:
-                if (connectionManager.getJoined()) {
+
+                if (joined) {
                     WriteThread writeThread2 = new WriteThread("LEAVE");
                     writeThread2.start();
+
+                    while (joined) { //TODO:Timeout
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+
+                    join.setClickable(true);
+                    join.setVisibility(View.VISIBLE);
+                    leave.setVisibility(GONE);
+                    leave.setClickable(false);
                 }
-                join.setClickable(true);
-                join.setVisibility(View.VISIBLE);
-                leave.setVisibility(GONE);
-                leave.setClickable(false);
 
                 break;
             case R.id.menu:
-                if (connectionManager.getJoined()) {
+
+                if (joined) {
                     WriteThread writeThread3 = new WriteThread("LEAVE");
                     writeThread3.start();
                 }
-                while (connectionManager.getJoined()) { //TODO:Timeout
+
+                while (joined) { //TODO:Timeout
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
                     }
                 }
+                connected = false;
                 profile.setId(-1);
-                connectionManager.setConnected(false);
 
                 Intent intent = new Intent(this, Menu.class);
                 intent.putExtra("profile", profile);
@@ -150,8 +174,16 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
         @Override
         public void run() {
-            while (connectionManager.getConnected()) {
+            while (connected) {
+                while (busy) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                busy = true;
                 ArrayList<String> data = connectionManager.readAllData();
+                busy = false;
                 Iterator<String> iterator = data.iterator();
                 while (iterator.hasNext()) {
 
@@ -164,12 +196,20 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                             profile.setId(Integer.parseInt(splittedCommand[1]));
                             break;
                         case "SETGAMEMODE":
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    game_mode.setText(splittedCommand[1] + " MODE");
-                                }
-                            });
+                            if (splittedCommand[1].equals("STARTED") && joined == false) {
+                                connected = false;
+                                Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
+                                intent.putExtra("profile", profile);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        game_mode.setText(splittedCommand[1] + " MODE");
+                                    }
+                                });
+                            }
                             break;
                         case "STATUS":
                             runOnUiThread(new Runnable() {
@@ -182,19 +222,37 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                         case "PLAYERJOINED":
                             addProfile(Integer.parseInt(splittedCommand[2]), splittedCommand[1], Integer.parseInt(splittedCommand[3]));
                             if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
-                                connectionManager.setJoined(true);
+                                joined = true;
                             }
                             break;
                         case "PLAYERLEAVE":
                             removeProfile(Integer.parseInt(splittedCommand[2]));
                             if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
-                                connectionManager.setJoined(false);
+                                joined = false;
                             }
+                            break;
+                        case "START":
+                            if (joined) {
+                                connected = false;
+                                Intent intent = new Intent(MultiplayerConnect.this, Multiplayer.class);
+                                intent.putExtra("profile", profile);
+                                intent.putExtra("conman", connectionManager);
+                                startActivity(intent);
+                                finish();
+                            }
+                            break;
+                        case "STOP":
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    game_status.setText("STOP");
+                                }
+                            });
                             break;
                     }
                 }
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
             }
@@ -211,9 +269,18 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
         @Override
         public void run() {
+            while (busy) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                }
+            }
+            busy = true;
             connectionManager.sendData(message);
+            busy = false;
         }
     }
+
 
     class ConnectionThread extends Thread {
         ConnectionThread() {
@@ -221,7 +288,13 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
         @Override
         public void run() {
-
+            while (busy) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                }
+            }
+            busy = true;
             while (connectionManager.connect() != 0) { //TODO:timout
                 try {
                     runOnUiThread(new Runnable() {
@@ -234,6 +307,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 } catch (InterruptedException e) {
                 }
             }
+            busy = false;
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -242,14 +316,23 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 }
             });
 
-            connectionManager.setConnected(true);
+            connected = true;
 
             ReadThread readThread = new ReadThread();
             readThread.start();
 
-
-            while (connectionManager.getConnected()) {
+            while (connected) {
+                while (busy) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                busy = true;
                 connectionManager.sendData("KEEPALIVE");
+                busy = false;
+                Log.i("servershit", "alive" + profile.getId());
+
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {

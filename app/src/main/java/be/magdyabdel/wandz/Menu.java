@@ -55,7 +55,7 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
                 intent = new Intent(this, ChangeProfileIcon.class);
                 break;
             case R.id.master:
-                intent = new Intent(this, MasterConnect.class);
+                intent = new Intent(this, MasterPassword.class);
                 break;
         }
         intent.putExtra("profile", profile);
