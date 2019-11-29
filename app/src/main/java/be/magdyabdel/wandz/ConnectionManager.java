@@ -13,7 +13,7 @@ public class ConnectionManager implements Serializable {
 
     private String ip;
     private int port;
-    private Socket socket;
+    private static Socket socket;
 
     public ConnectionManager(String ip, int port){
         this.ip = ip;
@@ -30,6 +30,14 @@ public class ConnectionManager implements Serializable {
         }
 
         return 0; //No errors, everything ok
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        ConnectionManager.socket = socket;
     }
 
     public int sendData(String data){
