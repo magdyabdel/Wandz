@@ -2,6 +2,7 @@ package be.magdyabdel.wandz;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ public class Start extends AppCompatActivity implements View.OnClickListener {
 
         Button button = findViewById(R.id.enter);
         button.setOnClickListener(this);
+
     }
 
     @Override

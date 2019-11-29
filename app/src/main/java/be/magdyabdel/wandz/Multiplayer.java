@@ -149,6 +149,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             // Get extra data included in the Intent
             int gest = intent.getIntExtra("hitCode",0);
             //cal function with gesture int
+            byte spell =  (byte)(gest & 0x00FF); //8 LSB's
+            byte attackerID = (byte)((gest >>> 8)&0x00FF); // 8-16 LSB's
+
         }
     };
 }
