@@ -14,6 +14,15 @@ public class ConnectionManager implements Serializable {
     private String ip;
     private int port;
     private static Socket socket;
+    private String gamemode;
+
+    public String getGamemode() {
+        return gamemode;
+    }
+
+    public void setGamemode(String gamemode) {
+        this.gamemode = gamemode;
+    }
 
     public ConnectionManager(String ip, int port){
         this.ip = ip;

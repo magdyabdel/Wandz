@@ -30,6 +30,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     private Boolean busy = false;
     private Boolean connected = false;
     private Boolean joined = false;
+    private Boolean master = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,6 +201,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                                 @Override
                                 public void run() {
                                     game_mode.setText(splittedCommand[1] + " MODE");
+                                    connectionManager.setGamemode(splittedCommand[1]);
                                 }
                             });
                             break;
@@ -208,6 +210,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                                 connected = false;
                                 Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
                                 intent.putExtra("profile", profile);
+
                                 startActivity(intent);
                                 finish();
                             } else {
@@ -237,6 +240,8 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                                 Intent intent = new Intent(MultiplayerConnect.this, Multiplayer.class);
                                 intent.putExtra("profile", profile);
                                 intent.putExtra("conman", connectionManager);
+                                intent.putExtra("profiles", profiles);
+                                intent.putExtra("master", master);
                                 startActivity(intent);
                                 finish();
                             }

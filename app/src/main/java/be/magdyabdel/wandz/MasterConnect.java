@@ -33,6 +33,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
     private Boolean started = false;
     private String[] modes = new String[]{"ELIMINATION", "TEAMELIMINATION", "CORRUPTEDWIZARD", "SPIRALDEFENSE"};
     private int mode = 0;
+    private boolean master = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,14 +238,23 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                                 @Override
                                 public void run() {
                                     game_mode.setText(splittedCommand[1] + " MODE");
+                                    connectionManager.setGamemode(splittedCommand[1]);
                                 }
                             });
                             break;
                         case "STATUS":
                             if (splittedCommand[1].equals("STARTED")) {
                                 started = true;
+                                start.setClickable(false);
+                                start.setVisibility(View.GONE);
+                                stop.setVisibility(View.VISIBLE);
+                                stop.setClickable(true);
                             } else if (splittedCommand[1].equals("NOTSTARTED")) {
                                 started = false;
+                                start.setClickable(true);
+                                start.setVisibility(View.VISIBLE);
+                                stop.setVisibility(GONE);
+                                stop.setClickable(false);
                             }
                             break;
                         case "PLAYERJOINED":
@@ -265,6 +275,8 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                             Intent intent = new Intent(MasterConnect.this, Multiplayer.class);
                             intent.putExtra("profile", profile);
                             intent.putExtra("conman", connectionManager);
+                            intent.putExtra("profiles", profiles);
+                            intent.putExtra("master", master);
                             startActivity(intent);
                             finish();
                             break;

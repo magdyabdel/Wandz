@@ -70,4 +70,7 @@
     <string name="mode_game">MODE</string>
     <string name="previous_mode">PREVIOUS MODE</string>
     <string name="next_mode">NEXT MODE</string>
+    <string name="energy">Energy</string>
+    <string name="last_hit">Last Hit</string>
+    <string name="last_hit_by">Last Hit By</string>
 </resources>
