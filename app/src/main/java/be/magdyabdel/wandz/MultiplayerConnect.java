@@ -196,6 +196,14 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                             profile.setId(Integer.parseInt(splittedCommand[1]));
                             break;
                         case "SETGAMEMODE":
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    game_mode.setText(splittedCommand[1] + " MODE");
+                                }
+                            });
+                            break;
+                        case "STATUS":
                             if (splittedCommand[1].equals("STARTED") && joined == false) {
                                 connected = false;
                                 Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
@@ -206,18 +214,10 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        game_mode.setText(splittedCommand[1] + " MODE");
+                                        game_status.setText(splittedCommand[1]);
                                     }
                                 });
                             }
-                            break;
-                        case "STATUS":
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    game_status.setText(splittedCommand[1]);
-                                }
-                            });
                             break;
                         case "PLAYERJOINED":
                             addProfile(Integer.parseInt(splittedCommand[2]), splittedCommand[1], Integer.parseInt(splittedCommand[3]));
