@@ -1,11 +1,16 @@
 package be.magdyabdel.wandz;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -15,6 +20,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class Multiplayer extends AppCompatActivity implements View.OnClickListener {
 
@@ -92,6 +98,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
          **/
         Intent intent1 = new Intent(this, BLEService.class);
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
+
     }
 
     @Override
@@ -127,9 +135,20 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         }
 
         if (intent != null) {
+            unbindService(connection); //unbind bluetooth service
+            mBound = false;
             intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
         }
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            int gest = intent.getIntExtra("hitCode",0);
+            //cal function with gesture int
+        }
+    };
 }

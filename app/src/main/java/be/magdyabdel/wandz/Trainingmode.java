@@ -149,9 +149,9 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         }
 
         if (intent != null) {
-            intent.putExtra("profile", profile);
             unbindService(connection); //unbind bluetooth service
             mBound = false;
+            intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
         }

@@ -36,6 +36,7 @@ public class BLEService extends Service {
     ArrayList<BluetoothGattCharacteristic> acceleroChars = new ArrayList<>();
     BluetoothGattCharacteristic spell;
     BluetoothGattCharacteristic wizardID;
+    BluetoothGattCharacteristic gotHit;
     int charIndex = 0;
     /*data for the DTW*/
     Float[] waarden;
@@ -73,6 +74,10 @@ public class BLEService extends Service {
                 float z = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getFloat();
                 addValue(z);
             }
+             else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
+                 int hitvalue = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getInt();
+                 sendHitMessageToActivity(hitvalue);
+             }
 
             //}
             // });
@@ -236,8 +241,11 @@ public class BLEService extends Service {
                 spell = gattCharacteristic;
                  }
                  else if (UUID.fromString("00004ad5-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
-                wizardID = gattCharacteristic;
-                 }
+                    wizardID = gattCharacteristic;
+                }
+                else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
+                    gotHit = gattCharacteristic;
+                }
 
                 final String charUuid = gattCharacteristic.getUuid().toString();
                 System.out.println("Characteristic discovered for service: " + charUuid);
@@ -304,12 +312,12 @@ public class BLEService extends Service {
             }
 
             if (gesturerecognised) {
-                sendMessageToActivity(gesture);
+                sendGestureMessageToActivity(gesture);
                 spell.setValue(gesture, FORMAT_UINT8, 0); //true if succes
                 boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if succes
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
-                sendMessageToActivity((byte) 0);
+                sendGestureMessageToActivity((byte) 0);
                 // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
             // toast.show();
@@ -402,13 +410,22 @@ public class BLEService extends Service {
         gravity = new float[]{0, 0, 0};
     }
 
-    private  void sendMessageToActivity(byte b) {
+    private  void sendGestureMessageToActivity(byte b) {
         Intent intent = new Intent("GestureUpdate");
         // You can also include some extra data.
         intent.putExtra("gesture", b);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
     }
+
+    private  void sendHitMessageToActivity(int a) {
+        Intent intent = new Intent("hitUpdate");
+        // You can also include some extra data.
+        intent.putExtra("hitCode", a);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        Log.i("message", "message is send");
+    }
+
     public void sendWizardID(int ID){
         wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
         boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes

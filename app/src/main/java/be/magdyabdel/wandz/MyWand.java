@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -308,9 +309,11 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
     public void connectToDeviceSelected() {
         peripheralTextView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
         int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
-
-        mService.connect(devicesDiscovered, deviceSelected);
-
+        Log.i("test", "probeer");
+        if(mBound) {
+            Log.i("test", "gelukt");
+            mService.connect(devicesDiscovered, deviceSelected);
+        }
     }
 
     public void disconnectDeviceSelected() {
