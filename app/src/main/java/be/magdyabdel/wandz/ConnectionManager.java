@@ -4,20 +4,16 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class ConnectionManager {
+public class ConnectionManager implements Serializable {
 
     private String ip;
     private int port;
-    private Socket socket;
-    private Boolean connected = false;
-    private Boolean joined = false;
-    private Boolean start = false;
-
-
+    private static Socket socket;
 
     public ConnectionManager(String ip, int port){
         this.ip = ip;
@@ -34,6 +30,14 @@ public class ConnectionManager {
         }
 
         return 0; //No errors, everything ok
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        ConnectionManager.socket = socket;
     }
 
     public int sendData(String data){
@@ -64,29 +68,5 @@ public class ConnectionManager {
                 System.out.println("Error reading data from client.");
             }
         return dataList;
-    }
-
-    public Boolean getConnected() {
-        return connected;
-    }
-
-    public void setConnected(Boolean connected) {
-        this.connected = connected;
-    }
-
-    public Boolean getJoined() {
-        return joined;
-    }
-
-    public void setJoined(Boolean joined) {
-        this.joined = joined;
-    }
-
-    public Boolean getStart() {
-        return start;
-    }
-
-    public void setStart(Boolean start) {
-        this.start = start;
     }
 }

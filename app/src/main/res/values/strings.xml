@@ -64,4 +64,10 @@
     <string name="change_profile">Change Your Profile</string>
     <string name="back_to_menu">Back To Menu</string>
     <string name="click_here_if_you_re_the_gamemaster">Click Here If You\'re The GameMaster</string>
+    <string name="stop_the_game">Stop The Game</string>
+    <string name="enter_the_secret_code_to_enter_master_mode">Enter The Secret Code To Enter Master Mode</string>
+    <string name="start_the_game">Start The Game</string>
+    <string name="mode_game">MODE</string>
+    <string name="previous_mode">PREVIOUS MODE</string>
+    <string name="next_mode">NEXT MODE</string>
 </resources>

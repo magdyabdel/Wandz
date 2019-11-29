@@ -61,22 +61,17 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         stub.setLayoutResource(R.layout.activity_multiplayer);
         stub.inflate();
 
-        ImageView profileImageView = findViewById(R.id.profile);
-        profileImageView.setOnClickListener(this);
+        ImageView profileImageView = findViewById(R.id.profile_image);
         TextView yourNameTextView = findViewById(R.id.your_name);
-        yourNameTextView.setOnClickListener(this);
-        Button trainingmode = findViewById(R.id.training_mode);
-        trainingmode.setOnClickListener(this);
+        Button leaveGame = findViewById(R.id.training_mode);
+        leaveGame.setOnClickListener(this);
+        leaveGame.setText("Leave The Game");
         Button multiplayer = findViewById(R.id.multiplayer);
-        multiplayer.setOnClickListener(this);
+        multiplayer.setVisibility(View.GONE);
         Button myWand = findViewById(R.id.my_wand);
-        myWand.setOnClickListener(this);
-        Button leave = findViewById(R.id.leave);
-        leave.setOnClickListener(this);
-        leave.setClickable(false);
-        Button join = findViewById(R.id.join);
-        join.setOnClickListener(this);
-        join.setVisibility(View.VISIBLE);
+        myWand.setVisibility(View.GONE);
+        Button menu = findViewById(R.id.menu);
+        menu.setVisibility(View.GONE);
         /******* Navigation Drawer *******/
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
@@ -126,20 +121,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             /******* Navigation Drawer *******/
 
             case R.id.utility_button:
-                break;
-            case R.id.join:
-                break;
-            case R.id.leave:
-                connect = false;
-                Button leave = findViewById(R.id.leave);
-                leave.setClickable(false);
-                leave.setVisibility(View.GONE);
-                Button join = findViewById(R.id.join);
-                join.setClickable(true);
-                join.setVisibility(View.VISIBLE);
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                }
                 break;
             default:
                 break;
