@@ -6,11 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.VibrationEffect;
-import android.util.Log;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
@@ -20,8 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
@@ -116,10 +111,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
         multiplayer_name.setText(profile.getName());
 
-        drawer = findViewById(R.id.drawer_layout);
-        utilityButton = findViewById(R.id.utility_button);
-        utilityButton.setOnClickListener(this);
-
         /**
          * bind to the bluetooth service and send the ID
          **/
@@ -145,6 +136,18 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         connectionThread.start();
     }
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            int gest = intent.getIntExtra("hitCode", 0);
+            //cal function with gesture int
+            byte spell = (byte) (gest & 0x00FF); //8 LSB's
+            byte attackerID = (byte) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
+
+        }
+    };
+
     @Override
     public void onClick(View view) {
 
@@ -161,6 +164,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 }
                 connected = false;
                 Intent intent = new Intent(this, Menu.class);
+                intent.putExtra("profile", profile);
+                unbindService(connection); //unbind bluetooth service
+                mBound = false;
                 intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();
@@ -200,13 +206,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 score = score + 200;
                 break;
         }
-
-        if (intent != null) {
-            unbindService(connection); //unbind bluetooth service
-            mBound = false;
-            intent.putExtra("profile", profile);
-            startActivity(intent);
-            finish();
         score_value.setText(score);
     }
 
@@ -372,16 +371,4 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             }
         }
     }
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            int gest = intent.getIntExtra("hitCode",0);
-            //cal function with gesture int
-            byte spell =  (byte)(gest & 0x00FF); //8 LSB's
-            byte attackerID = (byte)((gest >>> 8)&0x00FF); // 8-16 LSB's
-
-        }
-    };
 }
