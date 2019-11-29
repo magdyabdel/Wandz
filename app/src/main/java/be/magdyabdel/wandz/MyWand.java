@@ -102,9 +102,11 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         Intent intent = new Intent(this, BLEService.class);
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
 
         /******* Navigation Drawer *******/
         setContentView(R.layout.activity_navigation_drawer);
@@ -277,12 +279,15 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
         peripheralTextView.append("Started Scanning\n");
         startScanningButton.setVisibility(View.INVISIBLE);
         stopScanningButton.setVisibility(View.VISIBLE);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                btScanner.startScan(lfilt, settings.build(), leScanCallback);
-            }
-        });
+        try {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    btScanner.startScan(lfilt, settings.build(), leScanCallback);
+                }
+            });
+        } catch (NullPointerException e) {
+        }//TODO: wegwerken trycatch
 
         mHandler.postDelayed(new Runnable() {
             @Override

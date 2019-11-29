@@ -17,14 +17,31 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name=".BLEService" />
-        <activity android:name=".Menu" />
-        <activity android:name=".MultiplayerConnect" />
-        <activity android:name=".ChangeProfileIcon" />
-        <activity android:name=".Master" />
-        <activity android:name=".MasterConnect" />
-        <activity android:name=".MyWand" />
-        <activity android:name=".Multiplayer" />
+        <service
+            android:name=".BLEService"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".Menu"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MultiplayerConnect"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ChangeProfileIcon"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MasterPassword"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MasterConnect"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyWand"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Multiplayer"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Trainingmode"
             android:screenOrientation="portrait" />

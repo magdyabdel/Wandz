@@ -427,8 +427,11 @@ public class BLEService extends Service {
     }
 
     public void sendWizardID(int ID){
-        wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
-        boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
+        try {
+            wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
+            boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
+        } catch (NullPointerException e) {
+        }
     }
 }
 

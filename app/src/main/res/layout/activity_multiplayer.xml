@@ -34,9 +34,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.6" />
 
-
-
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline7"
         android:layout_width="wrap_content"
@@ -93,7 +90,7 @@
         android:layout_marginTop="32dp"
         android:fontFamily="@font/quite_magical"
         android:text="@string/health"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,7 +102,7 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/quite_magical"
         android:text="@string/energy"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/health_progressBar" />
 
@@ -130,7 +127,7 @@
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/quite_magical"
         android:text="@string/mode"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gamemode_title" />
@@ -158,24 +155,10 @@
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/quite_magical"
         android:text="@string/score"
-        android:textSize="30dp"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline1" />
-
-    <TextView
-        android:id="@+id/score_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/quite_magical"
-        android:text="@string/my_score"
-        android:textSize="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toBottomOf="@+id/score_title" />
 
     <View
         android:id="@+id/divider2"
@@ -230,10 +213,22 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:fontFamily="@font/quite_magical"
-        android:text="Notifications"
+        android:text="@string/notifications"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/scorevalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/quite_magical"
+        android:text="@string/textview"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toBottomOf="@+id/score_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
