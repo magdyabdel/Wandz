@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.util.Log;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,13 +24,28 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class Multiplayer extends AppCompatActivity implements View.OnClickListener {
 
     private Profile profile;
-    private DrawerLayout drawer;
-    private Button utilityButton;
     private ConnectionManager connectionManager;
-    private boolean connect = false;
+    private boolean connected = false;
+    private boolean busy = false;
+    private int score = 0;
+    private int power = 1000;
+    private int health = 1000;
+    private ArrayList<Profile> profiles;
+    private ProgressBar health_progressBar;
+    private ProgressBar energy_progressBar;
+    private TextView score_value;
+    private TextView game_mode_value;
+    private Boolean master;
+    private TextView lastHit;
+    private TextView lastHitBy;
+    private Boolean joined = false;
+    private TextView notification;
 
     /**
      *  Variables for bluetooth binding
@@ -67,13 +84,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         stub.setLayoutResource(R.layout.activity_multiplayer);
         stub.inflate();
 
-        ImageView profileImageView = findViewById(R.id.profile_image);
+        ImageView profile_image_drawer = findViewById(R.id.profile);
         TextView yourNameTextView = findViewById(R.id.your_name);
         Button leaveGame = findViewById(R.id.training_mode);
         leaveGame.setOnClickListener(this);
         leaveGame.setText("Leave The Game");
-        Button multiplayer = findViewById(R.id.multiplayer);
-        multiplayer.setVisibility(View.GONE);
+        Button stop = findViewById(R.id.multiplayer);
+        stop.setVisibility(View.GONE);
         Button myWand = findViewById(R.id.my_wand);
         myWand.setVisibility(View.GONE);
         Button menu = findViewById(R.id.menu);
@@ -82,10 +99,20 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
         yourNameTextView.setText(profile.getName());
-        profile.setProfileImage(this, profileImageView);
 
-        ImageView profile_image = findViewById(R.id.profile_image);
-        profile.setProfileImage(this, profile_image);
+        ImageView profileImageView = findViewById(R.id.profile_image);
+        profile.setProfileImage(this, profileImageView);
+        profile.setProfileImage(this, profile_image_drawer);
+
+        if (master) {
+            stop.setVisibility(View.VISIBLE);
+            stop.setOnClickListener(this);
+        }
+
+        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
+        profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
+        master = (Boolean) getIntent().getSerializableExtra("master");
+
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
         multiplayer_name.setText(profile.getName());
 
@@ -100,37 +127,77 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
 
+        health_progressBar = findViewById(R.id.health_progressBar);
+        health_progressBar.setProgress(health);
+        energy_progressBar = findViewById(R.id.energy_progressBar);
+        energy_progressBar.setProgress(power);
+        score_value = findViewById(R.id.score_value);
+        score_value.setText(score);
+        game_mode_value = findViewById(R.id.game_mode_value);
+        game_mode_value.setText(connectionManager.getGamemode());
+        lastHit = findViewById(R.id.lastHit);
+        lastHit.setText("Hit Somebody!");
+        lastHitBy = findViewById(R.id.lastHitBy);
+        lastHitBy.setText("Not Hitted Yet!");
+        notification = findViewById(R.id.notifications);
+
+        Multiplayer.ConnectionThread connectionThread = new Multiplayer.ConnectionThread();
+        connectionThread.start();
     }
 
     @Override
     public void onClick(View view) {
 
-        drawer = findViewById(R.id.drawer_layout);
-        utilityButton = findViewById(R.id.utility_button);
-
-        Intent intent = null;
         switch (view.getId()) {
-            /******* Navigation Drawer *******/
-            case R.id.profile:
-            case R.id.your_name:
-                intent = new Intent(this, ChangeProfileIcon.class);
-                break;
+
             case R.id.training_mode:
-                intent = new Intent(this, Trainingmode.class);
+                Multiplayer.WriteThread writeThread1 = new Multiplayer.WriteThread("Leave");
+                writeThread1.start();
+                while (joined) {//TODO:TIMEOUT
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                connected = false;
+                Intent intent = new Intent(this, Menu.class);
+                intent.putExtra("profile", profile);
+                startActivity(intent);
+                finish();
                 break;
-            case R.id.multiplayer:
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
+            case R.id.stop:
+                if (master) {
+                    Multiplayer.WriteThread writeThreadStop = new Multiplayer.WriteThread("STOP");
+                    writeThreadStop.start();
                 }
                 break;
-            case R.id.my_wand:
-                intent = new Intent(this, MyWand.class);
-                break;
-            /******* Navigation Drawer *******/
 
-            case R.id.utility_button:
-                break;
             default:
+                break;
+        }
+    }
+
+    private String getNameById(int id) {
+        Iterator iterator = profiles.iterator();
+        while (iterator.hasNext()) {
+            Profile currentProfile = (Profile) iterator.next();
+            if (currentProfile.getId() == id) {
+                return currentProfile.getName();
+            }
+        }
+        return "Unknown Player";
+    }
+
+    private void setScore(int spell) {
+        switch (spell) {
+            case 0:
+                score = score + 50;
+                break;
+            case 1:
+                score = score + 100;
+                break;
+            case 2:
+                score = score + 200;
                 break;
         }
 
@@ -140,6 +207,169 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
+        score_value.setText(score);
+    }
+
+    private void setHealth(int spell) {
+        switch (spell) {
+            case 0:
+                health = health - 100;
+                break;
+            case 1:
+                health = health - 200;
+                break;
+            case 2:
+                health = health - 500;
+                break;
+        }
+        health_progressBar.setProgress(health);
+    }
+
+    private void sendHit(int player_id, int spell) {
+
+        Multiplayer.WriteThread writeThreadHit = new Multiplayer.WriteThread("HIT " + player_id + " " + profile.getId() + " " + spell);
+        writeThreadHit.start();
+    }
+
+    private void removeProfile(int ids) {
+        final int id = ids;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Iterator<Profile> iterator = profiles.iterator();
+                int i = 0;
+                while (iterator.hasNext()) {
+                    if (iterator.next().getId() == id) {
+                        iterator.remove();
+                        break;
+                    } else {
+                        i++;
+                    }
+                }
+            }
+        });
+    }
+
+    class WriteThread extends Thread {
+
+        String message;
+
+        WriteThread(String message) {
+            this.message = message;
+        }
+
+        @Override
+        public void run() {
+            while (busy) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                }
+            }
+            busy = true;
+            connectionManager.sendData(message);
+            busy = false;
+        }
+    }
+
+    class ConnectionThread extends Thread {
+        ConnectionThread() {
+        }
+
+        @Override
+        public void run() {
+
+            connected = true;
+
+            Multiplayer.ReadThread readThread = new Multiplayer.ReadThread();
+            readThread.start();
+
+            joined = true;
+
+            while (connected) {
+                while (busy) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                busy = true;
+                connectionManager.sendData("KEEPALIVE");
+                busy = false;
+                Log.i("servershit", "alive" + profile.getId());
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    }
+
+    class ReadThread extends Thread {
+        ReadThread() {
+        }
+
+        @Override
+        public void run() {
+            while (connected) {
+                while (busy) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                busy = true;
+                ArrayList<String> data = connectionManager.readAllData();
+                busy = false;
+                Iterator<String> iterator = data.iterator();
+                while (iterator.hasNext()) {
+
+                    String command = iterator.next();
+                    Log.i("servershit", command);
+                    final String[] splittedCommand = command.split(" ");
+
+                    switch (splittedCommand[0]) {
+                        case "PLAYERLEAVE":
+                            removeProfile(Integer.parseInt(splittedCommand[2]));
+                            if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
+                                joined = false;
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notification.setText(splittedCommand[1] + "Has Left The Game!");
+                                }
+                            });
+                            break;
+                        case "HIT":
+                            if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        setScore(Integer.parseInt(splittedCommand[3]));
+                                        lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
+                                    }
+                                });
+                            }
+                            break;
+                        case "STOP":
+                            Multiplayer.WriteThread writeThreadLeave = new Multiplayer.WriteThread("LEAVE");
+                            writeThreadLeave.start();
+                            joined = false;
+                            connected = false;
+                            Intent intent = new Intent(Multiplayer.this, Menu.class);
+                            intent.putExtra("profile", profile);
+                            startActivity(intent);
+                            finish();
+                            break;
+                    }
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
         }
     }
 
