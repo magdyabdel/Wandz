@@ -32,7 +32,6 @@
         <item>#755431</item>
         <item>#553A1F</item>
         <item>#EDBBBD</item>
-        <item>#000000</item>
     </string-array>
 
     <string-array name="skin_details">
@@ -42,7 +41,6 @@
         <item>#3F2D1A</item>
         <item>#21160C</item>
         <item>#BA9395</item>
-        <item>#FFFFFF</item>
     </string-array>
 
     <string-array name="hair_array">

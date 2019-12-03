@@ -325,7 +325,6 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         }
     }
 
-
     class ConnectionThread extends Thread {
         ConnectionThread() {
         }

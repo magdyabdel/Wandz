@@ -2,39 +2,59 @@ package be.magdyabdel.wandz;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class Start extends AppCompatActivity implements View.OnClickListener {
+
+    private Boolean click = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        ImageView imageView = findViewById(R.id.wizard);
-        imageView.setImageResource(R.drawable.ic_welcome_wizard);
+        ConstraintLayout constraintLayout = findViewById(R.id.start);
+        constraintLayout.setOnClickListener(this);
 
-        Button button = findViewById(R.id.enter);
-        button.setOnClickListener(this);
-
+        AnimThread animThread = new AnimThread();
+        animThread.start();
     }
 
     @Override
     public void onClick(View view) {
-
-        switch (view.getId()) {
-            case R.id.enter:
-                Intent intent = new Intent(this, ChooseName.class);
-                startActivity(intent);
-                break;
-            default:
-                break;
+        if (view.getId() == R.id.start) {
+            click = true;
+            Intent intent = new Intent(this, Intro.class);
+            startActivity(intent);
         }
     }
 
+    class AnimThread extends Thread {
+
+        AnimThread() {
+        }
+
+        @Override
+        public void run() {
+            while (!click) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                if (click) {
+                    break;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Start.this, "Click The Screen To Enter", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+    }
 }

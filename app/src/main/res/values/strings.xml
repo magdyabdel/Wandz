@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Wandz</string>
     <string name="welcomewizard">WelcomeWizard</string>
-    <string name="enter_wizardworld">Enter WizardWorld</string>
+    <string name="enter_wizardworld">Enter Wandz</string>
     <string name="name_wizard">name wizard</string>
     <string name="name">Name</string>
     <string name="your_name">Your Wizard Name</string>
@@ -74,4 +74,11 @@
     <string name="last_hit">Last Hit</string>
     <string name="last_hit_by">Last Hit By</string>
     <string name="notifications">Notifications</string>
+    <string name="show_again">Show Again</string>
+    <string name="well_done">Well Done!</string>
+    <string name="learn_the_gestures_with_your_wand">Practice The Gestures With Your Wand</string>
+    <string name="join">Join</string>
+    <string name="practice">Practice</string>
+    <string name="skip_the_tutorial">skip the tutorial</string>
+    <string name="name_wand">Name Wand</string>
 </resources>

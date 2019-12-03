@@ -11,13 +11,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -31,7 +29,6 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
     private int currentGestureImage = 0;
     Vibrator v;
 
-
     private Profile profile;
 
     BLEService mService;
@@ -39,26 +36,6 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
 
     ImageView bad;
     ImageView good;
-
-    /**
-     * Defines callbacks for service binding, passed to bindService()
-     */
-    private ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +134,22 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
+            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
     public void changeGestureImage(int direction) {
         if (direction == 1) {
             currentGestureImage++;
@@ -173,6 +166,28 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         }
         imageView.setImageResource(gestureImages[currentGestureImage]);
     }
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Byte gest = intent.getByteExtra("gesture",(byte)0);
+            if(gest == (currentGestureImage+1)){
+                good.setVisibility(View.VISIBLE);
+                bad.setVisibility(View.INVISIBLE);
+            }
+            else{
+                // Vibrate for 500 milliseconds
+                bad.setVisibility(View.VISIBLE);
+                good.setVisibility(View.INVISIBLE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    v.vibrate(500);
+                }
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -183,30 +198,5 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
             super.onBackPressed();
         }
     }
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            Log.i("yess", "jaaaaaaa");
-            Byte gest = intent.getByteExtra("gesture",(byte)0);
-            if(gest == (currentGestureImage+1)){
-                good.setVisibility(View.VISIBLE);
-                bad.setVisibility(View.INVISIBLE);
-            }
-            else{
-                // Vibrate for 500 milliseconds
-                bad.setVisibility(View.VISIBLE);
-                good.setVisibility(View.INVISIBLE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    //deprecated in API 26
-                    v.vibrate(500);
-                }
-                //Toast.makeText(getApplicationContext(), gest, Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
 
 }

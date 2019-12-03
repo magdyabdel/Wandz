@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -17,9 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ChooseYourWand"></activity>
+        <activity android:name=".GameExplanation" />
+        <activity android:name=".WandExplanation" />
+        <activity android:name=".Intro" />
+        <activity android:name=".LearnTheGestures" />
+
         <service
             android:name=".BLEService"
-            android:screenOrientation="portrait" />
+            android:stopWithTask="false" />
 
         <activity
             android:name=".Menu"
