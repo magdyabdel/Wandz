@@ -21,18 +21,6 @@
         app:layout_constraintGuide_percent="0.55" />
 
     <ImageView
-        android:id="@+id/wizard"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:contentDescription="@string/name_wizard"
-        android:rotation="0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        tools:srcCompat="@drawable/ic_name_wizard_black_wand" />
-
-    <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -48,14 +36,15 @@
         android:id="@+id/name_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="@color/wizardWhite"
         android:ems="10"
-        android:fontFamily="@font/open_sans_light"
+        android:fontFamily="@font/slim_joe"
         android:hint="@string/your_name"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
+        android:maxLength="10"
         android:textAlignment="center"
         android:textColor="@color/wizardWhite"
         android:textColorHint="@color/wizardWhite"
@@ -72,11 +61,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/quite_magical"
+        android:fontFamily="@font/big_john"
         android:text="@string/choose_your_name"
-        android:textColor="@color/wizardWhite"
-        android:textSize="50sp"
         android:textAlignment="center"
+        android:textColor="@color/wizardWhite"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -88,15 +77,25 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
-        android:fontFamily="@font/quite_magical"
+        android:fontFamily="@font/big_john"
         android:text="@string/enter"
         android:textAllCaps="false"
         android:textColor="@color/wizardWhite"
-        android:textSize="30sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name_field" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
+        app:srcCompat="@drawable/ic_choose_name" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

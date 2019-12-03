@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.ParcelUuid;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -39,7 +41,7 @@ import java.util.List;
 public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
     private final static int REQUEST_ENABLE_BT = 1;
-    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 2;
     private static final long SCAN_PERIOD = 5000;
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
@@ -102,9 +104,11 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         Intent intent = new Intent(this, BLEService.class);
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
 
         /******* Navigation Drawer *******/
         setContentView(R.layout.activity_navigation_drawer);
@@ -192,7 +196,6 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
             });
             builder.show();
         }
-
     }
 
     @Override
@@ -233,10 +236,21 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    public static boolean isBluetoothAvailable() {
+        final BluetoothAdapter bluetoothAdapter =
+                BluetoothAdapter.getDefaultAdapter();
+
+        return (bluetoothAdapter != null &&
+                bluetoothAdapter.isEnabled() &&
+                bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PERMISSION_REQUEST_COARSE_LOCATION: {
+
+            case PERMISSION_REQUEST_COARSE_LOCATION:
+
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     System.out.println("coarse location permission granted");
                 } else {
@@ -253,14 +267,21 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
                     });
                     builder.show();
                 }
-                return;
-            }
+
+                break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(connection);
+        Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
     }
 
     public void startScanning() {
         final ScanFilter.Builder builder = new ScanFilter.Builder();
-        builder.setDeviceName("Wandz02");
+        builder.setServiceUuid(ParcelUuid.fromString("0da26b35-ef4a-47e8-bbd8-44606fde5eeb"));
 
         final List<ScanFilter> lfilt = new ArrayList<>();
         lfilt.add(builder.build());
@@ -277,12 +298,31 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
         peripheralTextView.append("Started Scanning\n");
         startScanningButton.setVisibility(View.INVISIBLE);
         stopScanningButton.setVisibility(View.VISIBLE);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                btScanner.startScan(lfilt, settings.build(), leScanCallback);
-            }
-        });
+
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (isBluetoothAvailable()) {
+                        try {
+                            btScanner.startScan(lfilt, settings.build(), leScanCallback);
+                        } catch (NullPointerException e) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MyWand.this, "Put on your bluetooth and current location!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MyWand.this, "Put on your bluetooth and current location!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            });
 
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -290,6 +330,21 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
                 stopScanning();
             }
         }, SCAN_PERIOD);
+    }
+
+    public void connectToDeviceSelected() {
+        peripheralTextView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
+        int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
+        Log.i("test", "probeer");
+        if (mBound) {
+            Log.i("test", "gelukt");
+            mService.connect(devicesDiscovered, deviceSelected);
+        }
+    }
+
+    public void disconnectDeviceSelected() {
+        peripheralTextView.append("Disconnecting from device\n");
+        mService.disconnect();
     }
 
     public void stopScanning() {
@@ -301,23 +356,11 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                btScanner.stopScan(leScanCallback);
+                try {
+                    btScanner.stopScan(leScanCallback);
+                } catch (NullPointerException e) {
+                }
             }
         });
-    }
-
-    public void connectToDeviceSelected() {
-        peripheralTextView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
-        int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
-        Log.i("test", "probeer");
-        if(mBound) {
-            Log.i("test", "gelukt");
-            mService.connect(devicesDiscovered, deviceSelected);
-        }
-    }
-
-    public void disconnectDeviceSelected() {
-        peripheralTextView.append("Disconnecting from device\n");
-        mService.disconnect();
     }
 }

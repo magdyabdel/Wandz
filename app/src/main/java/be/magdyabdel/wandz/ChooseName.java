@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,19 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ChooseName extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editText;
+    private Boolean skip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_your_name);
 
-        ImageView imageView = findViewById(R.id.wizard);
-        imageView.setImageResource(R.drawable.ic_name_wizard_black_wand);
-
         Button button = findViewById(R.id.enter);
         button.setOnClickListener(this);
 
         editText = findViewById(R.id.name_field);
+        skip = (Boolean) getIntent().getSerializableExtra("skip");
     }
 
     @Override
@@ -38,7 +36,12 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
 
                 if(!name.equals("")){
                     Profile profile = new Profile(-1, name, 0000);
-                    Intent intent = new Intent(this, ChangeProfileIcon.class);
+                    Intent intent;
+                    if (skip) {
+                        intent = new Intent(this, Menu.class);
+                    } else {
+                        intent = new Intent(this, WandExplanation.class);
+                    }
                     intent.putExtra("profile", profile);
                     startActivity(intent);
                     finish();

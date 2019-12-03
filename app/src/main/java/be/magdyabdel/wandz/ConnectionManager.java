@@ -16,14 +16,6 @@ public class ConnectionManager implements Serializable {
     private static Socket socket;
     private String gamemode;
 
-    public String getGamemode() {
-        return gamemode;
-    }
-
-    public void setGamemode(String gamemode) {
-        this.gamemode = gamemode;
-    }
-
     public ConnectionManager(String ip, int port){
         this.ip = ip;
         this.port = port;
@@ -39,14 +31,6 @@ public class ConnectionManager implements Serializable {
         }
 
         return 0; //No errors, everything ok
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public void setSocket(Socket socket) {
-        ConnectionManager.socket = socket;
     }
 
     public int sendData(String data){
@@ -77,5 +61,13 @@ public class ConnectionManager implements Serializable {
                 System.out.println("Error reading data from client.");
             }
         return dataList;
+    }
+
+    public String getGamemode() {
+        return gamemode;
+    }
+
+    public void setGamemode(String gamemode) {
+        this.gamemode = gamemode;
     }
 }

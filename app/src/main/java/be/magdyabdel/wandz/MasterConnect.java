@@ -244,17 +244,27 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                             break;
                         case "STATUS":
                             if (splittedCommand[1].equals("STARTED")) {
-                                started = true;
-                                start.setClickable(false);
-                                start.setVisibility(View.GONE);
-                                stop.setVisibility(View.VISIBLE);
-                                stop.setClickable(true);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        started = true;
+                                        start.setClickable(false);
+                                        start.setVisibility(View.GONE);
+                                        stop.setVisibility(View.VISIBLE);
+                                        stop.setClickable(true);
+                                    }
+                                });
                             } else if (splittedCommand[1].equals("NOTSTARTED")) {
-                                started = false;
-                                start.setClickable(true);
-                                start.setVisibility(View.VISIBLE);
-                                stop.setVisibility(GONE);
-                                stop.setClickable(false);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        started = false;
+                                        start.setClickable(true);
+                                        start.setVisibility(View.VISIBLE);
+                                        stop.setVisibility(GONE);
+                                        stop.setClickable(false);
+                                    }
+                                });
                             }
                             break;
                         case "PLAYERJOINED":
@@ -314,7 +324,6 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
             busy = false;
         }
     }
-
 
     class ConnectionThread extends Thread {
         ConnectionThread() {

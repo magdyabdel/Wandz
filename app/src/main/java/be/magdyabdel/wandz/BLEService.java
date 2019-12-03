@@ -28,7 +28,7 @@ import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8;
 
 public class BLEService extends Service {
 
-    private final IBinder binder = new LocalBinder();      // interface for clients that bind
+    private final IBinder binder = new LocalBinder();
     BluetoothGatt bluetoothGatt;
     boolean disconnectBeforeConnecting = false;
     ArrayList<BluetoothDevice> devicesDiscovered;
@@ -38,7 +38,7 @@ public class BLEService extends Service {
     BluetoothGattCharacteristic wizardID;
     BluetoothGattCharacteristic gotHit;
     int charIndex = 0;
-    /*data for the DTW*/
+
     Float[] waarden;
     int position;
     int dummy;
@@ -52,15 +52,10 @@ public class BLEService extends Service {
     private Trainingdata data;
     byte gesture = 0;
 
-    // Device connect call back
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            // this will get called anytime you perform a read or write characteristic operation
-            // BLEService.this.runOnUiThread(new Runnable() {
-            //public void run() {
-            // peripheralTextView.append("device read or wrote to\n");
 
             byte[] val = characteristic.getValue();
             if (UUID.fromString("00004ad1-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
@@ -80,85 +75,45 @@ public class BLEService extends Service {
                 Log.i("hitupdate", ""+ gotHit);
                 sendHitMessageToActivity(hitvalue);
              }
-
-            //}
-            // });
         }
 
         @Override
         public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
-            // this will get called when a device connects or disconnects
+
             System.out.println(newState);
             switch (newState) {
                 case BluetoothProfile.STATE_DISCONNECTED:
                     bluetoothGatt.close();
                     acceleroChars.clear();
                     bluetoothGatt = null;
-                 /*   BLEparcelable.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            //  peripheralTextView.append("device disconnected\n");
-                            //connectToDevice.setVisibility(View.VISIBLE);
-                            //disconnectDevice.setVisibility(View.INVISIBLE);
-
-                        }
-                    });*/
 
                     if (disconnectBeforeConnecting) {
                         bluetoothGatt = devicesDiscovered.get(deviceIndexInput).connectGatt(BLEService.this, false, btleGattCallback);
                     }
                     break;
                 case BluetoothProfile.STATE_CONNECTED:
-                   /* BLEparcelable.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            //  peripheralTextView.append("device connected\n");
-                            //   connectToDevice.setVisibility(View.INVISIBLE);
-                            // disconnectDevice.setVisibility(View.VISIBLE);
-                        }
-                    });*/
-
-                    // discover services and characteristics for this device
                     bluetoothGatt.discoverServices();
 
-                    break;
-                default:
-                   /* BLEparcelable.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            //peripheralTextView.append("we encounterned an unknown state, uh oh\n");
-                        }
-                    });*/
                     break;
             }
         }
 
         @Override
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            // this will get called after the client initiates a BluetoothGatt.discoverServices() call
-          /*  BLEparcelable.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    //peripheralTextView.append("device services have been discovered\n");
-                }
-            });*/
             displayGattServices(bluetoothGatt.getServices());
         }
 
         @Override
-        // Result of a characteristic read operation
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-
             }
         }
 
         @Override
-        public void onDescriptorWrite(BluetoothGatt gatt,
-                                      BluetoothGattDescriptor descriptor,
-                                      int status) {
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 ++charIndex;
-                if (charIndex < 3) {
-                    //peripheralTextView.append("SUCCESS DESCRIPTOR\n");
+                if (charIndex < 4) {
                     BluetoothGattCharacteristic c = acceleroChars.get(charIndex);
                     bluetoothGatt.setCharacteristicNotification(c, true);
                     BluetoothGattDescriptor d = c.getDescriptor(
@@ -183,11 +138,8 @@ public class BLEService extends Service {
             lT[i][2] = pList.get(i)[2];
         }
         Log.i("array", Arrays.deepToString(lT)); //print multi dimension array
-        // Return the Array.
         return lT;
     }
-
-
 
     public void connect(ArrayList<BluetoothDevice> devices, int device) {
         devicesDiscovered = devices;
@@ -207,25 +159,16 @@ public class BLEService extends Service {
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
 
-        // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
 
             final String uuid = gattService.getUuid().toString();
             System.out.println("Service discovered: " + uuid);
-            /*BLEparcelable.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    //  peripheralTextView.append("Service discovered: " + uuid + "\n");
-                }
-            });*/
 
             List<BluetoothGattCharacteristic> gattCharacteristics =
                     gattService.getCharacteristics();
 
-            // Loops through available Characteristics.
             for (BluetoothGattCharacteristic gattCharacteristic :
                     gattCharacteristics) {
-
-//                bluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
 
                 if (UUID.fromString("00004ad1-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
                     bluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
@@ -240,23 +183,16 @@ public class BLEService extends Service {
                 } else if (UUID.fromString("00004ad3-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
                     acceleroChars.add(gattCharacteristic);
                 } else if (UUID.fromString("00004ad4-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
-                spell = gattCharacteristic;
-                 }
-                 else if (UUID.fromString("00004ad5-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
+                    spell = gattCharacteristic;
+                } else if (UUID.fromString("00004ad5-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
                     wizardID = gattCharacteristic;
-                }
-                else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
+                } else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(gattCharacteristic.getUuid())) {
                     gotHit = gattCharacteristic;
+                    acceleroChars.add(gattCharacteristic);
                 }
 
                 final String charUuid = gattCharacteristic.getUuid().toString();
                 System.out.println("Characteristic discovered for service: " + charUuid);
-              /*  BLEService.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        //peripheralTextView.append("Characteristic discovered for service: " + charUuid + "\n");
-                    }
-                });*/
-
             }
         }
     }
@@ -315,8 +251,8 @@ public class BLEService extends Service {
 
             if (gesturerecognised) {
                 sendGestureMessageToActivity(gesture);
-                spell.setValue(gesture, FORMAT_UINT8, 0); //true if succes
-                boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if succes
+                spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
+                boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 sendGestureMessageToActivity((byte) 0);
@@ -341,48 +277,11 @@ public class BLEService extends Service {
             position++;
         }
         aantal++;
-
-        //////////////////////////////////////TRAINING///////////////////////////////////////
-
-/*
-        if(value ==500f) {
-            if (dummy != 9) {
-                dummy++;
-                toast = Toast.makeText(getApplicationContext(), "training completed with " + aantal + " samples", Toast.LENGTH_SHORT);
-                toast.show();
-                gravity = new float[]{0.50f, 0.0f, 0.85f}; //reset gravity
-                aantal = 0;
-            } else {
-                for (int i = 0; i < 10; i++) {
-                    float training[][] = primitive(trainingsets[i]);
-                }
-            }
-        }
-        else if(position==2){
-            trainingsets[dummy].add(waarden);
-            acceleroZTextView.setText(String.format("%.2f",waarden[position]));
-            waarden = new Float[3];
-            position = 0;
-        }
-        else{
-            if(position==0){
-            acceleroXTextView.setText(String.format("%.2f",waarden[position]));}
-            if(position==1){
-                acceleroYTextView.setText(String.format("%.2f",waarden[position]));}
-            position++;
-        }
-        aantal++;*/
     }
 
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    public class LocalBinder extends Binder {
-        BLEService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return BLEService.this;
-        }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_REDELIVER_INTENT;
     }
 
     @Nullable
@@ -391,9 +290,12 @@ public class BLEService extends Service {
         return binder;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return Service.START_REDELIVER_INTENT;
+    public void sendWizardID(int ID) {
+        try {
+            wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
+            boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
+        } catch (NullPointerException e) {
+        }
     }
 
     public void onCreate() {
@@ -414,7 +316,6 @@ public class BLEService extends Service {
 
     private  void sendGestureMessageToActivity(byte b) {
         Intent intent = new Intent("GestureUpdate");
-        // You can also include some extra data.
         intent.putExtra("gesture", b);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
@@ -422,15 +323,25 @@ public class BLEService extends Service {
 
     private  void sendHitMessageToActivity(int a) {
         Intent intent = new Intent("hitUpdate");
-        // You can also include some extra data.
         intent.putExtra("hitCode", a);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
     }
 
-    public void sendWizardID(int ID){
-        wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
-        boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+
+        //unregister listeners
+        //do any other cleanup if required
+
+        //stop service
+        stopSelf();
+    }
+
+    public class LocalBinder extends Binder {
+        BLEService getService() {
+            return BLEService.this;
+        }
     }
 }
 

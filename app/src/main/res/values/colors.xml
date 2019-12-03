@@ -12,6 +12,8 @@
     <color name="wizardBlack">#000000</color>
     <color name="goodGesture">#00FF21</color>
     <color name="badGesture">#FF0000</color>
+    <color name="ButtonColor">#96c7e1</color>
+    <color name="ButtonTextColor">#5169B1</color>
 
 
 </resources>

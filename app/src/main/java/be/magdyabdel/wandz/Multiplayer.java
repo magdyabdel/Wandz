@@ -41,16 +41,31 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private TextView lastHitBy;
     private Boolean joined = false;
     private TextView notification;
+    private Button stop;
 
-    /**
-     *  Variables for bluetooth binding
-     **/
     BLEService mService;
     boolean mBound = false;
 
-    /**
-     * Defines callbacks for service binding, passed to bindService()
-     */
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            int gest = intent.getIntExtra("hitCode", 0);
+            //cal function with gesture int
+            byte spell = (byte) (gest & 0x00FF); //8 LSB's
+            final byte attackerID = (byte) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
+            Log.i("tagshitspell", Integer.toString((int) spell));
+            Log.i("tagshitplayer", Integer.toString((int) attackerID));
+            sendHit(attackerID, spell);
+            setHealth(spell);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    lastHitBy.setText(getNameById((int) attackerID));
+                }
+            });
+        }
+    };
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -78,13 +93,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.activity_multiplayer);
         stub.inflate();
-
         ImageView profile_image_drawer = findViewById(R.id.profile);
         TextView yourNameTextView = findViewById(R.id.your_name);
         Button leaveGame = findViewById(R.id.training_mode);
         leaveGame.setOnClickListener(this);
         leaveGame.setText("Leave The Game");
-        Button stop = findViewById(R.id.multiplayer);
+        stop = findViewById(R.id.multiplayer);
+        stop.setText("Stop The Game");
         stop.setVisibility(View.GONE);
         Button myWand = findViewById(R.id.my_wand);
         myWand.setVisibility(View.GONE);
@@ -122,8 +137,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         health_progressBar.setProgress(health);
         energy_progressBar = findViewById(R.id.energy_progressBar);
         energy_progressBar.setProgress(power);
-        score_value = findViewById(R.id.score_value);
-        score_value.setText(score);
+        score_value = findViewById(R.id.scorevalue);
+        score_value.setText(Integer.toString(score));
         game_mode_value = findViewById(R.id.game_mode_value);
         game_mode_value.setText(connectionManager.getGamemode());
         lastHit = findViewById(R.id.lastHit);
@@ -132,21 +147,30 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         lastHitBy.setText("Not Hitted Yet!");
         notification = findViewById(R.id.notifications);
 
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+        yourNameTextView.setText(profile.getName());
+        ImageView profileImageView = findViewById(R.id.profile_image);
+        profile.setProfileImage(this, profileImageView);
+        profile.setProfileImage(this, profile_image_drawer);
+        TextView multiplayer_name = findViewById(R.id.multiplayer_name);
+        multiplayer_name.setText(Integer.toString(profile.getId()));
+
+        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
+        profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
+        master = (Boolean) getIntent().getSerializableExtra("master");
+
+        if (master) {
+            stop.setVisibility(View.VISIBLE);
+            stop.setOnClickListener(this);
+        }
+
         Multiplayer.ConnectionThread connectionThread = new Multiplayer.ConnectionThread();
         connectionThread.start();
+
+        Intent intent1 = new Intent(this, BLEService.class);
+        bindService(intent1, connection, Context.BIND_AUTO_CREATE); //TODO:fix problem ServiceConnection leaked
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
     }
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            int gest = intent.getIntExtra("hitCode", 0);
-            //cal function with gesture int
-            byte spell = (byte) (gest & 0x00FF); //8 LSB's
-            byte attackerID = (byte) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
-
-        }
-    };
 
     @Override
     public void onClick(View view) {
@@ -154,7 +178,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         switch (view.getId()) {
 
             case R.id.training_mode:
-                Multiplayer.WriteThread writeThread1 = new Multiplayer.WriteThread("Leave");
+                Multiplayer.WriteThread writeThread1 = new Multiplayer.WriteThread("LEAVE");
                 writeThread1.start();
                 while (joined) {//TODO:TIMEOUT
                     try {
@@ -167,18 +191,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 intent.putExtra("profile", profile);
                 unbindService(connection); //unbind bluetooth service
                 mBound = false;
-                intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();
                 break;
-            case R.id.stop:
+            case R.id.multiplayer:
                 if (master) {
                     Multiplayer.WriteThread writeThreadStop = new Multiplayer.WriteThread("STOP");
                     writeThreadStop.start();
+                    stop.setText("Game Finished!");
                 }
-                break;
-
-            default:
                 break;
         }
     }
@@ -196,28 +217,28 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     private void setScore(int spell) {
         switch (spell) {
-            case 0:
+            case 1:
                 score = score + 50;
                 break;
-            case 1:
+            case 2:
                 score = score + 100;
                 break;
-            case 2:
+            case 3:
                 score = score + 200;
                 break;
         }
-        score_value.setText(score);
+        score_value.setText(Integer.toString(score));
     }
 
     private void setHealth(int spell) {
         switch (spell) {
-            case 0:
+            case 1:
                 health = health - 100;
                 break;
-            case 1:
+            case 2:
                 health = health - 200;
                 break;
-            case 2:
+            case 3:
                 health = health - 500;
                 break;
         }
@@ -296,7 +317,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 connectionManager.sendData("KEEPALIVE");
                 busy = false;
                 Log.i("servershit", "alive" + profile.getId());
-
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {

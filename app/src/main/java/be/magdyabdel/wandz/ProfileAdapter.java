@@ -25,18 +25,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     public ProfileAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
         View contactView = inflater.inflate(R.layout.profile_row, parent, false);
-
         ViewHolder viewHolder = new ViewHolder(contactView);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ProfileAdapter.ViewHolder viewHolder, int position) {
-
         Profile profile = profiles.get(position);
-
         TextView textView = viewHolder.player_name;
         textView.setText(profile.getName());
         ImageView imageView = viewHolder.profile;
@@ -55,7 +51,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             profile = itemView.findViewById(R.id.image_player);
             player_name = itemView.findViewById(R.id.name_player);
         }
