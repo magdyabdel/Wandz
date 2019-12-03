@@ -21,7 +21,7 @@
         <activity android:name=".Menu" />
         <activity android:name=".MultiplayerConnect" />
         <activity android:name=".ChangeProfileIcon" />
-        <activity android:name=".Master" />
+        <activity android:name=".MasterPassword" />
         <activity android:name=".MasterConnect" />
         <activity android:name=".MyWand" />
         <activity android:name=".Multiplayer" />

@@ -99,14 +99,14 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         profile.setProfileImage(this, profileImageView);
         profile.setProfileImage(this, profile_image_drawer);
 
+        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
+        profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
+        master = (Boolean) getIntent().getSerializableExtra("master");
+
         if (master) {
             stop.setVisibility(View.VISIBLE);
             stop.setOnClickListener(this);
         }
-
-        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
-        profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
-        master = (Boolean) getIntent().getSerializableExtra("master");
 
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
         multiplayer_name.setText(profile.getName());

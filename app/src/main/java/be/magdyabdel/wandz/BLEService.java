@@ -75,8 +75,10 @@ public class BLEService extends Service {
                 addValue(z);
             }
              else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
+                 Log.i("hitupdate", "characteristic gelezen");
                  int hitvalue = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getInt();
-                 sendHitMessageToActivity(hitvalue);
+                Log.i("hitupdate", ""+ gotHit);
+                sendHitMessageToActivity(hitvalue);
              }
 
             //}

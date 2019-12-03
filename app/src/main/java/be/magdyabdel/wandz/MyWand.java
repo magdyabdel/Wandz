@@ -260,7 +260,7 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
     public void startScanning() {
         final ScanFilter.Builder builder = new ScanFilter.Builder();
-        builder.setDeviceName("Wandz01");
+        builder.setDeviceName("Wandz02");
 
         final List<ScanFilter> lfilt = new ArrayList<>();
         lfilt.add(builder.build());
