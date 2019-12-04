@@ -6,6 +6,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorPrimaryDark">@color/wizardBlack</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
 </resources>
