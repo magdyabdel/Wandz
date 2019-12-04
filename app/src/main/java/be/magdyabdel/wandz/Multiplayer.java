@@ -9,11 +9,13 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -110,6 +112,16 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                         // Hide the nav bar and status bar
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Allow this non-streaming activity to layout under notches.
+            //
+            // We should NOT do this for the Game activity unless
+            // the user specifically opts in, because it can obscure
+            // parts of the streaming surface.
+            this.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
     }
 
     @Override
@@ -134,10 +146,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         stop = findViewById(R.id.multiplayer);
         stop.setText("Stop The Game");
         stop.setVisibility(View.GONE);
-        Button myWand = findViewById(R.id.my_wand);
-        myWand.setVisibility(View.GONE);
-        Button menu = findViewById(R.id.menu);
-        menu.setVisibility(View.GONE);
         /******* Navigation Drawer *******/
 
         profile = (Profile) getIntent().getSerializableExtra("profile");

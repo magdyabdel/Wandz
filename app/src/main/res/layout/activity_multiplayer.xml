@@ -4,7 +4,8 @@
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
-                                                   tools:context=".Multiplayer">
+                                                   tools:context=".Multiplayer"
+                                                   android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
@@ -140,7 +141,7 @@
             android:fontFamily="@font/big_john"
             android:text="@string/last_hit"
             android:textColor="@color/wizardGrey"
-            android:textSize="30sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="24dp" app:layout_constraintTop_toTopOf="@+id/guideline12"
             android:layout_marginStart="16dp"/>
@@ -152,7 +153,7 @@
             android:fontFamily="@font/big_john"
             android:text="@string/last_hit_by"
             android:textColor="@color/wizardGrey"
-            android:textSize="30sp"
+            android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@+id/lastHit"
             app:layout_constraintStart_toStartOf="@+id/lastHit" android:layout_marginTop="16dp"/>
 
