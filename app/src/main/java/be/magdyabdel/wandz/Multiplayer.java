@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -58,14 +58,16 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 final byte attackerID = (byte) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
                 Log.i("tagshitspell", Integer.toString((int) spell));
                 Log.i("tagshitplayer", Integer.toString((int) attackerID));
-                sendHit(attackerID, spell);
-                setHealth(spell);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        lastHitBy.setText(getNameById((int) attackerID));
-                    }
-                });
+                if (attackerID != profile.getId()) {
+                    sendHit(attackerID, spell);
+                    setHealth(spell);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lastHitBy.setText(getNameById((int) attackerID));
+                        }
+                    });
+                }
             }
         }
     };
@@ -448,14 +450,16 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             }
                             break;
                         case "HIT":
-                            if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setScore(Integer.parseInt(splittedCommand[3]));
-                                        lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
-                                    }
-                                });
+                            if (Integer.parseInt(splittedCommand[3]) != Integer.parseInt(splittedCommand[2])) {
+                                if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setScore(Integer.parseInt(splittedCommand[3]));
+                                            lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
+                                        }
+                                    });
+                                }
                             }
                             break;
                         case "STOP":
