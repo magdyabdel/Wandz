@@ -45,14 +45,8 @@
             android:name=".MasterConnect"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MyWand"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".Multiplayer"
             android:screenOrientation="landscape" />
-        <activity
-            android:name=".Trainingmode"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".ChooseName"
             android:screenOrientation="portrait" />
