@@ -60,7 +60,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             {
                 int gest = intent.getIntExtra("hitCode", 0);
                 byte spell = (byte) (gest & 0x00FF); //8 LSB's
-                final byte attackerID = (byte) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
+                final char attackerID = (char) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
                 Log.i("tagshitspell", Integer.toString((int) spell));
                 Log.i("tagshitplayer", Integer.toString((int) attackerID));
                 if (attackerID != profile.getId()) {
@@ -82,7 +82,17 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
             {
                 Byte gest = intent.getByteExtra("gesture", (byte) 0);
-
+                switch (gest) {
+                    case 1:
+                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 100);
+                        break;
+                    case 2:
+                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 200);
+                        break;
+                    case 3:
+                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 300);
+                        break;
+                }
             }
         }
     };
@@ -271,6 +281,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     protected void onDestroy() {
         super.onDestroy();
         try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(gestureReceiver);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hitReceiver);
             unbindService(connection);
             mBound = false;
@@ -415,9 +426,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 }
             }
 
-            Multiplayer.ReadThread readThread = new Multiplayer.ReadThread();
-            readThread.start();
-
+            new ReadThread().start();
+            new PowerThread().start();
 
 
             while (connected) {
@@ -541,12 +551,12 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         if (energy_progressBar.getProgress() < 1000) {
-                            energy_progressBar.setProgress(energy_progressBar.getProgress() + 10);
+                            energy_progressBar.setProgress(energy_progressBar.getProgress() + 1);
                         }
                     }
                 });
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
             }
