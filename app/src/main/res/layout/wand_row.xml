@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="10dp"
+    android:id="@+id/wand_row"
+    android:onClick="onClick"
     android:paddingBottom="10dp">
 
 
@@ -38,6 +40,6 @@
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_the_wand_without_hand" />
+        app:srcCompat="@drawable/ic_simple_wand" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

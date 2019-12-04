@@ -25,7 +25,7 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
     private Profile profile;
     private Button practice;
     private Boolean skip = false;
-    private TextView skipButton;
+    private Button skipButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +52,15 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
 
         switch (view.getId()) {
             case R.id.practice:
-                Intent intent = new Intent(this, LearnTheGestures.class);
-                intent.putExtra("profile", profile);
-                startActivity(intent);
                 break;
             case R.id.skip:
                 skip = true;
-                Intent intent2 = new Intent(this, Menu.class);
-                intent2.putExtra("profile", profile);
-                startActivity(intent2);
                 break;
         }
+        Intent intent = new Intent(this, ChooseYourWand.class);
+        intent.putExtra("profile", profile);
+        intent.putExtra("skip", skip);
+        startActivity(intent);
     }
 
     private void delay(int delay) {
@@ -121,6 +119,8 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                     public void run() {
                         practice.setVisibility(View.VISIBLE);
                         practice.setClickable(true);
+                        skipButton.setVisibility(View.GONE);
+                        skipButton.setClickable(false);
                     }
                 });
                 delay(100);

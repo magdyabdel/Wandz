@@ -16,11 +16,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelUuid;
+import android.provider.Settings;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +42,7 @@ import java.util.List;
 
 public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
-    private final static int REQUEST_ENABLE_BT = 1;
+    private static final int REQUEST_ENABLE_BT = 1;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 2;
     private static final long SCAN_PERIOD = 5000;
     BluetoothManager btManager;
@@ -80,9 +82,7 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
             }
         }
     };
-    /**
-     * Defines callbacks for service binding, passed to bindService()
-     */
+
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -104,11 +104,10 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Intent intent = new Intent(this, BLEService.class);
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
+        //unbindService(connection);
 
         /******* Navigation Drawer *******/
         setContentView(R.layout.activity_navigation_drawer);
@@ -177,11 +176,6 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
         btAdapter = btManager.getAdapter();
         btScanner = btAdapter.getBluetoothLeScanner();
 
-        if (btAdapter != null && !btAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        }
-
         // Make sure we have access coarse location enabled, if not, prompt the user to enable it
         if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -195,6 +189,58 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
                 }
             });
             builder.show();
+        }
+
+        checkEnable();
+    }
+
+    private void checkEnable() {
+        LocationManager lm = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        BluetoothManager bm = (BluetoothManager) this.getSystemService(BLUETOOTH_SERVICE);
+
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+        boolean bluetooth_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+        }
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+        }
+
+        try {
+            bluetooth_enabled = bm.getAdapter().isEnabled();
+        } catch (Exception ex) {
+        }
+
+        if (!gps_enabled && !network_enabled) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Please enable your location!")
+                    .setPositiveButton("Open location settings", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            }
+                    ).setNegativeButton("Cancel", null).show();
+        }
+
+        if (!bluetooth_enabled) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            /*new AlertDialog.Builder(this)
+                    .setMessage("Please enable your bluetooth!")
+                    .setPositiveButton("Open bluetooth settings", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                    startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+                                }
+                            }
+                    ).setNegativeButton("Cancel",null).show();*/
         }
     }
 
@@ -229,7 +275,6 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
 
         if (intent != null) {
             intent.putExtra("profile", profile);
-            unbindService(connection); //unbind bluetooth service
             mBound = false;
             startActivity(intent);
             finish();
@@ -275,8 +320,12 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(connection);
-        Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
+        try {
+            unbindService(connection);
+            mBound = false;
+        } catch (RuntimeException e) {
+        }
+        //Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
     }
 
     public void startScanning() {
@@ -317,7 +366,7 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(MyWand.this, "Put on your bluetooth and current location!", Toast.LENGTH_SHORT).show();
+                                checkEnable();
                             }
                         });
                     }
@@ -357,7 +406,9 @@ public class MyWand extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void run() {
                 try {
-                    btScanner.stopScan(leScanCallback);
+                    if (isBluetoothAvailable()) {
+                        btScanner.stopScan(leScanCallback);
+                    }
                 } catch (NullPointerException e) {
                 }
             }
