@@ -14,6 +14,7 @@
     <color name="badGesture">#FF0000</color>
     <color name="ButtonColor">#96c7e1</color>
     <color name="ButtonTextColor">#5169B1</color>
+    <color name="wizardGreen">#66BB6A</color>
 
 
 </resources>

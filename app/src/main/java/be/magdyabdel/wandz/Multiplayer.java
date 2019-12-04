@@ -1,11 +1,13 @@
 package be.magdyabdel.wandz;
 
+import android.app.ActionBar;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -85,8 +87,17 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     };
 
     @Override
+    public void onWindowFocusChanged (boolean hasFocus){
+        // nothing
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Force landscape mode on create for this activity
+
+        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
 
         /******* Navigation Drawer *******/
         setContentView(R.layout.activity_navigation_drawer);
@@ -129,7 +140,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
         multiplayer_name.setText(Integer.toString(profile.getId()));
 
-        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
         profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
         master = (Boolean) getIntent().getSerializableExtra("master");
 
