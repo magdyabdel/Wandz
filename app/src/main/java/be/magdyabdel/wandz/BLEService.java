@@ -328,10 +328,10 @@ public class BLEService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-
         //unregister listeners
         //do any other cleanup if required
-
+        stopService(rootIntent);
+        Log.i("stop", "stop");
         //stop service
         stopSelf();
     }
@@ -341,5 +341,6 @@ public class BLEService extends Service {
             return BLEService.this;
         }
     }
+
 }
 

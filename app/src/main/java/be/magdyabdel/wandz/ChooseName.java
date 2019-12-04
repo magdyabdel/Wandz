@@ -38,7 +38,8 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
                     Profile profile = new Profile(-1, name, 0000);
                     Intent intent;
                     if (skip) {
-                        intent = new Intent(this, Menu.class);
+                        intent = new Intent(this, ChooseYourWand.class);
+                        intent.putExtra("skip", true);
                     } else {
                         intent = new Intent(this, WandExplanation.class);
                     }

@@ -128,6 +128,7 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         if (intent != null) {
             unbindService(connection); //unbind bluetooth service
             mBound = false;
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             intent.putExtra("profile", profile);
             startActivity(intent);
             finish();
@@ -166,6 +167,7 @@ public class Trainingmode extends AppCompatActivity implements View.OnClickListe
         }
         imageView.setImageResource(gestureImages[currentGestureImage]);
     }
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

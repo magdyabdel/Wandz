@@ -24,6 +24,15 @@ public class Profile implements Serializable {
     private int hair_color_array_id = 0;
     private int eye_color_array_id = 0;
     private int health = 1000;
+    private Boolean demo = true;
+
+    public Boolean getDemo() {
+        return demo;
+    }
+
+    public void setDemo(Boolean demo) {
+        this.demo = demo;
+    }
 
     public Profile(int id, String name, int layoutNumbers) {
         this.name = name;
