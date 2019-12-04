@@ -59,8 +59,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
             {
                 int gest = intent.getIntExtra("hitCode", 0);
-                byte spell = (byte) (gest & 0x00FF); //8 LSB's
-                final char attackerID = (char) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
+                int spell = (gest & 0x000000FF); //8 LSB's
+                final int attackerID = (gest & 0x0000FF00) >>> 8; // 8-16 LSB's
                 Log.i("tagshitspell", Integer.toString((int) spell));
                 Log.i("tagshitplayer", Integer.toString((int) attackerID));
                 if (attackerID != profile.getId()) {
@@ -69,7 +69,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            lastHitBy.setText(getNameById((int) attackerID));
+                            lastHitBy.setText(getNameById(attackerID));
                         }
                     });
                 }
