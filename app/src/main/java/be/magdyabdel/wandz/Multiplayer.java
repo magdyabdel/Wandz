@@ -36,6 +36,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private int score = 0;
     private int power = 1000;
     private int health = 1000;
+    private final int powerOffensive = 100;
+    private final int powerDefensive = 200;
+    private final int powerUtility = 300;
     private ArrayList<Profile> profiles;
     private ProgressBar health_progressBar;
     private ProgressBar energy_progressBar;
@@ -49,7 +52,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     BLEService mService;
     boolean mBound = false;
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver hitReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             {
@@ -71,6 +74,17 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             }
         }
     };
+
+    private BroadcastReceiver gestureReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            {
+                Byte gest = intent.getByteExtra("gesture", (byte) 0);
+
+            }
+        }
+    };
+
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -142,8 +156,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         lastHitBy.setText("Not Hitted Yet!");
         notification = findViewById(R.id.notifications);
 
-
-
         profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
         master = (Boolean) getIntent().getSerializableExtra("master");
 
@@ -157,7 +169,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         Intent intent1 = new Intent(this, BLEService.class);
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(hitReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
     }
 
     private String getNameById(int id) {
@@ -230,7 +243,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     protected void onDestroy() {
         super.onDestroy();
         try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hitReceiver);
             unbindService(connection);
             mBound = false;
         } catch (RuntimeException e) {
@@ -482,6 +495,30 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 }
                 try {
                     Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    }
+
+    class PowerThread extends Thread {
+
+        PowerThread() {
+        }
+
+        @Override
+        public void run() {
+            while (connected && joined) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (energy_progressBar.getProgress() < 1000) {
+                            energy_progressBar.setProgress(energy_progressBar.getProgress() + 10);
+                        }
+                    }
+                });
+                try {
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                 }
             }
