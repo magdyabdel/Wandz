@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -18,14 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <service android:name=".BLEService" />
-        <activity android:name=".Menu" />
-        <activity android:name=".MultiplayerConnect" />
-        <activity android:name=".ChangeProfileIcon" />
-        <activity android:name=".MasterPassword" />
-        <activity android:name=".MasterConnect" />
-        <activity android:name=".MyWand" />
-        <activity android:name=".Multiplayer" />
         <activity android:name=".ChooseYourWand"></activity>
         <activity android:name=".GameExplanation" />
         <activity android:name=".WandExplanation" />

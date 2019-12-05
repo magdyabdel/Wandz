@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -16,6 +17,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -42,15 +45,18 @@ public class BLEService extends Service {
     Float[] waarden;
     int position;
     int dummy;
-    float[] gravity;
     int aantal;
     int training;
     private int mData;
-    private List<Float[]>[] trainingsets;
+    private List<Double>[] trainingsets;
+    private List<Integer> trainingTime;
     private List<Float[]> rlist;
+    private List<Long> rlistTime;
+    private double[] anglechange;
     private DTW dtw;
     private Trainingdata data;
     byte gesture = 0;
+    int amount_training = 20;
 
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
 
@@ -60,7 +66,6 @@ public class BLEService extends Service {
             byte[] val = characteristic.getValue();
             if (UUID.fromString("00004ad1-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
                 float x = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-                aantal++;
                 addValue(x);
             } else if (UUID.fromString("00004ad2-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
                 float y = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getFloat();
@@ -137,7 +142,18 @@ public class BLEService extends Service {
             lT[i][1] = pList.get(i)[1];
             lT[i][2] = pList.get(i)[2];
         }
-        Log.i("array", Arrays.deepToString(lT)); //print multi dimension array
+        //Log.i("array", Arrays.deepToString(lT)); //print multi dimension array
+        return lT;
+    }
+    private static final double[]primitivesingle(final List<Double> pList) {
+        // Declare the Array.
+        final double[] lT = new double[pList.size()];
+        // Iterate the List.
+        for (int i = 0; i < pList.size(); i++) {
+            // Buffer the Element.
+            lT[i] = pList.get(i);
+        }
+        //Log.i("array", Arrays.deepToString(lT)); //print multi dimension array
         return lT;
     }
 
@@ -199,84 +215,105 @@ public class BLEService extends Service {
 
     public void addValue(float value) {
         // Toast toast;
-        final float alpha = 0.70f;
         boolean gesturerecognised = false;
-        gravity[position] = alpha * gravity[position] + (1 - alpha) * value;
-        waarden[position] = value - gravity[position];
-        if (value == 500f) {
-            String text = "";
+        waarden[position] = value ;
+        if (value == 500f) {  //end the gesture detection
             float[][] sample = primitive(rlist);
-            double[] error = {100.0, 100.0, 100.0};
-            double minimum = 10;
-            int index;
-            for (int i = 0; i < 10; i++) {
-                float[][] training = data.getTrainingset1()[i];
-                double test = dtw.computeDTWError(sample, training);
-                if (test < error[0]) {
-                    error[0] = test;
-                    if (error[0] < 0.11) {
-                        text = "RIGHT-LEFT-RIGHT";
-                        index = i;
-                        gesture = 1;
-                        gesturerecognised = true;
-                    }
-                }
+            anglechange = new double[rlist.size()];
+            anglechange[0] = 0;
+            float xchange =0;
+            float ychange =0;
+            float zchange= 0 ;
+            for(int i=1; i< sample.length ;i++){
+                xchange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
+                ychange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
+                zchange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
+                String tijd = Long.toString(rlistTime.get(i)-rlistTime.get(i-1));
+               // Log.i("tijdspanne", ""+ tijd);
+                anglechange[i] = Math.sqrt(Math.pow(xchange,2) + Math.pow(ychange,2) + Math.pow(zchange,2));
             }
-            for (int i = 0; i < 10; i++) {
-                float[][] training = data.getTrainingset2()[i];
-                double test = dtw.computeDTWError(sample, training);
-                if (test < error[1]) {
-                    error[1] = test;
-                    if (error[1] < 0.17) {
-                        text = "UP-DOWN-UP";
-                        index = i;
-                        gesture = 2;
-                        gesturerecognised = true;
-                    }
-                }
+            //writeToFile((Arrays.toString(anglechange)),this);
+            Log.i("array", Arrays.toString(anglechange));
+            writeToFile(Arrays.toString(anglechange),this);
+            double error[] = new double[10];
+            error[0] = dtw.computeDTWError(anglechange, data.getTrainingset1());
+            error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
+            error[2] = dtw.computeDTWError(anglechange, data.getTrainingset3());
+
+            if(error[0]<8000){//cirkel
+                gesturerecognised = true;
+                gesture = 1;
             }
-            for (int i = 0; i < 10; i++) {
-                float[][] training = data.getTrainingset3()[i];
-                double test = dtw.computeDTWError(sample, training);
-                if (test < error[2]) {
-                    error[2] = test;
-                    if (error[2] < 0.13) {
-                        text = "CIRCLE";
-                        index = i;
-                        gesture = 3;
-                        gesturerecognised = true;
-                    }
-                }
+            else if(error[1]<10000&&error[0]>16000){//eight
+                gesturerecognised = true;
+                gesture = 2;
+            }
+            else if(error[2]<5000 && error[1]<20000){//eight
+                gesturerecognised = true;
+                gesture = 3;
             }
 
             if (gesturerecognised) {
+                Log.i("recognised!", Integer.toString(gesture) +" "+ Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2])+" "+ Double.toString(error[3]));
                 sendGestureMessageToActivity(gesture);
                 spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
                 boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
+                Log.i("NOT recognised!", Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]) +" "+ Double.toString(error[3]));
                 sendGestureMessageToActivity((byte) 0);
                 // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
             // toast.show();
             rlist.clear();
-            gravity = new float[]{0, 0.25f, 0.75f};
+            rlistTime.clear();
             aantal = 0;
-        } else if (position == 2) {
-            rlist.add(waarden);
-            //acceleroZTextView.setText(String.format("%.2f",waarden[position]));
+        } else if (position == 2) {            rlist.add(waarden);
+            rlistTime.add(System.currentTimeMillis());
             waarden = new Float[3];
             position = 0;
         } else {
-            if (position == 0) {
-                //acceleroXTextView.setText(String.format("%.2f",waarden[position]));
-            }
-            if (position == 1) {
-                //acceleroYTextView.setText(String.format("%.2f",waarden[position]));
-            }
             position++;
         }
         aantal++;
+    }
+
+    public void addtValue() {
+        int total_samples = 60;
+        /**
+         * Make every time sample the same length
+         */
+        double[][] normalized = new double[total_samples][data.getalleight()[0].length];
+        for(int i=0;i<total_samples;i++){
+            normalized[i] = dtw.normalize(data.getalleight()[i],data.getalleight()[0]);
+            //Log.i("result", " " + normalized[i].length + Arrays.toString(normalized[i]));
+        }
+        /**
+         * Calculate average template
+         */
+        double[] template = new double[data.getalleight()[0].length];
+        for(int j = 0; j<data.getalleight()[0].length; j++) {
+            for (int i = 0; i < total_samples; i++){
+                template[j] += normalized[i][j];
+            }
+            template[j] /= total_samples;
+        }
+        Log.i("result", " " + normalized[0].length + Arrays.toString(template));
+        /**
+         * determining all errors with optimal sample
+         */
+         double[] erroronoptimal = new double[total_samples];
+         double sum = 0;
+         for (int i = 0; i < total_samples; i++) {
+              erroronoptimal[i] = dtw.computeDTWError(template, data.getalleight()[i]);
+              sum+= erroronoptimal[i];
+             Log.i("error","" + erroronoptimal[i]);
+         }
+         sum /= total_samples;
+          Log.i("averageerroronoptimalsample","" + Double.toString(sum));
+
+
+
     }
 
     @Override
@@ -307,11 +344,13 @@ public class BLEService extends Service {
         dtw = new DTW();
         data = new Trainingdata();
         rlist = new ArrayList<>(); //initialise recognition list
-        trainingsets = new ArrayList[10]; //initialise array of training sets
-        for (int i = 0; i < 10; i++) {
+        rlistTime = new ArrayList<>();
+        trainingTime = new ArrayList<>();
+        trainingsets = new ArrayList[amount_training]; //initialise array of training sets
+        for (int i = 0; i < amount_training; i++) {
             trainingsets[i] = new ArrayList<>();
         }
-        gravity = new float[]{0, 0, 0};
+        addtValue();
     }
 
     private  void sendGestureMessageToActivity(byte b) {
@@ -341,6 +380,19 @@ public class BLEService extends Service {
     public class LocalBinder extends Binder {
         BLEService getService() {
             return BLEService.this;
+        }
+    }
+
+    private void writeToFile(String data, Context context) { //look in device file explorer, data/data/be.magdyabel.wandz/files
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("rechtslinkslang.txt", Context.MODE_APPEND));
+            outputStreamWriter.write(data);
+            outputStreamWriter.write("\n");
+            outputStreamWriter.close();
+            Log.i("waar?", " " + BLEService.this.getFilesDir().getAbsolutePath());
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
         }
     }
 }

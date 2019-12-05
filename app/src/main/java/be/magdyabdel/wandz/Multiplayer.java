@@ -107,25 +107,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         menu.setVisibility(View.GONE);
         /******* Navigation Drawer *******/
 
-        profile = (Profile) getIntent().getSerializableExtra("profile");
-        yourNameTextView.setText(profile.getName());
-
-        ImageView profileImageView = findViewById(R.id.profile_image);
-        profile.setProfileImage(this, profileImageView);
-        profile.setProfileImage(this, profile_image_drawer);
-
-        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
-        profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
-        master = (Boolean) getIntent().getSerializableExtra("master");
-
-        if (master) {
-            stop.setVisibility(View.VISIBLE);
-            stop.setOnClickListener(this);
-        }
-
-        TextView multiplayer_name = findViewById(R.id.multiplayer_name);
-        multiplayer_name.setText(profile.getName());
-
         /**
          * bind to the bluetooth service and send the ID
          **/
@@ -166,10 +147,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         Multiplayer.ConnectionThread connectionThread = new Multiplayer.ConnectionThread();
         connectionThread.start();
-
-        Intent intent1 = new Intent(this, BLEService.class);
-        bindService(intent1, connection, Context.BIND_AUTO_CREATE); //TODO:fix problem ServiceConnection leaked
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
     }
 
     @Override
@@ -317,6 +294,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 connectionManager.sendData("KEEPALIVE");
                 busy = false;
                 Log.i("servershit", "alive" + profile.getId());
+
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
