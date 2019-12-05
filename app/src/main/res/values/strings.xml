@@ -31,7 +31,7 @@
     <string name="choose_a_gesture_and_practice_with_your_wand">Choose a gesture and practice with your wand!</string>
     <string name="singleplayer">Singleplayer</string>
     <string name="my_wand">My Wand</string>
-    <string name="training_mode">Training Mode</string>
+    <string name="training_mode">Training</string>
     <string name="shoot">Shoot!</string>
     <string name="mode">mode</string>
     <string name="health">Health</string>
@@ -81,4 +81,7 @@
     <string name="practice">Practice</string>
     <string name="skip_the_tutorial">skip the tutorial</string>
     <string name="name_wand">Name Wand</string>
+    <string name="enter_demo_mode_without_wand">Enter Demo Mode\n(without wand)</string>
+    <string name="choose_your_wand">Choose Your Wand</string>
+    <string name="a_wizard_has_only_one_wand_you_already_have_one">A Wizard Has Only One Wand! You Already Have One.</string>
 </resources>

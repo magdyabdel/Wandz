@@ -1,18 +1,29 @@
 package be.magdyabdel.wandz;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class LearnTheGestures extends AppCompatActivity implements View.OnClickListener {
 
     private int[] imagesRoundAnim = new int[]{R.drawable.ic_round1, R.drawable.ic_round2, R.drawable.ic_round3, R.drawable.ic_round4, R.drawable.ic_round5, R.drawable.ic_round6};
     private int[] imagesCrossAnim = new int[]{R.drawable.ic_cross1, R.drawable.ic_cross2, R.drawable.ic_cross3, R.drawable.ic_cross4, R.drawable.ic_cross5, R.drawable.ic_cross6};
+    Vibrator v;
 
     private int gesture = 0;
     private Button showAgain;
@@ -21,6 +32,43 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
     private Profile profile;
     private ImageView gestureImage;
+    private int[] imagesHorizontalAnim = new int[]{R.drawable.ic_horizontal1, R.drawable.ic_horizontal2, R.drawable.ic_horizontal3, R.drawable.ic_horizontal4, R.drawable.ic_horizontal5};
+    private BLEService mService;
+    private boolean mBound = false;
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
+            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            {
+                Byte gest = intent.getByteExtra("gesture", (byte) 0);
+                if (gest == (gesture + 1)) {
+                    setCorrectOrNot(true);
+                } else {
+                    setCorrectOrNot(false);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        v.vibrate(500);
+                    }
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +89,11 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
         gestureImage = findViewById(R.id.gesture_image);
+
+        Intent intent1 = new Intent(this, BLEService.class);
+        bindService(intent1, connection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("GestureUpdate")); //broadcast receiver
+        v = (Vibrator) getSystemService(getApplicationContext().VIBRATOR_SERVICE);
     }
 
     @Override
@@ -53,24 +106,65 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.next:
                 gesture++;
-                if (gesture == 2) {
-                    Intent intent = new Intent(this, GameExplanation.class);
+
+                if (gesture == 3) {
+                    Intent intent = new Intent(this, Menu.class);
                     intent.putExtra("profile", profile);
                     startActivity(intent);
+                } else {
+                    LearnTheGestures.AnimThread animThread = new LearnTheGestures.AnimThread(gesture);
+                    animThread.start();
                 }
                 break;
         }
-        LearnTheGestures.AnimThread animThread = new LearnTheGestures.AnimThread(gesture);
-        animThread.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            unbindService(connection);
+            mBound = false;
+        } catch (RuntimeException e) {
+        }
+        //Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
     }
 
     private void setCorrectOrNot(Boolean correctOrNot) {
-        if (correctOrNot) {
-            WriteTextThread writeTextThread = new WriteTextThread("Well Done!");
-            writeTextThread.start();
-        } else {
-            WriteTextThread writeTextThread2 = new WriteTextThread("Try Again!");
-            writeTextThread2.start();
+
+        final Boolean correct = correctOrNot;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (correct) {
+                    well_done.setText("Well Done!");
+                } else {
+                    well_done.setText("Try Again!");
+                }
+                DelayThread delayThread = new DelayThread();
+                delayThread.start();
+            }
+        });
+    }
+
+    class DelayThread extends Thread {
+
+        DelayThread() {
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    well_done.setText("");
+                }
+            });
         }
     }
 
@@ -96,10 +190,13 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
             switch (gesture) {
                 case 0:
-                    array = imagesRoundAnim;
+                    array = imagesHorizontalAnim;
                     break;
                 case 1:
                     array = imagesCrossAnim;
+                    break;
+                case 2:
+                    array = imagesRoundAnim;
                     break;
                 default:
                     array = new int[0];
@@ -124,25 +221,6 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 public void run() {
                     next.setClickable(true);
                     showAgain.setClickable(true);
-                }
-            });
-        }
-    }
-
-    class WriteTextThread extends Thread {
-
-        final String text;
-
-        WriteTextThread(String text) {
-            this.text = text;
-        }
-
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    well_done.setText(text);
                 }
             });
         }

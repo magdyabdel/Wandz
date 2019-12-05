@@ -6,15 +6,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -26,11 +32,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     private Profile profile;
     private ConnectionManager connectionManager;
-    private boolean connected = false;
+    private boolean connected = true;
+    private Boolean joined = true;
     private boolean busy = false;
     private int score = 0;
     private int power = 1000;
     private int health = 1000;
+    private final int powerOffensive = 100;
+    private final int powerDefensive = 200;
+    private final int powerUtility = 300;
     private ArrayList<Profile> profiles;
     private ProgressBar health_progressBar;
     private ProgressBar energy_progressBar;
@@ -39,43 +49,63 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private Boolean master;
     private TextView lastHit;
     private TextView lastHitBy;
-    private Boolean joined = false;
     private TextView notification;
     private Button stop;
 
     BLEService mService;
     boolean mBound = false;
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver hitReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            int gest = intent.getIntExtra("hitCode", 0);
-            //cal function with gesture int
-            byte spell = (byte) (gest & 0x00FF); //8 LSB's
-            final byte attackerID = (byte) ((gest >>> 8) & 0x00FF); // 8-16 LSB's
-            Log.i("tagshitspell", Integer.toString((int) spell));
-            Log.i("tagshitplayer", Integer.toString((int) attackerID));
-            sendHit(attackerID, spell);
-            setHealth(spell);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    lastHitBy.setText(getNameById((int) attackerID));
+            {
+                int gest = intent.getIntExtra("hitCode", 0);
+                int spell = (gest & 0x000000FF); //8 LSB's
+                final int attackerID = (gest & 0x0000FF00) >>> 8; // 8-16 LSB's
+                Log.i("tagshitspell", Integer.toString((int) spell));
+                Log.i("tagshitplayer", Integer.toString((int) attackerID));
+                if (attackerID != profile.getId()) {
+                    sendHit(attackerID, spell);
+                    setHealth(spell);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lastHitBy.setText(getNameById(attackerID));
+                        }
+                    });
                 }
-            });
+            }
         }
     };
+
+    private BroadcastReceiver gestureReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            {
+                Byte gest = intent.getByteExtra("gesture", (byte) 0);
+                switch (gest) {
+                    case 1:
+                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 100);
+                        break;
+                    case 2:
+                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 200);
+                        break;
+                    case 3:
+                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 300);
+                        break;
+                }
+            }
+        }
+    };
+
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
             BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
-            mService.sendWizardID(profile.getId()); //Send the ID of the player to the wand
+            mService.sendWizardID(profile.getId());
         }
 
         @Override
@@ -85,8 +115,47 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     };
 
     @Override
+    public void onWindowFocusChanged (boolean hasFocus){
+        if (hasFocus) {
+            hideSystemUI();
+        }
+    }
+
+    private void hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        // Set the content to appear under the system bars so that the
+                        // content doesn't resize when the system bars hide and show.
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Allow this non-streaming activity to layout under notches.
+            //
+            // We should NOT do this for the Game activity unless
+            // the user specifically opts in, because it can obscure
+            // parts of the streaming surface.
+            this.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Force landscape mode on create for this activity
+        hideSystemUI();
+
+        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
 
         /******* Navigation Drawer *******/
         setContentView(R.layout.activity_navigation_drawer);
@@ -101,11 +170,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         stop = findViewById(R.id.multiplayer);
         stop.setText("Stop The Game");
         stop.setVisibility(View.GONE);
-        Button myWand = findViewById(R.id.my_wand);
-        myWand.setVisibility(View.GONE);
-        Button menu = findViewById(R.id.menu);
-        menu.setVisibility(View.GONE);
         /******* Navigation Drawer *******/
+
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+        yourNameTextView.setText(profile.getName());
+        ImageView profileImageView = findViewById(R.id.profile_image);
+        profile.setProfileImage(this, profileImageView);
+        profile.setProfileImage(this, profile_image_drawer);
+        TextView multiplayer_name = findViewById(R.id.multiplayer_name);
+        multiplayer_name.setText(Integer.toString(profile.getId()));
 
         /**
          * bind to the bluetooth service and send the ID
@@ -128,15 +201,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         lastHitBy.setText("Not Hitted Yet!");
         notification = findViewById(R.id.notifications);
 
-        profile = (Profile) getIntent().getSerializableExtra("profile");
-        yourNameTextView.setText(profile.getName());
-        ImageView profileImageView = findViewById(R.id.profile_image);
-        profile.setProfileImage(this, profileImageView);
-        profile.setProfileImage(this, profile_image_drawer);
-        TextView multiplayer_name = findViewById(R.id.multiplayer_name);
-        multiplayer_name.setText(Integer.toString(profile.getId()));
-
-        connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
         profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
         master = (Boolean) getIntent().getSerializableExtra("master");
 
@@ -147,6 +211,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         Multiplayer.ConnectionThread connectionThread = new Multiplayer.ConnectionThread();
         connectionThread.start();
+
+        Intent intent1 = new Intent(this, BLEService.class);
+        bindService(intent1, connection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(hitReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
     }
 
     @Override
@@ -247,6 +316,19 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(gestureReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hitReceiver);
+            unbindService(connection);
+            mBound = false;
+        } catch (RuntimeException e) {
+        }
+        //Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
+    }
+
     class WriteThread extends Thread {
 
         String message;
@@ -269,6 +351,77 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+
+            case R.id.training_mode:
+                if (connected) {
+                    if (joined) {
+                        new WriteThread("LEAVE").start();
+                        int i = 0;
+                        while (joined && i < 10) {
+                            if (!getInternetAccess()) {
+                                break;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                            }
+                            i++;
+                        }
+                    }
+                }
+
+                connected = false;
+                joined = false;
+                profile.setId(-1);
+
+                Intent intent = new Intent(this, Menu.class);
+                intent.putExtra("profile", profile);
+                startActivity(intent);
+                finish();
+
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.multiplayer:
+                if (master) {
+                    new Multiplayer.WriteThread("STOP").start();
+
+                }
+                break;
+        }
+    }
+
+    private void addProfile(int id, String name, int layoutNumbers) {
+
+        final String names = name;
+        profiles.add(new Profile(id, name, layoutNumbers));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notification.setText(names + " Has Joined The Game!");
+            }
+        });
+    }
+
+    private Boolean getInternetAccess() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            return true;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Multiplayer.this, "Check Your Internet Connection!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return false;
+    }
+
     class ConnectionThread extends Thread {
         ConnectionThread() {
         }
@@ -276,12 +429,45 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         @Override
         public void run() {
 
-            connected = true;
+            if (!connected) {
+                while (busy) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
+                }
 
-            Multiplayer.ReadThread readThread = new Multiplayer.ReadThread();
-            readThread.start();
+                busy = true;
+                int i = 0;
+                while (connectionManager.connect() != 0 && i < 20) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                    i++;
+                    getInternetAccess();
+                }
+                busy = false;
+                if (i == 5) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(Multiplayer.this, "You've left the game because of problems with the internet connection.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    connected = false;
+                    joined = false;
+                    profile.setId(-1);
+                    Intent intent = new Intent(Multiplayer.this, Menu.class);
+                    intent.putExtra("profile", profile);
+                    startActivity(intent);
+                    finish();
+                }
+            }
 
-            joined = true;
+            new ReadThread().start();
+            new PowerThread().start();
+
 
             while (connected) {
                 while (busy) {
@@ -290,13 +476,21 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     } catch (InterruptedException e) {
                     }
                 }
+
+                if (!getInternetAccess()) {
+                    connected = false;
+                    joined = false;
+                    new ConnectionThread().start();
+                    break;
+                }
+
                 busy = true;
                 connectionManager.sendData("KEEPALIVE");
                 busy = false;
-                Log.i("servershit", "alive" + profile.getId());
 
+                //Log.i("servershit", "alive" + profile.getId());
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                 }
             }
@@ -335,22 +529,36 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    notification.setText(splittedCommand[1] + "Has Left The Game!");
+                                    notification.setText(splittedCommand[1] + " Has Left The Game!");
                                 }
                             });
                             break;
+                        case "PlAYERJOIN":
+                            addProfile(Integer.parseInt(splittedCommand[2]), splittedCommand[1], Integer.parseInt(splittedCommand[3]));
+                            if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
+                                joined = true;
+                            }
+                            break;
                         case "HIT":
-                            if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setScore(Integer.parseInt(splittedCommand[3]));
-                                        lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
-                                    }
-                                });
+                            if (Integer.parseInt(splittedCommand[3]) != Integer.parseInt(splittedCommand[2])) {
+                                if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setScore(Integer.parseInt(splittedCommand[3]));
+                                            lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
+                                        }
+                                    });
+                                }
                             }
                             break;
                         case "STOP":
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    stop.setText("Game Finished!");
+                                }
+                            });
                             Multiplayer.WriteThread writeThreadLeave = new Multiplayer.WriteThread("LEAVE");
                             writeThreadLeave.start();
                             joined = false;
@@ -362,6 +570,30 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             break;
                     }
                 }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    }
+
+    class PowerThread extends Thread {
+
+        PowerThread() {
+        }
+
+        @Override
+        public void run() {
+            while (connected && joined) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (energy_progressBar.getProgress() < 1000) {
+                            energy_progressBar.setProgress(energy_progressBar.getProgress() + 1);
+                        }
+                    }
+                });
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {

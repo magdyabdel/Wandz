@@ -369,10 +369,10 @@ public class BLEService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-
         //unregister listeners
         //do any other cleanup if required
-
+        stopService(rootIntent);
+        Log.i("stop", "stop");
         //stop service
         stopSelf();
     }
@@ -382,6 +382,7 @@ public class BLEService extends Service {
             return BLEService.this;
         }
     }
+
 
     private void writeToFile(String data, Context context) { //look in device file explorer, data/data/be.magdyabel.wandz/files
         try {

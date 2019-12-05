@@ -47,6 +47,10 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                 break;
             case R.id.skip:
                 skip = true;
+                Intent intent = new Intent(Intro.this, ChooseName.class);
+                intent.putExtra("skip", skip);
+                startActivity(intent);
+                finish();
                 break;
         }
     }
@@ -114,11 +118,12 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                 }
                 delay(1000);
             }
-            Intent intent = new Intent(Intro.this, ChooseName.class);
-            intent.putExtra("skip", skip);
-            startActivity(intent);
-            finish();
-
+            if (!skip) {
+                Intent intent = new Intent(Intro.this, ChooseName.class);
+                intent.putExtra("skip", skip);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 
