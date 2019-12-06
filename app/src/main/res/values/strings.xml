@@ -56,7 +56,7 @@
     <string name="name_player">Name_Player</string>
     <string name="connecting_to_the_server">Connecting To The Server</string>
     <string name="game_status">Game Status</string>
-    <string name="players_joined_already">Players Joined Already</string>
+    <string name="players_joined_already">Players</string>
     <string name="welcome">Welcome!</string>
     <string name="setup_your_wand">Wand</string>
     <string name="enter_multiplayer_world">Play game</string>
