@@ -36,7 +36,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private Boolean joined = true;
     private boolean busy = false;
     private int score = 0;
-    public static int power = 0;
+    public static int power = 1000;
     private int health = 1000;
     public static int powerOffensive = 100;
     public static int powerDefensive = 200;
