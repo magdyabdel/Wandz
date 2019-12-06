@@ -36,11 +36,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private Boolean joined = true;
     private boolean busy = false;
     private int score = 0;
-    public static int power = 1000;
+    private int power = 1000;
     private int health = 1000;
-    public static int powerOffensive = 100;
-    public static int powerDefensive = 200;
-    public static int powerUtility = 300;
+    private int powerDamage = 100;
+    private int powerDamageMyHealth = 200;
+    private int powerDamageOtherHealth = 300;
     private ArrayList<Profile> profiles;
     private ProgressBar health_progressBar;
     private ProgressBar energy_progressBar;
@@ -69,9 +69,10 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     Log.i("profileID", Integer.toString(profile.getId()));
                     sendHit(attackerID, spell);
                     setHealth(spell);
-                    mService.sendGesture((byte) 100); //send 100 to the wand to vibrate(got hit)
+                    if (mBound) {
+                        mService.sendGesture((byte) 100); //send 100 to the wand to vibrate(got hit)
+                    }
                     if (health <= 0) {
-                        power = 0;
                         new WriteThread("DEAD " + profile.getId() + " " + attackerID).start();
                     }
 
@@ -91,23 +92,87 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
             {
                 Byte gest = intent.getByteExtra("gesture", (byte) 0);
-                switch (gest) {
-                    case 1:
-                        power -= 100;
-                        break;
-                    case 2:
-                        power -= 200;
-                        break;
-                    case 3:
-                        power -= 300;
-
-                        break;
+                if (gest != null) {
+                    setPower(gest);
+                    Boolean shoot = false;
+                    switch (gest) {
+                        case 1:
+                            if (power > powerDamage) shoot = true;
+                            break;
+                        case 2:
+                            if (power > powerDamageMyHealth) shoot = true;
+                            break;
+                        case 3:
+                            if (power > powerDamageOtherHealth) shoot = true;
+                            break;
+                    }
+                    if (mBound && shoot) {
+                        mService.sendGesture(gest);
+                    }
                 }
-                if (power < 0) power = 0;
-                energy_progressBar.setProgress(power);
             }
         }
     };
+
+    private void setScore() {
+        score += 100;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                score_value.setText(Integer.toString(score));
+            }
+        });
+    }
+
+    private void setHealth(int spell) {
+        switch (spell) {
+            case 1:
+                health -= 400;
+                break;
+            case 2:
+                health -= 650;
+                break;
+            case 3:
+                health -= 200;
+                break;
+            case 4:
+                health += 200;
+                break;
+        }
+        if (health <= 0) {
+            new WriteThread("DEAD " + profile.getId() + " " + profile.getId()).start();
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                health_progressBar.setProgress(health);
+            }
+        });
+
+    }
+
+    private void setPower(int spell) {
+        switch (spell) {
+            case 1:
+                power -= 200;
+                break;
+            case 2:
+                power -= 400;
+                setHealth(3);
+                break;
+            case 3:
+                power -= 100;
+                setHealth(4);
+                break;
+        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                energy_progressBar.setProgress(power);
+            }
+        });
+    }
 
     private ServiceConnection connection = new ServiceConnection() {
 
@@ -223,22 +288,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
     }
 
-    public int getPower() {
-        return power;
-    }
-
-    public int getPowerOffensive() {
-        return powerOffensive;
-    }
-
-    public int getPowerDefensive() {
-        return powerDefensive;
-    }
-
-    public int getPowerUtility() {
-        return powerUtility;
-    }
-
     private String getNameById(int id) {
         Iterator iterator = profiles.iterator();
         while (iterator.hasNext()) {
@@ -248,52 +297,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             }
         }
         return "Unknown Player";
-    }
-
-    private void setScore(int spell) {
-        switch (spell) {
-            case 1:
-                score = score + 50;
-                break;
-            case 2:
-                score = score + 100;
-                break;
-            case 3:
-                score = score + 200;
-                break;
-            case 4:
-                score = score + 500;
-                break;
-        }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                score_value.setText(Integer.toString(score));
-            }
-        });
-
-    }
-
-    private void setHealth(int spell) {
-        switch (spell) {
-            case 1:
-                health = health - 100;
-                break;
-            case 2:
-                health = health - 200;
-                break;
-            case 3:
-                health = health - 500;
-                break;
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                health_progressBar.setProgress(health);
-            }
-        });
-
     }
 
     private void sendHit(int player_id, int spell) {
@@ -550,7 +553,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            setScore(Integer.parseInt(splittedCommand[3]));
+                                            setScore();
                                             lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
                                         }
                                     });
@@ -588,7 +591,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     }
                                 });
                                 if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
-                                    setScore(4);
+                                    setScore();
+                                    setScore();
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -625,7 +629,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         @Override
         public void run() {
-            while (connected && joined) {
+            while (connected && joined && !dead) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -640,6 +644,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 } catch (InterruptedException e) {
                 }
             }
+            power = 0;
         }
     }
 }
