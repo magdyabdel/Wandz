@@ -23,8 +23,8 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
     private ArrayList<Profile> profiles;
     private ProfileAdapter adapter;
-    private Button join;
-    private Button leave;
+//    private Button join;
+//    private Button leave;
     private ConnectionManager connectionManager;
     private Profile profile;
     private TextView connect_server;
@@ -51,11 +51,11 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         game_mode = findViewById(R.id.game_mode_value);
         game_status = findViewById(R.id.game_status);
 
-        join = findViewById(R.id.join);
-        join.setOnClickListener(this);
-        leave = findViewById(R.id.leave);
-        leave.setOnClickListener(this);
-        leave.setClickable(false);
+//        join = findViewById(R.id.join);
+//        join.setOnClickListener(this);
+//        leave = findViewById(R.id.leave);
+//        leave.setOnClickListener(this);
+//        leave.setClickable(false);
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
         connectionManager = new ConnectionManager("51.83.69.116", 6789);
@@ -64,6 +64,24 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
         Button menu = findViewById(R.id.menu);
         menu.setOnClickListener(this);
+
+        if (!joined) {
+                        new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
+                        int i = 0;
+                        while (!joined && i < 5) {
+                            if (!getInternetAccess()) {
+                                break;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                            }
+                            i++;
+                        }
+                        if (i == 5) {
+                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
     }
 
     private void addProfile(int ids, String names, int layoutNumberss) {
@@ -105,70 +123,70 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.join: {
-                if (connected) {
-                    if (!joined) {
-                        new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
-                        int i = 0;
-                        while (!joined && i < 5) {
-                            if (!getInternetAccess()) {
-                                break;
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                            }
-                            i++;
-                        }
-                        if (i == 5) {
-                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
-                        } else if (joined) {
-                            join.setClickable(false);
-                            join.setVisibility(View.GONE);
-                            leave.setVisibility(View.VISIBLE);
-                            leave.setClickable(true);
-                        }
-                    } else {
-                        join.setClickable(false);
-                        join.setVisibility(View.GONE);
-                        leave.setVisibility(View.VISIBLE);
-                        leave.setClickable(true);
-                    }
-                }
-            }
-                break;
-            case R.id.leave: {
-                if (connected) {
-                    if (joined) {
-                        new WriteThread("LEAVE").start();
-                        int i = 0;
-                        while (joined && i < 5) {
-                            if (!getInternetAccess()) {
-                                break;
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                            }
-                            i++;
-                        }
-                        if (i == 5) {
-                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
-                        } else if (!joined) {
-                            join.setClickable(true);
-                            join.setVisibility(View.VISIBLE);
-                            leave.setVisibility(View.GONE);
-                            leave.setClickable(false);
-                        }
-                    } else {
-                        join.setClickable(true);
-                        join.setVisibility(View.VISIBLE);
-                        leave.setVisibility(View.GONE);
-                        leave.setClickable(false);
-                    }
-                }
-            }
-                break;
+//            case R.id.join: {
+//                if (connected) {
+//                    if (!joined) {
+//                        new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
+//                        int i = 0;
+//                        while (!joined && i < 5) {
+//                            if (!getInternetAccess()) {
+//                                break;
+//                            }
+//                            try {
+//                                Thread.sleep(100);
+//                            } catch (InterruptedException e) {
+//                            }
+//                            i++;
+//                        }
+//                        if (i == 5) {
+//                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+//                        } else if (joined) {
+//                            join.setClickable(false);
+//                            join.setVisibility(View.GONE);
+//                            leave.setVisibility(View.VISIBLE);
+//                            leave.setClickable(true);
+//                        }
+//                    } else {
+//                        join.setClickable(false);
+//                        join.setVisibility(View.GONE);
+//                        leave.setVisibility(View.VISIBLE);
+//                        leave.setClickable(true);
+//                    }
+//                }
+//            }
+//                break;
+//            case R.id.leave: {
+//                if (connected) {
+//                    if (joined) {
+//                        new WriteThread("LEAVE").start();
+//                        int i = 0;
+//                        while (joined && i < 5) {
+//                            if (!getInternetAccess()) {
+//                                break;
+//                            }
+//                            try {
+//                                Thread.sleep(100);
+//                            } catch (InterruptedException e) {
+//                            }
+//                            i++;
+//                        }
+//                        if (i == 5) {
+//                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+//                        } else if (!joined) {
+//                            join.setClickable(true);
+//                            join.setVisibility(View.VISIBLE);
+//                            leave.setVisibility(View.GONE);
+//                            leave.setClickable(false);
+//                        }
+//                    } else {
+//                        join.setClickable(true);
+//                        join.setVisibility(View.VISIBLE);
+//                        leave.setVisibility(View.GONE);
+//                        leave.setClickable(false);
+//                    }
+//                }
+//            }
+//                break;
             case R.id.menu: {
                 if (connected) {
                     if (joined) {

@@ -1,6 +1,7 @@
 package be.magdyabdel.wandz;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.widget.ImageView;
 
@@ -60,6 +61,18 @@ public class Profile implements Serializable {
         return outfit_color_array_id + skin_color_array_id * 10 + hair_color_array_id * 100 + eye_color_array_id * 1000;
     }
 
+    public String[] getOutfitColors() {
+        return outfitColors;
+    }
+
+    public String[] getOutfitColorsTwo() {
+        return outfitColorsTwo;
+    }
+
+    public int getOutfit_color_array_id() {
+        return outfit_color_array_id;
+    }
+
     public void setLayoutNumbers(int layoutNumbers) {
 
         int[] array_ids = new int[4];
@@ -76,6 +89,30 @@ public class Profile implements Serializable {
         hair_color_array_id = array_ids[2];
         eye_color_array_id = array_ids[3];
 
+    }
+
+    public String[] getSkinColors() {
+        return skinColors;
+    }
+
+    public String[] getHairColors() {
+        return hairColors;
+    }
+
+    public String[] getEyeColors() {
+        return eyeColors;
+    }
+
+    public int getSkin_color_array_id() {
+        return skin_color_array_id;
+    }
+
+    public int getHair_color_array_id() {
+        return hair_color_array_id;
+    }
+
+    public int getEye_color_array_id() {
+        return eye_color_array_id;
     }
 
     public void setProfileImage(Context context, ImageView profile) {
