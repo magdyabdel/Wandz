@@ -234,7 +234,7 @@ public class BLEService extends Service {
             }
             Log.i("array", Arrays.toString(anglechange));
             writeToFile(Arrays.toString(anglechange),this);
-            double error[] = new double[10];
+            double[] error = new double[10];
             error[0] = dtw.computeDTWError(anglechange, data.getTrainingset1());
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
             error[2] = dtw.computeDTWError(anglechange, data.getTrainingset3());
@@ -252,14 +252,14 @@ public class BLEService extends Service {
                 gesture = 3;
             }
 
-            if (gesturerecognised) {
-                Log.i("recognised!", Integer.toString(gesture) +" "+ Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]));
+            if (gesturerecognised && Multiplayer.power != 0) {
+                Log.i("recognised!", gesture + " " + error[0] + " " + error[1] + " " + error[2]);
                 sendGestureMessageToActivity(gesture);
                 spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
                 boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
-                Log.i("NOT recognised!", Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]) );
+                Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);
                 sendGestureMessageToActivity((byte) 0);
                 // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
@@ -309,7 +309,7 @@ public class BLEService extends Service {
              Log.i("error","" + erroronoptimal[i]);
          }
          sum /= total_samples;
-          Log.i("averageerroronoptimalsample","" + Double.toString(sum));
+        Log.i("averageerroronoptimalsample", "" + sum);
 
 
 

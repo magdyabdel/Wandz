@@ -52,32 +52,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" android:fontFamily="@font/big_john"
             android:textAlignment="center" android:textColor="@color/wizardWhite"/>
-    
+
     <TextView
-            android:id="@+id/game_mode_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:fontFamily="@font/big_john"
-            android:text="@string/game_mode"
-            android:textColor="@color/wizardWhite"
-            android:textSize="40sp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-    
+        android:id="@+id/game_mode_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/big_john"
+        android:text="@string/game_mode"
+        android:textColor="@color/wizardWhite"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
-            android:id="@+id/game_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/big_john"
-            android:text="@string/game_status"
-            android:textColor="@color/start_grad_46"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3" android:textStyle="italic"/>
+        android:id="@+id/game_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/big_john"
+        android:text="@string/game_status"
+        android:textColor="@color/start_grad_46"
+        android:textSize="15sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
     <TextView
             android:id="@+id/textView4"
