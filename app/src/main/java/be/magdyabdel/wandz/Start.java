@@ -20,8 +20,7 @@ public class Start extends AppCompatActivity implements View.OnClickListener {
         ConstraintLayout constraintLayout = findViewById(R.id.start);
         constraintLayout.setOnClickListener(this);
 
-        AnimThread animThread = new AnimThread();
-        animThread.start();
+        new AnimThread().start();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class Start extends AppCompatActivity implements View.OnClickListener {
         public void run() {
             while (!click) {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                 }
                 if (click) {
@@ -54,6 +53,10 @@ public class Start extends AppCompatActivity implements View.OnClickListener {
                         Toast.makeText(Start.this, "Click The Screen To Enter", Toast.LENGTH_SHORT).show();
                     }
                 });
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
             }
         }
     }

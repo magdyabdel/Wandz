@@ -64,5 +64,4 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         intent.putExtra("profile", profile);
         startActivity(intent);
     }
-
 }

@@ -54,15 +54,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     BLEService mService;
     boolean mBound = false;
+
     private BroadcastReceiver hitReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             {
                 int gest = intent.getIntExtra("hitCode", 0);
-                int spell = (gest & 0x000000FF); //8 LSB's
-                final int attackerID = (gest & 0x0000FF00) >>> 8; // 8-16 LSB's
-                Log.i("tagshitspell", Integer.toString((int) spell));
-                Log.i("tagshitplayer", Integer.toString((int) attackerID));
+                int spell = (gest & 0x000000FF);
+                final int attackerID = (gest & 0x0000FF00) >>> 8;
+
                 if (attackerID != profile.getId()) {
                     sendHit(attackerID, spell);
                     setHealth(spell);
@@ -202,13 +202,28 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             stop.setOnClickListener(this);
         }
 
-        Multiplayer.ConnectionThread connectionThread = new Multiplayer.ConnectionThread();
-        connectionThread.start();
+        new ConnectionThread().start();
 
         Intent intent1 = new Intent(this, BLEService.class);
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(hitReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    public int getPowerOffensive() {
+        return powerOffensive;
+    }
+
+    public int getPowerDefensive() {
+        return powerDefensive;
+    }
+
+    public int getPowerUtility() {
+        return powerUtility;
     }
 
     private String getNameById(int id) {
@@ -280,14 +295,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(gestureReceiver);
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hitReceiver);
-            unbindService(connection);
-            mBound = false;
-        } catch (RuntimeException e) {
-        }
-        //Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
+        stopIt();
     }
 
     class WriteThread extends Thread {
@@ -334,11 +342,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                         }
                     }
                 }
-
-                connected = false;
-                joined = false;
-                profile.setId(-1);
-
+                stopIt();
                 Intent intent = new Intent(this, Menu.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);
@@ -353,6 +357,19 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
                 }
                 break;
+        }
+    }
+
+    private void stopIt() {
+        profile.setId(-1);
+        connected = false;
+        joined = false;
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(gestureReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hitReceiver);
+            unbindService(connection);
+            mBound = false;
+        } catch (RuntimeException e) {
         }
     }
 
@@ -416,9 +433,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             Toast.makeText(Multiplayer.this, "You've left the game because of problems with the internet connection.", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    connected = false;
-                    joined = false;
-                    profile.setId(-1);
+                    stopIt();
                     Intent intent = new Intent(Multiplayer.this, Menu.class);
                     intent.putExtra("profile", profile);
                     startActivity(intent);
@@ -522,8 +537,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             });
                             Multiplayer.WriteThread writeThreadLeave = new Multiplayer.WriteThread("LEAVE");
                             writeThreadLeave.start();
-                            joined = false;
-                            connected = false;
+                            stopIt();
                             Intent intent = new Intent(Multiplayer.this, Menu.class);
                             intent.putExtra("profile", profile);
                             startActivity(intent);

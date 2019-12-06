@@ -145,12 +145,16 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onItemClick(View view, int position) {
                             connectToDeviceSelected(position);
-                            scanning = false;
                             Intent intent;
                             if (skip) {
                                 intent = new Intent(ChooseYourWand.this, Menu.class);
                             } else {
                                 intent = new Intent(ChooseYourWand.this, LearnTheGestures.class);
+                            }
+                            scanning = false;
+                            try {
+                                unbindService(connection);
+                            } catch (RuntimeException e) {
                             }
                             profile.setDemo(false);
                             intent.putExtra("profile", profile);
@@ -257,7 +261,6 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             unbindService(connection);
         } catch (RuntimeException e) {
         }
-        //Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
     }
 
     public void startScanning() {
@@ -345,6 +348,10 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             intent = new Intent(ChooseYourWand.this, LearnTheGestures.class);
         }
         scanning = false;
+        try {
+            unbindService(connection);
+        } catch (RuntimeException e) {
+        }
         intent.putExtra("profile", profile);
         startActivity(intent);
         finish();
