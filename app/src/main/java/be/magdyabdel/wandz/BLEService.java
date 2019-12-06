@@ -243,7 +243,7 @@ public class BLEService extends Service {
                 gesturerecognised = true;
                 gesture = 1;
             }
-            else if(error[1]<10000&&error[0]>14000){//eight // && error[2]>6500
+            else if(error[1]<10000&&error[0]>14000 && error[2]>6500){//eight // && error[2]>6500
                 gesturerecognised = true;
                 gesture = 2;
             }
