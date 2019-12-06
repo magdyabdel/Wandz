@@ -1,11 +1,14 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -110,47 +113,71 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
+        int i = 0;
         switch (view.getId()) {
             case R.id.start:
-                while (!joined) {//TODO:Timeout
+
+                while (!joined && i < 5) {
+                    if (!getInternetAccess()) {
+                        break;
+                    }
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
+                    i++;
                 }
-                if (!started) {
-                    WriteThread writeThread3 = new WriteThread("START");
-                    writeThread3.start();
+                if (i == 5) {
+                    Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not started!", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!started) {
+                        new WriteThread("START").start();
 
-                    while (!started) { //TODO:Timeout
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
+                        i = 0;
+                        while (!started && i < 5) {
+                            if (!getInternetAccess()) {
+                                break;
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                            }
+                            i++;
+                        }
+                        if (i == 5) {
+                            Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not started!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            start.setClickable(false);
+                            start.setVisibility(View.GONE);
+                            stop.setVisibility(View.VISIBLE);
+                            stop.setClickable(true);
                         }
                     }
-
-                    start.setClickable(false);
-                    start.setVisibility(View.GONE);
-                    stop.setVisibility(View.VISIBLE);
-                    stop.setClickable(true);
                 }
                 break;
             case R.id.stop:
                 if (started) {
                     WriteThread writeThread3 = new WriteThread("STOP");
                     writeThread3.start();
-
-                    while (started) {//TODO:Timeout
+                    i = 0;
+                    while (started && i < 5) {
+                        if (!getInternetAccess()) {
+                            break;
+                        }
                         try {
-                            Thread.sleep(50);
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {
                         }
+                        i++;
                     }
-
-                    start.setClickable(true);
-                    start.setVisibility(View.VISIBLE);
-                    stop.setVisibility(GONE);
-                    stop.setClickable(false);
+                    if (i == 5) {
+                        Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not stopped!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        start.setClickable(true);
+                        start.setVisibility(View.VISIBLE);
+                        stop.setVisibility(GONE);
+                        stop.setClickable(false);
+                    }
                 }
                 break;
             case R.id.menu:
@@ -160,23 +187,38 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                     writeThread4.start();
                 }
 
-                while (started) { //TODO:Timeout
+                i = 0;
+                while (started && i < 5) {
+                    if (!getInternetAccess()) {
+                        break;
+                    }
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
+                    }
+                    i++;
+                }
+                if (i == 5) {
+                    Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not stopped!", Toast.LENGTH_SHORT).show();
+                }
+                if (connected) {
+                    if (joined) {
+                        new WriteThread("LEAVE").start();
+                        i = 0;
+                        while (joined && i < 5) {
+                            if (!getInternetAccess()) {
+                                break;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                            }
+                            i++;
+                        }
                     }
                 }
 
-                if (joined) {
-                    WriteThread writeThread5 = new WriteThread("LEAVE");
-                    writeThread5.start();
-                }
-                while (joined) { //TODO:Timeout
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                    }
-                }
+                joined = false;
                 connected = false;
                 profile.setId(-1);
 
@@ -202,7 +244,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.enter:
                 WriteThread writeThread6 = new WriteThread("SETGAMEMODE " + modes[mode]);
-                writeThread6.start();
+                writeThread6.start();//TODO: check mode & Timeout
                 break;
         }
     }
@@ -325,64 +367,147 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private Boolean getInternetAccess() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            return true;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MasterConnect.this, "Check Your Internet Connection!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        connected = false;
+        joined = false;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        connected = false;
+        joined = false;
+        Intent intent = new Intent(this, BLEService.class);
+        stopService(intent);
+    }
+
     class ConnectionThread extends Thread {
         ConnectionThread() {
         }
 
         @Override
         public void run() {
+
             while (busy) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
                 }
             }
+
             busy = true;
-            while (connectionManager.connect() != 0) { //TODO:timout
+            int i = 0;
+            while (connectionManager.connect() != 0 && i < 5) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connect_server.setVisibility(View.VISIBLE);
+                    }
+                });
                 try {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            connect_server.setVisibility(View.VISIBLE);
-                        }
-                    });
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                 }
+                i++;
             }
             busy = false;
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    connect_server.setVisibility(GONE);
+            if (i != 5) {
+                connected = true;
+                new ReadThread().start();
+
+                if (!joined) {
+                    new WriteThread("JOIN " + profile.getName().replace(" ", "_") + "(master) " + profile.getLayoutNumbers()).start();
+                    int j = 0;
+                    while (!joined && j < 5) {
+                        if (!getInternetAccess()) {
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        j++;
+                    }
+                    if (j == 5) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        connected = false;
+                        joined = false;
+                        profile.setId(-1);
+                        Intent intent = new Intent(MasterConnect.this, Menu.class);
+                        intent.putExtra("profile", profile);
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
                 }
-            });
 
-            connected = true;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connect_server.setVisibility(GONE);
+                    }
+                });
 
-            ReadThread readThread = new ReadThread();
-            readThread.start();
+                while (connected) {
+                    while (busy) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                        }
+                    }
 
-            WriteThread writeThread = new WriteThread("JOIN " + profile.getName().replace(" ", "_") + "(master) " + profile.getLayoutNumbers());
-            writeThread.start();
+                    if (!getInternetAccess()) {
+                        connected = false;
+                        joined = false;
+                        new ConnectionThread().start();
+                        break;
+                    }
+                    busy = true;
+                    connectionManager.sendData("KEEPALIVE");
+                    busy = false;
 
-            while (connected) {
-                while (busy) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
                 }
-                busy = true;
-                connectionManager.sendData("KEEPALIVE");
-                busy = false;
-                Log.i("servershit", "alive" + profile.getId());
-
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MasterConnect.this, "Unable to connect to the server.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                connected = false;
+                joined = false;
+                profile.setId(-1);
+                Intent intent = new Intent(MasterConnect.this, Menu.class);
+                intent.putExtra("profile", profile);
+                startActivity(intent);
+                finish();
             }
         }
     }

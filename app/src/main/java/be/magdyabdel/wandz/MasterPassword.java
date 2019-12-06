@@ -67,4 +67,11 @@ public class MasterPassword extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Intent intent = new Intent(this, BLEService.class);
+        stopService(intent);
+    }
 }

@@ -93,7 +93,8 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                                     textView.setText(textToView);
                                 }
                             });
-                            delay(60);
+                            if (skip) break;
+                            delay(100);
                         }
                     } else {
                         text += splitString[j];
@@ -105,7 +106,7 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                                 imageview.setImageResource(image);
                             }
                         });
-                        delay(60);
+                        delay(100);
                     }
                     if (skip) break;
 
@@ -123,7 +124,7 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                         skipButton.setClickable(false);
                     }
                 });
-                delay(100);
+                //delay(100);
             }
         }
     }
