@@ -66,6 +66,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 if (attackerID != profile.getId()) {
                     sendHit(attackerID, spell);
                     setHealth(spell);
+                    mService.sendGesture((byte) 100); //send 100 to the wand to vibrate(got hit)
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

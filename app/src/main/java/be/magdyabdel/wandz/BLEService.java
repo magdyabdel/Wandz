@@ -55,7 +55,6 @@ public class BLEService extends Service {
     private double[] anglechange;
     private DTW dtw;
     private Trainingdata data;
-    byte gesture = 0;
     int amount_training = 20;
 
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
@@ -214,7 +213,7 @@ public class BLEService extends Service {
     }
 
     public void addValue(float value) {
-        // Toast toast;
+        byte gesture = 0;
         boolean gesturerecognised = false;
         waarden[position] = value ;
         if (value == 500f) {  //end the gesture detection
@@ -239,7 +238,7 @@ public class BLEService extends Service {
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
             error[2] = dtw.computeDTWError(anglechange, data.getTrainingset3());
 
-            if(error[0]<7000){//cirkel
+            if(error[0]<8500){//cirkel
                 gesturerecognised = true;
                 gesture = 1;
             }
@@ -254,9 +253,7 @@ public class BLEService extends Service {
 
             if (gesturerecognised) {
                 Log.i("recognised!", Integer.toString(gesture) +" "+ Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]));
-                sendGestureMessageToActivity(gesture);
-                spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
-                boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
+                sendGesture(gesture);
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 Log.i("NOT recognised!", Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]) );
@@ -332,6 +329,12 @@ public class BLEService extends Service {
             boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
         } catch (NullPointerException e) {
         }
+    }
+
+    public void sendGesture(byte gesture){
+        sendGestureMessageToActivity(gesture);
+        spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
+        boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
     }
 
     public void onCreate() {
