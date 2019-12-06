@@ -241,7 +241,7 @@ public class BLEService extends Service {
 
             if(error[0]<8000){//cirkel
                 gesturerecognised = true;
-                gesture = 3;
+                gesture = 1;
             }
             else if(error[1]<10000&&error[0]>14000){//eight // && error[2]>6500
                 gesturerecognised = true;
@@ -249,7 +249,7 @@ public class BLEService extends Service {
             }
             else if(error[2]<6000 && error[0]>25000 && error[1]>10000){//eight
                 gesturerecognised = true;
-                gesture = 1;
+                gesture = 3;
             }
 
             if (gesturerecognised) {
