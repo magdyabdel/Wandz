@@ -119,6 +119,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
 
                 while (!joined && i < 5) {
                     if (!getInternetAccess()) {
+                        i = 5;
                         break;
                     }
                     try {
@@ -136,6 +137,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                         i = 0;
                         while (!started && i < 5) {
                             if (!getInternetAccess()) {
+                                i = 5;
                                 break;
                             }
                             try {

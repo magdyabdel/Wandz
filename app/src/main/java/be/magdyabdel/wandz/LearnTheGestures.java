@@ -23,6 +23,8 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
     private int[] imagesRoundAnim = new int[]{R.drawable.ic_round1, R.drawable.ic_round2, R.drawable.ic_round3, R.drawable.ic_round4, R.drawable.ic_round5, R.drawable.ic_round6};
     private int[] imagesCrossAnim = new int[]{R.drawable.ic_cross1, R.drawable.ic_cross2, R.drawable.ic_cross3, R.drawable.ic_cross4, R.drawable.ic_cross5, R.drawable.ic_cross6};
+    private int[] imagesHorizontalAnim = new int[]{R.drawable.ic_horizontal1, R.drawable.ic_horizontal2, R.drawable.ic_horizontal3, R.drawable.ic_horizontal4, R.drawable.ic_horizontal5};
+    private int[] imagesInfinityAnim = new int[]{R.drawable.ic_infinity1, R.drawable.ic_infinity2, R.drawable.ic_infinity3, R.drawable.ic_infinity4, R.drawable.ic_infinity5, R.drawable.ic_infinity6, R.drawable.ic_infinity7};
     Vibrator v;
 
     private int gesture = 0;
@@ -32,7 +34,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
     private Profile profile;
     private ImageView gestureImage;
-    private int[] imagesHorizontalAnim = new int[]{R.drawable.ic_horizontal1, R.drawable.ic_horizontal2, R.drawable.ic_horizontal3, R.drawable.ic_horizontal4, R.drawable.ic_horizontal5};
+
     private BLEService mService;
     private boolean mBound = false;
     private ServiceConnection connection = new ServiceConnection() {
@@ -186,13 +188,13 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
             switch (gesture) {
                 case 0:
-                    array = imagesHorizontalAnim;
+                    array = imagesRoundAnim;
                     break;
                 case 1:
-                    array = imagesCrossAnim;
+                    array = imagesInfinityAnim;
                     break;
                 case 2:
-                    array = imagesRoundAnim;
+                    array = imagesHorizontalAnim;
                     break;
                 default:
                     array = new int[0];
