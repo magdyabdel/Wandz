@@ -25,17 +25,17 @@ public class Start extends AppCompatActivity implements View.OnClickListener {
         ConstraintLayout constraintLayout = findViewById(R.id.start);
         constraintLayout.setOnClickListener(this);
 
-        GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{ContextCompat.getColor(this, R.color.start_grad_end),
-                        ContextCompat.getColor(this, R.color.start_grad_84),
-                        ContextCompat.getColor(this, R.color.start_grad_71),
-                        ContextCompat.getColor(this, R.color.start_grad_59),
-                        ContextCompat.getColor(this, R.color.start_grad_46),
-                        ContextCompat.getColor(this, R.color.start_grad_30),
-                        ContextCompat.getColor(this, R.color.start_grad_24),
-                        ContextCompat.getColor(this, R.color.start_grad_top)});
-        findViewById(R.id.start).setBackground(gradientDrawable);
+//        GradientDrawable gradientDrawable = new GradientDrawable(
+//                GradientDrawable.Orientation.TOP_BOTTOM,
+//                new int[]{ContextCompat.getColor(this, R.color.start_grad_end),
+//                        ContextCompat.getColor(this, R.color.start_grad_84),
+//                        ContextCompat.getColor(this, R.color.start_grad_71),
+//                        ContextCompat.getColor(this, R.color.start_grad_59),
+//                        ContextCompat.getColor(this, R.color.start_grad_46),
+//                        ContextCompat.getColor(this, R.color.start_grad_30),
+//                        ContextCompat.getColor(this, R.color.start_grad_24),
+//                        ContextCompat.getColor(this, R.color.start_grad_top)});
+//        findViewById(R.id.start).setBackground(gradientDrawable);
 
         final Animation in = new AlphaAnimation(0.1f, 1.0f);
         in.setDuration(2000);

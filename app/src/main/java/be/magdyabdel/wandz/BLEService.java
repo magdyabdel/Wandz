@@ -55,6 +55,7 @@ public class BLEService extends Service {
     private double[] anglechange;
     private DTW dtw;
     private Trainingdata data;
+    byte gesture = 0;
     int amount_training = 20;
 
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
@@ -233,7 +234,7 @@ public class BLEService extends Service {
             }
             Log.i("array", Arrays.toString(anglechange));
             writeToFile(Arrays.toString(anglechange),this);
-            double error[] = new double[10];
+            double[] error = new double[10];
             error[0] = dtw.computeDTWError(anglechange, data.getTrainingset1());
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
             error[2] = dtw.computeDTWError(anglechange, data.getTrainingset3());

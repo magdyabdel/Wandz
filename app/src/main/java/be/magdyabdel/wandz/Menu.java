@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,7 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
 
     private Profile profile;
     private Boolean demo;
+    private Boolean off = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,8 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         TextView welcome = findViewById(R.id.welcome);
         TextView master = findViewById(R.id.master);
         master.setOnClickListener(this);
+        ImageView closeApp = findViewById(R.id.app_close);
+        closeApp.setOnClickListener(this);
 
 
         welcome.setText("Welcome " + profile.getName());
@@ -67,8 +71,42 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
             case R.id.master:
                 intent = new Intent(this, MasterPassword.class);
                 break;
+            case R.id.app_close:
+                if (!off) {
+                    new powerThread().start();
+                } else {
+                    Intent intent2 = new Intent(this, BLEService.class);
+                    stopService(intent2);
+                    finishAffinity();
+                    System.exit(1);
+                }
+                break;
         }
-        intent.putExtra("profile", profile);
-        startActivity(intent);
+        if (view.getId() != R.id.app_close) {
+            intent.putExtra("profile", profile);
+            startActivity(intent);
+        }
+    }
+
+    private class powerThread extends Thread {
+
+        powerThread() {
+        }
+
+        @Override
+        public void run() {
+            off = true;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(Menu.this, "Press again to confirm!", Toast.LENGTH_SHORT).show();
+                }
+            });
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+            off = false;
+        }
     }
 }

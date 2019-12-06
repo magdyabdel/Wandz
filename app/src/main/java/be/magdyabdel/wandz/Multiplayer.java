@@ -36,11 +36,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private Boolean joined = true;
     private boolean busy = false;
     private int score = 0;
-    private int power = 1000;
+    public static int power = 0;
     private int health = 1000;
-    private final int powerOffensive = 100;
-    private final int powerDefensive = 200;
-    private final int powerUtility = 300;
+    public static int powerOffensive = 100;
+    public static int powerDefensive = 200;
+    public static int powerUtility = 300;
     private ArrayList<Profile> profiles;
     private ProgressBar health_progressBar;
     private ProgressBar energy_progressBar;
@@ -51,6 +51,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private TextView lastHitBy;
     private TextView notification;
     private Button stop;
+    private Boolean dead = false;
 
     BLEService mService;
     boolean mBound = false;
@@ -63,10 +64,17 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 int spell = (gest & 0x000000FF);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
 
-                if (attackerID != profile.getId()) {
+                if (attackerID != profile.getId() && !dead) {
+                    Log.i("attackerID", Integer.toString(attackerID));
+                    Log.i("profileID", Integer.toString(profile.getId()));
                     sendHit(attackerID, spell);
                     setHealth(spell);
                     mService.sendGesture((byte) 100); //send 100 to the wand to vibrate(got hit)
+                    if (health <= 0) {
+                        power = 0;
+                        new WriteThread("DEAD " + profile.getId() + " " + attackerID).start();
+                    }
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -85,15 +93,18 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 Byte gest = intent.getByteExtra("gesture", (byte) 0);
                 switch (gest) {
                     case 1:
-                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 100);
+                        power -= 100;
                         break;
                     case 2:
-                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 200);
+                        power -= 200;
                         break;
                     case 3:
-                        energy_progressBar.setProgress(energy_progressBar.getProgress() - 300);
+                        power -= 300;
+
                         break;
                 }
+                if (power < 0) power = 0;
+                energy_progressBar.setProgress(power);
             }
         }
     };
@@ -153,7 +164,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // Force landscape mode on create for this activity
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         hideSystemUI();
 
         connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
@@ -179,7 +190,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         profile.setProfileImage(this, profileImageView);
         profile.setProfileImage(this, profile_image_drawer);
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
-        multiplayer_name.setText(Integer.toString(profile.getId()));
+        multiplayer_name.setText(profile.getName());
 
         health_progressBar = findViewById(R.id.health_progressBar);
         health_progressBar.setProgress(health);
@@ -203,6 +214,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             stop.setOnClickListener(this);
         }
 
+        power = 1000;
         new ConnectionThread().start();
 
         Intent intent1 = new Intent(this, BLEService.class);
@@ -249,8 +261,18 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             case 3:
                 score = score + 200;
                 break;
+            case 4:
+                score = score + 500;
+                break;
         }
-        score_value.setText(Integer.toString(score));
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                score_value.setText(Integer.toString(score));
+            }
+        });
+
     }
 
     private void setHealth(int spell) {
@@ -265,7 +287,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 health = health - 500;
                 break;
         }
-        health_progressBar.setProgress(health);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                health_progressBar.setProgress(health);
+            }
+        });
+
     }
 
     private void sendHit(int player_id, int spell) {
@@ -506,7 +534,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    notification.setText(splittedCommand[1] + " Has Left The Game!");
+                                    notification.setText(splittedCommand[1] + " Has Left The Game!"); //
                                 }
                             });
                             break;
@@ -536,13 +564,49 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     stop.setText("Game Finished!");
                                 }
                             });
-                            Multiplayer.WriteThread writeThreadLeave = new Multiplayer.WriteThread("LEAVE");
-                            writeThreadLeave.start();
+                            new WriteThread("LEAVE").start();
                             stopIt();
                             Intent intent = new Intent(Multiplayer.this, Menu.class);
                             intent.putExtra("profile", profile);
                             startActivity(intent);
                             finish();
+                            break;
+                        case "DEAD":
+                            if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                dead = true;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        lastHit.setText("Game Over! You're Dead!");
+                                    }
+                                });
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        notification.setText(getNameById(Integer.parseInt(splittedCommand[1])) + " Has Lost The Game!");
+                                    }
+                                });
+                                if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                    setScore(4);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            lastHit.setText("You've killed " + getNameById(Integer.parseInt(splittedCommand[1])));
+                                        }
+                                    });
+                                }
+                                removeProfile(Integer.parseInt(splittedCommand[1]));
+                                if (profiles.size() == 1) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            lastHit.setText("Winner!");
+                                            lastHitBy.setText("Winner!");
+                                        }
+                                    });
+                                }
+                            }
                             break;
                     }
                 }
@@ -566,7 +630,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         if (energy_progressBar.getProgress() < 1000) {
-                            energy_progressBar.setProgress(energy_progressBar.getProgress() + 1);
+                            power++;
+                            energy_progressBar.setProgress(power);
                         }
                     }
                 });
