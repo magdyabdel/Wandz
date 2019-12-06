@@ -109,7 +109,7 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                                 imageview.setImageResource(image);
                             }
                         });
-                        delay(50);
+                        delay(100);
                     }
 
                 }

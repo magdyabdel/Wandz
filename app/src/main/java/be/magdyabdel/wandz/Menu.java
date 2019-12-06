@@ -1,6 +1,8 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +21,8 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+
         Button training = findViewById(R.id.training);
         training.setOnClickListener(this);
         Button multiplayer = findViewById(R.id.multiplayer);
@@ -33,9 +37,12 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         TextView master = findViewById(R.id.master);
         master.setOnClickListener(this);
 
-        profile = (Profile) getIntent().getSerializableExtra("profile");
+
         welcome.setText("Welcome " + profile.getName());
         profile.setProfileImage(this, profile_image);
+
+        multiplayer.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(profile.getOutfitColors()[profile.getOutfit_color_array_id()])));
+        multiplayer.setTextColor(Color.parseColor(profile.getOutfitColorsTwo()[profile.getOutfit_color_array_id()]));
     }
 
     @Override
@@ -64,5 +71,4 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         intent.putExtra("profile", profile);
         startActivity(intent);
     }
-
 }

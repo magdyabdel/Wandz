@@ -1,6 +1,8 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -41,9 +43,7 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
 
         Button ready = findViewById(R.id.ready);
         ready.setOnClickListener(this);
-        Button gender = findViewById(R.id.gender);
-        gender.setOnClickListener(this);
-        Button random = findViewById(R.id.random);
+        ImageView random = findViewById(R.id.random);
         random.setOnClickListener(this);
 
         profile_image = findViewById(R.id.profile_vector);
@@ -51,6 +51,15 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
         TextView yourNameTextView = findViewById(R.id.name);
         yourNameTextView.setText(profile.getName());
         profile.setProfileImage(this, profile_image);
+
+        TextView outfit = findViewById(R.id.outfit);
+        outfit.setTextColor(Color.parseColor(profile.getOutfitColors()[profile.getOutfit_color_array_id()]));
+        TextView skin = findViewById(R.id.skin);
+        skin.setTextColor(Color.parseColor(profile.getSkinColors()[profile.getSkin_color_array_id()]));
+        TextView hair = findViewById(R.id.hair);
+        hair.setTextColor(Color.parseColor(profile.getHairColors()[profile.getHair_color_array_id()]));
+        TextView eye = findViewById(R.id.eye);
+        eye.setTextColor(Color.parseColor(profile.getEyeColors()[profile.getEye_color_array_id()]));
     }
 
     @Override
@@ -64,6 +73,15 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
         } else {
             profile.changeProfileByButton(view.getId());
             profile.setProfileImage(this, profile_image);
+
+            TextView outfit = findViewById(R.id.outfit);
+            outfit.setTextColor(Color.parseColor(profile.getOutfitColors()[profile.getOutfit_color_array_id()]));
+            TextView skin = findViewById(R.id.skin);
+            skin.setTextColor(Color.parseColor(profile.getSkinColors()[profile.getSkin_color_array_id()]));
+            TextView hair = findViewById(R.id.hair);
+            hair.setTextColor(Color.parseColor(profile.getHairColors()[profile.getHair_color_array_id()]));
+            TextView eye = findViewById(R.id.eye);
+            eye.setTextColor(Color.parseColor(profile.getEyeColors()[profile.getEye_color_array_id()]));
         }
     }
 }

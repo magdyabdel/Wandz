@@ -106,8 +106,16 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.next:
                 gesture++;
-
+                if (gesture == 2) {
+                    next.setText("Done");
+                }
                 if (gesture == 3) {
+                    try {
+                        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+                        unbindService(connection);
+                        mBound = false;
+                    } catch (RuntimeException e) {
+                    }
                     Intent intent = new Intent(this, Menu.class);
                     intent.putExtra("profile", profile);
                     startActivity(intent);
@@ -117,18 +125,6 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 }
                 break;
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-            unbindService(connection);
-            mBound = false;
-        } catch (RuntimeException e) {
-        }
-        //Toast.makeText(this, "Service Un-Binded", Toast.LENGTH_LONG).show();
     }
 
     private void setCorrectOrNot(Boolean correctOrNot) {

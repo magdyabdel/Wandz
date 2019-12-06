@@ -7,14 +7,23 @@
     <color name="wizardDarkBlue">#34336F</color>
     <color name="wizardPink">#FEA4F8</color>
     <color name="wizardWhite">#FFFFFF</color>
-    <color name="wizardGrey">#353535</color>
+    <color name="wizardGrey">#191919</color>
     <color name="wizardTransparent">#00FFFFFF</color>
     <color name="wizardBlack">#000000</color>
     <color name="goodGesture">#00FF21</color>
     <color name="badGesture">#FF0000</color>
-    <color name="ButtonColor">#96c7e1</color>
-    <color name="ButtonTextColor">#5169B1</color>
+    <color name="ButtonColor">#FFFFFF</color>
+    <color name="ButtonTextColor">#3C3C3C</color>
     <color name="wizardGreen">#66BB6A</color>
-
+    <color name="wizardBackground">#F4E0CD</color>
+    <color name="start_grad_top">#DBDCD7</color>
+    <color name="start_grad_24">#DDDCD7</color>
+    <color name="start_grad_30">#E2C9CC</color>
+    <color name="start_grad_46">#E7627D</color>
+    <color name="start_grad_59">#B8235A</color>
+    <color name="start_grad_71">#801357</color>
+    <color name="start_grad_84">#3D1635</color>
+    <color name="start_grad_end">#1C1A27</color>
+	<color name="wizardDarkerGreen">#316434</color>
 
 </resources>

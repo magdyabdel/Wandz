@@ -1,8 +1,10 @@
 package be.magdyabdel.wandz;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,6 +26,21 @@ public class MasterPassword extends AppCompatActivity implements View.OnClickLis
         menu.setOnClickListener(this);
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
+
+        EditText password = findViewById(R.id.password);
+        password.requestFocus();
+        InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
     @Override
@@ -49,5 +66,12 @@ public class MasterPassword extends AppCompatActivity implements View.OnClickLis
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Intent intent = new Intent(this, BLEService.class);
+        stopService(intent);
     }
 }

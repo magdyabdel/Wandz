@@ -23,8 +23,8 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
     private ArrayList<Profile> profiles;
     private ProfileAdapter adapter;
-    private Button join;
-    private Button leave;
+//    private Button join;
+//    private Button leave;
     private ConnectionManager connectionManager;
     private Profile profile;
     private TextView connect_server;
@@ -34,7 +34,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     private Boolean connected = false;
     private Boolean joined = false;
     private Boolean master = false;
-    private Boolean timing = false;
+    private Boolean started = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,11 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         game_mode = findViewById(R.id.game_mode_value);
         game_status = findViewById(R.id.game_status);
 
-        join = findViewById(R.id.join);
-        join.setOnClickListener(this);
-        leave = findViewById(R.id.leave);
-        leave.setOnClickListener(this);
-        leave.setClickable(false);
+//        join = findViewById(R.id.join);
+//        join.setOnClickListener(this);
+//        leave = findViewById(R.id.leave);
+//        leave.setOnClickListener(this);
+//        leave.setClickable(false);
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
         connectionManager = new ConnectionManager("51.83.69.116", 6789);
@@ -64,6 +64,24 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
 
         Button menu = findViewById(R.id.menu);
         menu.setOnClickListener(this);
+
+        if (!joined) {
+                        new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
+                        int i = 0;
+                        while (!joined && i < 5) {
+                            if (!getInternetAccess()) {
+                                break;
+                            }
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                            }
+                            i++;
+                        }
+                        if (i == 5) {
+                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
     }
 
     private void addProfile(int ids, String names, int layoutNumberss) {
@@ -105,70 +123,70 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.join: {
-                if (connected) {
-                    if (!joined) {
-                        new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
-                        int i = 0;
-                        while (!joined && i < 5) {
-                            if (!getInternetAccess()) {
-                                break;
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                            }
-                            i++;
-                        }
-                        if (i == 5) {
-                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
-                        } else if (joined) {
-                            join.setClickable(false);
-                            join.setVisibility(View.GONE);
-                            leave.setVisibility(View.VISIBLE);
-                            leave.setClickable(true);
-                        }
-                    } else {
-                        join.setClickable(false);
-                        join.setVisibility(View.GONE);
-                        leave.setVisibility(View.VISIBLE);
-                        leave.setClickable(true);
-                    }
-                }
-            }
-                break;
-            case R.id.leave: {
-                if (connected) {
-                    if (joined) {
-                        new WriteThread("LEAVE").start();
-                        int i = 0;
-                        while (joined && i < 5) {
-                            if (!getInternetAccess()) {
-                                break;
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                            }
-                            i++;
-                        }
-                        if (i == 5) {
-                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
-                        } else if (!joined) {
-                            join.setClickable(true);
-                            join.setVisibility(View.VISIBLE);
-                            leave.setVisibility(View.GONE);
-                            leave.setClickable(false);
-                        }
-                    } else {
-                        join.setClickable(true);
-                        join.setVisibility(View.VISIBLE);
-                        leave.setVisibility(View.GONE);
-                        leave.setClickable(false);
-                    }
-                }
-            }
-                break;
+//            case R.id.join: {
+//                if (connected) {
+//                    if (!joined) {
+//                        new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
+//                        int i = 0;
+//                        while (!joined && i < 5) {
+//                            if (!getInternetAccess()) {
+//                                break;
+//                            }
+//                            try {
+//                                Thread.sleep(100);
+//                            } catch (InterruptedException e) {
+//                            }
+//                            i++;
+//                        }
+//                        if (i == 5) {
+//                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+//                        } else if (joined) {
+//                            join.setClickable(false);
+//                            join.setVisibility(View.GONE);
+//                            leave.setVisibility(View.VISIBLE);
+//                            leave.setClickable(true);
+//                        }
+//                    } else {
+//                        join.setClickable(false);
+//                        join.setVisibility(View.GONE);
+//                        leave.setVisibility(View.VISIBLE);
+//                        leave.setClickable(true);
+//                    }
+//                }
+//            }
+//                break;
+//            case R.id.leave: {
+//                if (connected) {
+//                    if (joined) {
+//                        new WriteThread("LEAVE").start();
+//                        int i = 0;
+//                        while (joined && i < 5) {
+//                            if (!getInternetAccess()) {
+//                                break;
+//                            }
+//                            try {
+//                                Thread.sleep(100);
+//                            } catch (InterruptedException e) {
+//                            }
+//                            i++;
+//                        }
+//                        if (i == 5) {
+//                            Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+//                        } else if (!joined) {
+//                            join.setClickable(true);
+//                            join.setVisibility(View.VISIBLE);
+//                            leave.setVisibility(View.GONE);
+//                            leave.setClickable(false);
+//                        }
+//                    } else {
+//                        join.setClickable(true);
+//                        join.setVisibility(View.VISIBLE);
+//                        leave.setVisibility(View.GONE);
+//                        leave.setClickable(false);
+//                    }
+//                }
+//            }
+//                break;
             case R.id.menu: {
                 if (connected) {
                     if (joined) {
@@ -179,7 +197,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                                 break;
                             }
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(1000);
                             } catch (InterruptedException e) {
                             }
                             i++;
@@ -187,10 +205,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                     }
                 }
 
-                connected = false;
-                joined = false;
-                profile.setId(-1);
-
+                stopIt();
                 Intent intent = new Intent(this, Menu.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);
@@ -198,6 +213,54 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
             }
                 break;
         }
+    }
+
+    private Boolean getInternetAccess() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        /*
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MultiplayerConnect.this, "Check Your Internet Connection!", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+    }
+
+    class WriteThread extends Thread {
+
+        String message;
+
+        WriteThread(String message) {
+            this.message = message;
+        }
+
+        @Override
+        public void run() {
+            while (busy) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                }
+            }
+            busy = true;
+            connectionManager.sendData(message);
+            busy = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        connected = false;
+        joined = false;
+    }
+
+    private void stopIt() {
+        profile.setId(-1);
+        connected = false;
+        joined = false;
     }
 
     class ReadThread extends Thread {
@@ -237,17 +300,13 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                             });
                             break;
                         case "STATUS":
-                            if (splittedCommand[1].equals("STARTED") && joined == false) {
-                                connected = false;
-                                Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
-                                intent.putExtra("profile", profile);
-
-                                startActivity(intent);
-                                finish();
+                            if (splittedCommand[1].equals("STARTED")) {
+                                started = true;
                             } else {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        started = false;
                                         game_status.setText(splittedCommand[1]);
                                     }
                                 });
@@ -268,6 +327,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                         case "START":
                             if (joined) {
                                 connected = false;
+                                joined = false;
                                 Intent intent = new Intent(MultiplayerConnect.this, Multiplayer.class);
                                 intent.putExtra("profile", profile);
                                 intent.putExtra("conman", connectionManager);
@@ -295,43 +355,6 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         }
     }
 
-    class WriteThread extends Thread {
-
-        String message;
-
-        WriteThread(String message) {
-            this.message = message;
-        }
-
-        @Override
-        public void run() {
-            while (busy) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                }
-            }
-            busy = true;
-            connectionManager.sendData(message);
-            busy = false;
-        }
-    }
-
-    private Boolean getInternetAccess() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            return true;
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MultiplayerConnect.this, "Check Your Internet Connection!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return false;
-    }
-
     class ConnectionThread extends Thread {
         ConnectionThread() {
         }
@@ -345,10 +368,14 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 } catch (InterruptedException e) {
                 }
             }
-
             busy = true;
+            connectionManager.connect();
+            busy = false;
+            connected = true;
+            new ReadThread().start();
+
             int i = 0;
-            while (connectionManager.connect() != 0 && i < 5) {
+            while (started == null && i < 5) {
                 try {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -361,20 +388,50 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 }
                 i++;
             }
-            busy = false;
-            if (i != 5) {
-
-
+            if (started) {
+                stopIt();
+                Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
+                intent.putExtra("profile", profile);
+                startActivity(intent);
+                finish();
+            } else if (i != 5) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         connect_server.setVisibility(GONE);
                     }
                 });
-                connected = true;
-
-                ReadThread readThread = new ReadThread();
-                readThread.start();
+                if (!joined) {
+                    new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
+                    int j = 0;
+                    while (!joined && j < 5) {
+                        if (!getInternetAccess()) {
+                            j = 5;
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        j++;
+                    }
+                    if (j == 5) {
+                        if (connected) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            stopIt();
+                            Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
+                            intent.putExtra("profile", profile);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                } else {
+                }
 
                 while (connected) {
                     while (busy) {
@@ -402,19 +459,19 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                     }
                 }
             } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MultiplayerConnect.this, "Unable to connect to the server.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                connected = false;
-                joined = false;
-                profile.setId(-1);
-                Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
-                intent.putExtra("profile", profile);
-                startActivity(intent);
-                finish();
+                if (connected) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MultiplayerConnect.this, "Unable to connect to the server.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    stopIt();
+                    Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
+                    intent.putExtra("profile", profile);
+                    startActivity(intent);
+                    finish();
+                }
             }
         }
     }
