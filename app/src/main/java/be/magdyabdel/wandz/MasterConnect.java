@@ -232,15 +232,19 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                 if (mode < 0) {
                     mode = modes.length - 1;
                 }
-                game_mode.setText(modes[mode] + "(Enter To Set)");
+//                game_mode.setText(modes[mode] + "\n(submit To Set)");
+                game_mode.setText(modes[mode]);
+                game_mode.setTextColor(getResources().getColor(R.color.start_grad_46));
                 break;
             case R.id.next:
                 mode++;
                 if (mode >= modes.length) {
                     mode = 0;
                 }
-                game_mode.setText(modes[mode] + "(Enter To Set)");
-                game_mode.setTextSize(20);
+                game_mode.setText(modes[mode]);
+                game_mode.setTextColor(getResources().getColor(R.color.start_grad_46));
+//                game_mode.setText(modes[mode] + "\n(submit To Set)");
+//                game_mode.setTextSize(20);
                 break;
             case R.id.enter:
                 WriteThread writeThread6 = new WriteThread("SETGAMEMODE " + modes[mode]);
@@ -279,7 +283,9 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    game_mode.setText(splittedCommand[1] + " MODE");
+                                    game_mode.setText(splittedCommand[1]);
+//                                    game_mode.setText(splittedCommand[1] + " MODE");
+                                    game_mode.setTextColor(getResources().getColor(R.color.wizardGreen));
                                     connectionManager.setGamemode(splittedCommand[1]);
                                 }
                             });

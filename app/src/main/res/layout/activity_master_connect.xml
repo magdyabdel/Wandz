@@ -20,13 +20,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.3"/>
-
+    
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.1"/>
+            app:layout_constraintGuide_percent="0.17"/>
 
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline4"
@@ -48,13 +48,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.66"/>
-
+    
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.25"/>
+            app:layout_constraintGuide_percent="0.27"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycleViewer"
@@ -66,24 +66,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline2"/>
-
+    
     <Button
             android:id="@+id/start"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="4dp"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/start_the_game"
-            android:textColor="@color/wizardBlue"
-            android:textSize="30sp"
+            android:textColor="@color/wizardDarkerGreen"
+            android:textSize="18sp"
             android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/guideline1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline4"/>
+            app:layout_constraintEnd_toEndOf="@+id/menu"
+            app:layout_constraintStart_toStartOf="@+id/menu"
+            app:layout_constraintTop_toTopOf="@+id/guideline4" android:backgroundTint="@color/wizardGreen"
+            android:stateListAnimator="@null"/>
 
     <Button
             android:id="@+id/stop"
@@ -114,49 +113,52 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-
+    
     <TextView
             android:id="@+id/game_mode_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/game_mode"
-            android:textColor="@color/wizardDarkBlue"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            android:textColor="@color/wizardWhite"
+            android:textSize="40sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/textView7"
+            app:layout_constraintVertical_bias="1.0"/>
+    
     <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/players_joined_already"
-            android:textColor="@color/wizardBlue"
-            android:textSize="25sp"
+            android:textColor="@color/wizardWhite"
+            android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
-
+    
     <Button
             android:id="@+id/menu"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/back_to_menu"
-            android:textColor="@color/wizardBlue"
-            android:textSize="30sp"
+            android:textColor="@color/ButtonTextColor"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline1"/>
-
+            app:layout_constraintTop_toTopOf="@+id/guideline1" android:backgroundTint="@color/ButtonColor"
+            android:stateListAnimator="@null"/>
+    
     <Button
             android:id="@+id/enter"
             android:layout_width="0dp"
@@ -165,15 +167,16 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/enter"
-            android:textColor="@color/wizardBlue"
+            android:textColor="@color/ButtonTextColor"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline7"
             app:layout_constraintEnd_toStartOf="@+id/guideline6"
             app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"/>
-
+            app:layout_constraintTop_toTopOf="@+id/guideline3" android:backgroundTint="@color/ButtonColor"
+            android:stateListAnimator="@null"/>
+    
     <Button
             android:id="@+id/previous"
             android:layout_width="0dp"
@@ -182,15 +185,16 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/previous_mode"
-            android:textColor="@color/wizardBlue"
-            android:textSize="15sp"
+            android:textColor="@color/ButtonTextColor"
+            android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline7"
             app:layout_constraintEnd_toStartOf="@+id/guideline5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"/>
-
+            app:layout_constraintTop_toTopOf="@+id/guideline3" android:backgroundTint="@color/ButtonColor"
+            android:stateListAnimator="@null"/>
+    
     <Button
             android:id="@+id/next"
             android:layout_width="0dp"
@@ -199,14 +203,25 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/quite_magical"
+            android:fontFamily="@font/big_john"
             android:text="@string/next_mode"
-            android:textColor="@color/wizardBlue"
-            android:textSize="15sp"
+            android:textColor="@color/ButtonTextColor"
+            android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline7"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline6"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"/>
+            app:layout_constraintTop_toTopOf="@+id/guideline3" android:backgroundTint="@color/ButtonColor"
+            android:stateListAnimator="@null"/>
+    <TextView
+            android:text="@string/master_switchmode_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView7"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+            android:textAlignment="center" android:fontFamily="@font/big_john" android:textSize="18sp"
+            android:textColor="@color/wizardWhite"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
