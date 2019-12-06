@@ -180,13 +180,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
         multiplayer_name.setText(Integer.toString(profile.getId()));
 
-        /**
-         * bind to the bluetooth service and send the ID
-         **/
-        Intent intent1 = new Intent(this, BLEService.class);
-        bindService(intent1, connection, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
-
         health_progressBar = findViewById(R.id.health_progressBar);
         health_progressBar.setProgress(health);
         energy_progressBar = findViewById(R.id.energy_progressBar);
@@ -218,37 +211,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
     }
 
-    @Override
-    public void onClick(View view) {
-
-        switch (view.getId()) {
-
-            case R.id.training_mode:
-                Multiplayer.WriteThread writeThread1 = new Multiplayer.WriteThread("LEAVE");
-                writeThread1.start();
-                while (joined) {//TODO:TIMEOUT
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                    }
-                }
-                connected = false;
-                Intent intent = new Intent(this, Menu.class);
-                intent.putExtra("profile", profile);
-                unbindService(connection); //unbind bluetooth service
-                mBound = false;
-                startActivity(intent);
-                finish();
-                break;
-            case R.id.multiplayer:
-                if (master) {
-                    Multiplayer.WriteThread writeThreadStop = new Multiplayer.WriteThread("STOP");
-                    writeThreadStop.start();
-                    stop.setText("Game Finished!");
-                }
-                break;
-        }
-    }
 
     private String getNameById(int id) {
         Iterator iterator = profiles.iterator();

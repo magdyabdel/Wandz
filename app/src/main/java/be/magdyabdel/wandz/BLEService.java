@@ -228,11 +228,10 @@ public class BLEService extends Service {
                 xchange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
                 ychange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
                 zchange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
-                String tijd = Long.toString(rlistTime.get(i)-rlistTime.get(i-1));
+                //String tijd = Long.toString(rlistTime.get(i)-rlistTime.get(i-1));
                // Log.i("tijdspanne", ""+ tijd);
                 anglechange[i] = Math.sqrt(Math.pow(xchange,2) + Math.pow(ychange,2) + Math.pow(zchange,2));
             }
-            //writeToFile((Arrays.toString(anglechange)),this);
             Log.i("array", Arrays.toString(anglechange));
             writeToFile(Arrays.toString(anglechange),this);
             double error[] = new double[10];
@@ -242,25 +241,25 @@ public class BLEService extends Service {
 
             if(error[0]<8000){//cirkel
                 gesturerecognised = true;
-                gesture = 1;
+                gesture = 3;
             }
-            else if(error[1]<10000&&error[0]>16000){//eight
+            else if(error[1]<10000&&error[0]>14000){//eight // && error[2]>6500
                 gesturerecognised = true;
                 gesture = 2;
             }
-            else if(error[2]<5000 && error[1]<20000){//eight
+            else if(error[2]<6000 && error[0]>25000 && error[1]>10000){//eight
                 gesturerecognised = true;
-                gesture = 3;
+                gesture = 1;
             }
 
             if (gesturerecognised) {
-                Log.i("recognised!", Integer.toString(gesture) +" "+ Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2])+" "+ Double.toString(error[3]));
+                Log.i("recognised!", Integer.toString(gesture) +" "+ Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]));
                 sendGestureMessageToActivity(gesture);
                 spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
                 boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
-                Log.i("NOT recognised!", Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]) +" "+ Double.toString(error[3]));
+                Log.i("NOT recognised!", Double.toString(error[0])+" "+ Double.toString(error[1])+" "+ Double.toString(error[2]) );
                 sendGestureMessageToActivity((byte) 0);
                 // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
@@ -279,20 +278,20 @@ public class BLEService extends Service {
     }
 
     public void addtValue() {
-        int total_samples = 60;
+        int total_samples = 20;
         /**
          * Make every time sample the same length
          */
-        double[][] normalized = new double[total_samples][data.getalleight()[0].length];
+        double[][] normalized = new double[total_samples][data.getallS()[0].length];
         for(int i=0;i<total_samples;i++){
-            normalized[i] = dtw.normalize(data.getalleight()[i],data.getalleight()[0]);
-            //Log.i("result", " " + normalized[i].length + Arrays.toString(normalized[i]));
+            normalized[i] = dtw.normalize(data.getallS()[i],data.getallS()[0]);
+            Log.i("result", " " + normalized[i].length + Arrays.toString(normalized[i]));
         }
         /**
          * Calculate average template
          */
-        double[] template = new double[data.getalleight()[0].length];
-        for(int j = 0; j<data.getalleight()[0].length; j++) {
+        double[] template = new double[data.getallS()[0].length];
+        for(int j = 0; j<data.getallS()[0].length; j++) {
             for (int i = 0; i < total_samples; i++){
                 template[j] += normalized[i][j];
             }
@@ -305,7 +304,7 @@ public class BLEService extends Service {
          double[] erroronoptimal = new double[total_samples];
          double sum = 0;
          for (int i = 0; i < total_samples; i++) {
-              erroronoptimal[i] = dtw.computeDTWError(template, data.getalleight()[i]);
+              erroronoptimal[i] = dtw.computeDTWError(template, data.getallS()[i]);
               sum+= erroronoptimal[i];
              Log.i("error","" + erroronoptimal[i]);
          }
