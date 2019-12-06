@@ -239,15 +239,15 @@ public class BLEService extends Service {
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
             error[2] = dtw.computeDTWError(anglechange, data.getTrainingset3());
 
-            if(error[0]<8000){//cirkel
+            if(error[0]<7000){//cirkel
                 gesturerecognised = true;
                 gesture = 1;
             }
-            else if(error[1]<10000&&error[0]>14000 && error[2]>6500){//eight // && error[2]>6500
+            else if(error[1]<10000&&error[0]>14000){//eight // && error[2]>6500
                 gesturerecognised = true;
                 gesture = 2;
             }
-            else if(error[2]<6000 && error[0]>25000 && error[1]>10000){//eight
+            else if(error[2]<10000){//eight  && error[0]>25000 && error[1]>10000
                 gesturerecognised = true;
                 gesture = 3;
             }
