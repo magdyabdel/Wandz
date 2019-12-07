@@ -52,6 +52,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private TextView notification;
     private Button stop;
     private Boolean dead = false;
+    public static Boolean shoot = false;
+    public static int id = 5;
 
     BLEService mService;
     boolean mBound = false;
@@ -60,7 +62,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         @Override
         public void onReceive(Context context, Intent intent) {
             {
-                int gest = intent.getIntExtra("hitCode", 0);
+                Byte gest = intent.getByteExtra("hitCode", (byte) 0);
                 int spell = (gest & 0x000000FF);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
 
@@ -69,9 +71,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     Log.i("profileID", Integer.toString(profile.getId()));
                     sendHit(attackerID, spell);
                     setHealth(spell);
-                    if (mBound) {
-                        mService.sendGesture((byte) 100); //send 100 to the wand to vibrate(got hit)
-                    }
                     if (health <= 0) {
                         new WriteThread("DEAD " + profile.getId() + " " + attackerID).start();
                     }
@@ -91,10 +90,10 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         @Override
         public void onReceive(Context context, Intent intent) {
             {
-                Byte gest = intent.getByteExtra("gesture", (byte) 0);
-                if (gest != null) {
+                int gest = intent.getIntExtra("gesture", 0);
+                if (gest != 0) {
                     setPower(gest);
-                    Boolean shoot = false;
+                    shoot = false;
                     switch (gest) {
                         case 1:
                             if (power > powerDamage) shoot = true;
@@ -106,11 +105,25 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             if (power > powerDamageOtherHealth) shoot = true;
                             break;
                     }
-                    if (mBound && shoot) {
-                        mService.sendGesture(gest);
-                    }
                 }
             }
+        }
+    };
+
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
+            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            mService.sendWizardID(profile.getId());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
         }
     };
 
@@ -165,7 +178,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 setHealth(4);
                 break;
         }
-
+        if (power < 0) {
+            power = 0;
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -174,22 +189,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         });
     }
 
-    private ServiceConnection connection = new ServiceConnection() {
 
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-
-            BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-            mService.sendWizardID(profile.getId());
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 
     @Override
     public void onWindowFocusChanged (boolean hasFocus){
@@ -250,12 +250,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         /******* Navigation Drawer *******/
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
+        id = profile.getId();
         yourNameTextView.setText(profile.getName());
         ImageView profileImageView = findViewById(R.id.profile_image);
         profile.setProfileImage(this, profileImageView);
         profile.setProfileImage(this, profile_image_drawer);
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
-        multiplayer_name.setText(profile.getName());
+        multiplayer_name.setText(Integer.toString(profile.getId()));
 
         health_progressBar = findViewById(R.id.health_progressBar);
         health_progressBar.setProgress(health);

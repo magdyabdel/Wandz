@@ -250,9 +250,10 @@ public class BLEService extends Service {
                 gesturerecognised = true;
                 gesture = 3;
             }
+
             if (gesturerecognised) {
                 Log.i("recognised!", gesture + " " + error[0] + " " + error[1] + " " + error[2]);
-                sendGestureMessageToActivity(gesture);
+                sendGesture(gesture);
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);
@@ -274,7 +275,7 @@ public class BLEService extends Service {
         aantal++;
     }
 
-    public void addValue() {
+    public void addtValue() {
         int total_samples = 20;
         /**
          * Make every time sample the same length
@@ -332,6 +333,7 @@ public class BLEService extends Service {
     }
 
     public void sendGesture(byte gesture){
+        //sendGestureMessageToActivity(gesture);
         spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
         boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
     }
@@ -351,7 +353,7 @@ public class BLEService extends Service {
         for (int i = 0; i < amount_training; i++) {
             trainingsets[i] = new ArrayList<>();
         }
-        addValue();
+        addtValue();
     }
 
     private  void sendGestureMessageToActivity(byte b) {

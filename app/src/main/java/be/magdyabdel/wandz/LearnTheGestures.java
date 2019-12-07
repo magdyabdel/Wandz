@@ -22,10 +22,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 public class LearnTheGestures extends AppCompatActivity implements View.OnClickListener {
 
     private int[] imagesRoundAnim = new int[]{R.drawable.ic_round1, R.drawable.ic_round2, R.drawable.ic_round3, R.drawable.ic_round4, R.drawable.ic_round5, R.drawable.ic_round6};
-    private int[] imagesCrossAnim = new int[]{R.drawable.ic_cross1, R.drawable.ic_cross2, R.drawable.ic_cross3, R.drawable.ic_cross4, R.drawable.ic_cross5, R.drawable.ic_cross6};
-    private int[] imagesHorizontalAnim = new int[]{R.drawable.ic_horizontal1, R.drawable.ic_horizontal2, R.drawable.ic_horizontal3, R.drawable.ic_horizontal4, R.drawable.ic_horizontal5};
     private int[] imagesInfinityAnim = new int[]{R.drawable.ic_infinity1, R.drawable.ic_infinity2, R.drawable.ic_infinity3, R.drawable.ic_infinity4, R.drawable.ic_infinity5, R.drawable.ic_infinity6, R.drawable.ic_infinity7};
     private int[] imagesSpinAnim = new int[]{R.drawable.ic_spin1, R.drawable.ic_spin2, R.drawable.ic_spin3, R.drawable.ic_spin4, R.drawable.ic_spin5, R.drawable.ic_spin6};
+
     Vibrator v;
 
     private int gesture = 0;
@@ -57,7 +56,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
         @Override
         public void onReceive(Context context, Intent intent) {
             {
-                Byte gest = intent.getByteExtra("gesture", (byte) 0);
+                int gest = intent.getIntExtra("gesture", 0);
                 if (gest == (gesture + 1)) {
                     setCorrectOrNot(true);
                 } else {
