@@ -73,13 +73,12 @@ public class BLEService extends Service {
             } else if (UUID.fromString("00004ad3-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
                 float z = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getFloat();
                 addValue(z);
-            }
-             else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
-                 Log.i("hitupdate", "characteristic gelezen");
-                 int hitvalue = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getInt();
+            } else if (UUID.fromString("00004ad6-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
+                Log.i("hitupdate", "characteristic gelezen");
+                int hitvalue = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getInt();
                 Log.i("hitupdate", ""+ gotHit);
                 sendHitMessageToActivity(hitvalue);
-             }
+            }
         }
 
         @Override
@@ -214,7 +213,7 @@ public class BLEService extends Service {
     }
 
     public void addValue(float value) {
-        // Toast toast;
+        byte gesture = 0;
         boolean gesturerecognised = false;
         waarden[position] = value ;
         if (value == 500f) {  //end the gesture detection
@@ -229,7 +228,7 @@ public class BLEService extends Service {
                 ychange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
                 zchange += sample[i][0]*(rlistTime.get(i)-rlistTime.get(i-1));
                 //String tijd = Long.toString(rlistTime.get(i)-rlistTime.get(i-1));
-               // Log.i("tijdspanne", ""+ tijd);
+                // Log.i("tijdspanne", ""+ tijd);
                 anglechange[i] = Math.sqrt(Math.pow(xchange,2) + Math.pow(ychange,2) + Math.pow(zchange,2));
             }
             Log.i("array", Arrays.toString(anglechange));
@@ -239,7 +238,7 @@ public class BLEService extends Service {
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
             error[2] = dtw.computeDTWError(anglechange, data.getTrainingset3());
 
-            if(error[0]<7000){//cirkel
+            if(error[0]<8500){//cirkel
                 gesturerecognised = true;
                 gesture = 1;
             }
@@ -247,16 +246,13 @@ public class BLEService extends Service {
                 gesturerecognised = true;
                 gesture = 2;
             }
-            else if(error[2]<10000){//eight  && error[0]>25000 && error[1]>10000
+            else if(error[2]<12000){//eight  && error[0]>25000 && error[1]>10000
                 gesturerecognised = true;
                 gesture = 3;
             }
-
-            if (gesturerecognised && Multiplayer.power != 0) {
+            if (gesturerecognised) {
                 Log.i("recognised!", gesture + " " + error[0] + " " + error[1] + " " + error[2]);
                 sendGestureMessageToActivity(gesture);
-                spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
-                boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);
@@ -267,7 +263,8 @@ public class BLEService extends Service {
             rlist.clear();
             rlistTime.clear();
             aantal = 0;
-        } else if (position == 2) {            rlist.add(waarden);
+        } else if (position == 2) {
+            rlist.add(waarden);
             rlistTime.add(System.currentTimeMillis());
             waarden = new Float[3];
             position = 0;
@@ -277,7 +274,7 @@ public class BLEService extends Service {
         aantal++;
     }
 
-    public void addtValue() {
+    public void addValue() {
         int total_samples = 20;
         /**
          * Make every time sample the same length
@@ -301,14 +298,14 @@ public class BLEService extends Service {
         /**
          * determining all errors with optimal sample
          */
-         double[] erroronoptimal = new double[total_samples];
-         double sum = 0;
-         for (int i = 0; i < total_samples; i++) {
-              erroronoptimal[i] = dtw.computeDTWError(template, data.getallS()[i]);
-              sum+= erroronoptimal[i];
-             Log.i("error","" + erroronoptimal[i]);
-         }
-         sum /= total_samples;
+        double[] erroronoptimal = new double[total_samples];
+        double sum = 0;
+        for (int i = 0; i < total_samples; i++) {
+            erroronoptimal[i] = dtw.computeDTWError(template, data.getallS()[i]);
+            sum += erroronoptimal[i];
+            Log.i("error", "" + erroronoptimal[i]);
+        }
+        sum /= total_samples;
         Log.i("averageerroronoptimalsample", "" + sum);
 
 
@@ -334,6 +331,11 @@ public class BLEService extends Service {
         }
     }
 
+    public void sendGesture(byte gesture){
+        spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
+        boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
+    }
+
     public void onCreate() {
         training = 0;
         position = 0;
@@ -349,7 +351,7 @@ public class BLEService extends Service {
         for (int i = 0; i < amount_training; i++) {
             trainingsets[i] = new ArrayList<>();
         }
-        addtValue();
+        addValue();
     }
 
     private  void sendGestureMessageToActivity(byte b) {

@@ -25,6 +25,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
     private int[] imagesCrossAnim = new int[]{R.drawable.ic_cross1, R.drawable.ic_cross2, R.drawable.ic_cross3, R.drawable.ic_cross4, R.drawable.ic_cross5, R.drawable.ic_cross6};
     private int[] imagesHorizontalAnim = new int[]{R.drawable.ic_horizontal1, R.drawable.ic_horizontal2, R.drawable.ic_horizontal3, R.drawable.ic_horizontal4, R.drawable.ic_horizontal5};
     private int[] imagesInfinityAnim = new int[]{R.drawable.ic_infinity1, R.drawable.ic_infinity2, R.drawable.ic_infinity3, R.drawable.ic_infinity4, R.drawable.ic_infinity5, R.drawable.ic_infinity6, R.drawable.ic_infinity7};
+    private int[] imagesSpinAnim = new int[]{R.drawable.ic_spin1, R.drawable.ic_spin2, R.drawable.ic_spin3, R.drawable.ic_spin4, R.drawable.ic_spin5, R.drawable.ic_spin6};
     Vibrator v;
 
     private int gesture = 0;
@@ -96,6 +97,17 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("GestureUpdate")); //broadcast receiver
         v = (Vibrator) getSystemService(getApplicationContext().VIBRATOR_SERVICE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            unbindService(connection);
+            mBound = false;
+        } catch (RuntimeException e) {
+        }
     }
 
     @Override
@@ -194,7 +206,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                     array = imagesInfinityAnim;
                     break;
                 case 2:
-                    array = imagesHorizontalAnim;
+                    array = imagesSpinAnim;
                     break;
                 default:
                     array = new int[0];
