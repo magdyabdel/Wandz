@@ -62,9 +62,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         @Override
         public void onReceive(Context context, Intent intent) {
             {
-                Byte gest = intent.getByteExtra("hitCode", (byte) 0);
+                int gest = intent.getIntExtra("hitCode", (int) 0);
                 int spell = (gest & 0x000000FF);
+                Log.i("spreuk", ""+spell);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
+                Log.i("receivedID", "" + attackerID);
 
                 if (attackerID != profile.getId() && !dead) {
                     Log.i("attackerID", Integer.toString(attackerID));

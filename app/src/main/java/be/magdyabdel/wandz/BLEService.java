@@ -350,6 +350,7 @@ public class BLEService extends Service {
     private  void sendHitMessageToActivity(int a) {
         Intent intent = new Intent("hitUpdate");
         intent.putExtra("hitCode", a);
+        Log.i("hitcode", ""+ a);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
     }
