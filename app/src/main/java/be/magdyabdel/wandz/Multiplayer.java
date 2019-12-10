@@ -94,7 +94,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             {
                 int gest = intent.getIntExtra("gesture", 0);
                 if (gest != 0) {
-                    setPower(gest);
                     shoot = false;
                     switch (gest) {
                         case 1:
@@ -107,7 +106,10 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             if (power > powerDamageOtherHealth) shoot = true;
                             break;
                     }
-                    mService.sendGesture((byte) gest);
+                    if(shoot) {
+                        setPower(gest);
+                        mService.sendGesture((byte) gest);
+                    }
                 }
             }
         }
@@ -179,7 +181,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 break;
             case 3:
                 power -= 100;
-                setHealth(4);
                 break;
         }
         if (power < 0) {
@@ -560,6 +561,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                         public void run() {
                                             setScore();
                                             lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
+                                            if(Integer.parseInt(splittedCommand[3]) == 3) {
+                                                setHealth(4);
+                                            }
                                         }
                                     });
                                 }

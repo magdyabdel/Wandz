@@ -247,8 +247,6 @@ public class BLEService extends Service {
             if (gesturerecognised) {
                 Log.i("recognised!", gesture + " " + error[0] + " " + error[1] + " " + error[2]);
                 sendGestureMessageToActivity(gesture);
-                sendGesture(gesture);
-
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);

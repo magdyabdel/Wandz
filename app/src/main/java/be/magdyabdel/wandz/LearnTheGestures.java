@@ -58,6 +58,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
             {
                 int gest = intent.getIntExtra("gesture", 0);
                 if (gest == (gesture + 1)) {
+                    mService.sendGesture((byte) gest);
                     setCorrectOrNot(true);
                 } else {
                     setCorrectOrNot(false);
