@@ -26,37 +26,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SINT32;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT32;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8;
 
 public class BLEService extends Service {
 
     private final IBinder binder = new LocalBinder();
-    BluetoothGatt bluetoothGatt;
+    private static BluetoothGatt bluetoothGatt;
     boolean disconnectBeforeConnecting = false;
     ArrayList<BluetoothDevice> devicesDiscovered;
     int deviceIndexInput;
     ArrayList<BluetoothGattCharacteristic> acceleroChars = new ArrayList<>();
-    BluetoothGattCharacteristic spell;
-    BluetoothGattCharacteristic wizardID;
-    BluetoothGattCharacteristic gotHit;
+    private static BluetoothGattCharacteristic spell;
+    private static BluetoothGattCharacteristic wizardID;
+    private BluetoothGattCharacteristic gotHit;
     int charIndex = 0;
 
     Float[] waarden;
     int position;
-    int dummy;
     int aantal;
-    int training;
-    private int mData;
-    private List<Double>[] trainingsets;
-    private List<Integer> trainingTime;
     private List<Float[]> rlist;
     private List<Long> rlistTime;
     private double[] anglechange;
     private DTW dtw;
     private Trainingdata data;
-    byte gesture = 0;
-    int amount_training = 20;
 
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
 
@@ -232,7 +226,7 @@ public class BLEService extends Service {
                 anglechange[i] = Math.sqrt(Math.pow(xchange,2) + Math.pow(ychange,2) + Math.pow(zchange,2));
             }
             Log.i("array", Arrays.toString(anglechange));
-            writeToFile(Arrays.toString(anglechange),this);
+            //writeToFile(Arrays.toString(anglechange),this);
             double[] error = new double[10];
             error[0] = dtw.computeDTWError(anglechange, data.getTrainingset1());
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
@@ -253,12 +247,10 @@ public class BLEService extends Service {
 
             if (gesturerecognised) {
                 Log.i("recognised!", gesture + " " + error[0] + " " + error[1] + " " + error[2]);
-                sendGesture(gesture);
-                //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
+                sendGestureMessageToActivity(gesture);
             } else {
                 Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);
                 sendGestureMessageToActivity((byte) 0);
-                // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
             // toast.show();
             rlist.clear();
@@ -275,7 +267,7 @@ public class BLEService extends Service {
         aantal++;
     }
 
-    public void addtValue() {
+    public void addtValue() { //this method gets the mean of multiple time series
         int total_samples = 20;
         /**
          * Make every time sample the same length
@@ -308,14 +300,11 @@ public class BLEService extends Service {
         }
         sum /= total_samples;
         Log.i("averageerroronoptimalsample", "" + sum);
-
-
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return Service.START_REDELIVER_INTENT;
+        return Service.START_STICKY_COMPATIBILITY;
     }
 
     @Nullable
@@ -326,39 +315,36 @@ public class BLEService extends Service {
 
     public void sendWizardID(int ID) {
         try {
-            wizardID.setValue(ID, FORMAT_UINT32, 0); //true if succes
+            Log.i("id verzenden", "voor!!");
+            Log.i("wizardid" , " "+ wizardID);
+            Log.i("bluetoothGatt" , " "+ bluetoothGatt);
+            wizardID.setValue(ID, FORMAT_SINT32, 0); //true if succes
+            Log.i("id verzenden", "tussentijds!!");
             boolean b = bluetoothGatt.writeCharacteristic(wizardID);//true if succes
+            Log.i("id verzenden", "gelukt!!");
         } catch (NullPointerException e) {
         }
     }
 
     public void sendGesture(byte gesture){
-        //sendGestureMessageToActivity(gesture);
-        spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
-        boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
+        if(spell.setValue(gesture, FORMAT_UINT8, 0)){ //true if success
+        boolean b = bluetoothGatt.writeCharacteristic(spell);     }      //true if success
     }
 
     public void onCreate() {
-        training = 0;
         position = 0;
-        dummy = 0;
         aantal = 0;
         waarden = new Float[3];
         dtw = new DTW();
         data = new Trainingdata();
         rlist = new ArrayList<>(); //initialise recognition list
         rlistTime = new ArrayList<>();
-        trainingTime = new ArrayList<>();
-        trainingsets = new ArrayList[amount_training]; //initialise array of training sets
-        for (int i = 0; i < amount_training; i++) {
-            trainingsets[i] = new ArrayList<>();
-        }
-        addtValue();
+        //addtValue();    //this method is only needed when we want to compute an average of multiple time series
     }
 
     private  void sendGestureMessageToActivity(byte b) {
         Intent intent = new Intent("GestureUpdate");
-        intent.putExtra("gesture", b);
+        intent.putExtra("gesture", (int)b);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
     }
@@ -385,7 +371,6 @@ public class BLEService extends Service {
             return BLEService.this;
         }
     }
-
 
     private void writeToFile(String data, Context context) { //look in device file explorer, data/data/be.magdyabel.wandz/files
         try {

@@ -110,7 +110,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
 
         if (profile.getDemo()) {
             Intent intent = new Intent(this, BLEService.class);
-            startService(new Intent(this, BLEService.class));
+            startService(intent);
             bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
             btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
