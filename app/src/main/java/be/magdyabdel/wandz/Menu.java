@@ -55,14 +55,14 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.training:
                 intent = new Intent(this, LearnTheGestures.class);
-                intent.putExtra("skip", true);
+                profile.setSkip(true);
                 break;
             case R.id.multiplayer:
                 intent = new Intent(this, MultiplayerConnect.class);
                 break;
             case R.id.setup_wand:
                 intent = new Intent(this, ChooseYourWand.class);
-                intent.putExtra("skip", true);
+                profile.setSkip(true);
                 break;
             case R.id.profile_image:
             case R.id.change_profile:

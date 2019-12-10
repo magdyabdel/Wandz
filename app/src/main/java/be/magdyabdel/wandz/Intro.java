@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class Intro extends AppCompatActivity implements View.OnClickListener {
 
@@ -17,8 +18,10 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
     private String[] textViews = new String[]{"Welcome To Wandz!", "The World Where You Want To Be The Most Powerful Wizard.", "Join Me To Learn The Basics Of WizardWorld.$", "First, I Have To Know Who You Are!"};
     private Button button;
     private Boolean joined = false;
-    private Boolean skip = false;
     private TextView skipButton;
+    private Profile profile;
+    private ConstraintLayout faster;
+    private Boolean fastertext = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +35,17 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
         button.setClickable(false);
         button.setVisibility(View.GONE);
 
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+
         AnimThread animThread = new AnimThread();
         animThread.start();
 
         skipButton = findViewById(R.id.skip);
         skipButton.setOnClickListener(this);
+        faster = findViewById(R.id.faster);
+        faster.setOnClickListener(this);
+
+
     }
 
     @Override
@@ -46,11 +55,14 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                 joined = true;
                 break;
             case R.id.skip:
-                skip = true;
+                profile.setSkip(true);
                 Intent intent = new Intent(Intro.this, ChooseName.class);
-                intent.putExtra("skip", skip);
+                intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();
+                break;
+            case R.id.faster:
+                fastertext = true;
                 break;
         }
     }
@@ -70,11 +82,12 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
         @Override
         public void run() {
             for (int i = 0; i < textViews.length; i++) {
+                fastertext = false;
                 final int image = imageViews[i];
                 char[] splitString = textViews[i].toCharArray();
                 String text = "";
                 for (int j = 0; j < splitString.length; j++) {
-                    if (skip) {
+                    if (profile.getSkip()) {
                         break;
                     }
                     if (splitString[j] == '$') {
@@ -89,7 +102,7 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                             }
                         });
                         while (!joined) {
-                            delay(60);
+                            delay(50);
                         }
                         runOnUiThread(new Runnable() {
                             @Override
@@ -109,18 +122,20 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                                 imageview.setImageResource(image);
                             }
                         });
-                        delay(100);
+                        if (!fastertext) {
+                            delay(70);
+                        }
                     }
 
                 }
-                if (skip) {
+                if (profile.getSkip()) {
                     break;
                 }
                 delay(1000);
             }
-            if (!skip) {
+            if (!profile.getSkip()) {
                 Intent intent = new Intent(Intro.this, ChooseName.class);
-                intent.putExtra("skip", skip);
+                intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();
             }

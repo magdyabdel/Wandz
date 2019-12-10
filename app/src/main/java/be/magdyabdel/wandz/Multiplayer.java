@@ -62,19 +62,21 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         @Override
         public void onReceive(Context context, Intent intent) {
             {
-                Byte gest = intent.getByteExtra("hitCode", (byte) 0);
+                int gest = intent.getIntExtra("hitCode", (int) 0);
                 int spell = (gest & 0x000000FF);
+                Log.i("spreuk", ""+spell);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
+                Log.i("receivedID", "" + attackerID);
 
                 if (attackerID != profile.getId() && !dead) {
                     Log.i("attackerID", Integer.toString(attackerID));
                     Log.i("profileID", Integer.toString(profile.getId()));
                     sendHit(attackerID, spell);
                     setHealth(spell);
+                    mService.sendGesture((byte) 100);
                     if (health <= 0) {
                         new WriteThread("DEAD " + profile.getId() + " " + attackerID).start();
                     }
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -105,6 +107,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             if (power > powerDamageOtherHealth) shoot = true;
                             break;
                     }
+                    mService.sendGesture((byte) gest);
                 }
             }
         }
@@ -118,6 +121,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
+            Log.i("send ID", "send ID!!!!!!!");
             mService.sendWizardID(profile.getId());
         }
 

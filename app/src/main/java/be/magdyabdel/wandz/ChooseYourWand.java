@@ -19,7 +19,6 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.provider.Settings;
@@ -41,7 +40,6 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 2;
-    private static final long SCAN_PERIOD = 5000;
 
     boolean gps_enabled = false;
     boolean network_enabled = false;
@@ -55,8 +53,6 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
     BluetoothLeScanner btScanner;
     Boolean btScanning = false;
     ArrayList<BluetoothDevice> devicesDiscovered;
-
-    private Handler mHandler = new Handler();
 
     private WandAdapter adapter;
     private Boolean scanning = true;
@@ -73,7 +69,6 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
         }
     };
 
-    private boolean skip = false;
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -103,14 +98,19 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_your_wand);
 
-        profile = (Profile) getIntent().getSerializableExtra("profile");
-        skip = (Boolean) getIntent().getSerializableExtra("skip");
+        try {
+            profile = (Profile) getIntent().getSerializableExtra("profile");
+            profile.getDemo();
+        } catch (NullPointerException e) {
+            profile = new Profile(-1, "wizard", 0000);
+        }
+
         demo = findViewById(R.id.demo);
         demo.setOnClickListener(this);
 
         if (profile.getDemo()) {
             Intent intent = new Intent(this, BLEService.class);
-            startService(new Intent(this, BLEService.class));
+            startService(intent);
             bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
             btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -146,10 +146,10 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                         public void onItemClick(View view, int position) {
                             connectToDeviceSelected(position);
                             Intent intent;
-                            if (skip) {
-                                intent = new Intent(ChooseYourWand.this, Menu.class);
+                            if (profile.getSkip()) {
+                                intent = new Intent(ChooseYourWand.this, ChooseName.class);
                             } else {
-                                intent = new Intent(ChooseYourWand.this, LearnTheGestures.class);
+                                intent = new Intent(ChooseYourWand.this, Intro.class);
                             }
                             scanning = false;
                             try {
@@ -333,19 +333,23 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch (view.getId()) {
             case R.id.demo:
                 profile.setDemo(true);
+                if (profile.getSkip()) {
+                    intent = new Intent(ChooseYourWand.this, Menu.class);
+                } else {
+                    intent = new Intent(ChooseYourWand.this, Intro.class);
+                }
                 break;
             case R.id.menu:
                 profile.setDemo(false);
+                intent = new Intent(ChooseYourWand.this, Menu.class);
                 break;
-        }
-        Intent intent;
-        if (skip) {
-            intent = new Intent(ChooseYourWand.this, Menu.class);
-        } else {
-            intent = new Intent(ChooseYourWand.this, LearnTheGestures.class);
+            default:
+                intent = new Intent(ChooseYourWand.this, ChooseYourWand.class);
+                break;
         }
         scanning = false;
         try {

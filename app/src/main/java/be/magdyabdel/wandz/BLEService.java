@@ -32,31 +32,24 @@ import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8;
 public class BLEService extends Service {
 
     private final IBinder binder = new LocalBinder();
-    BluetoothGatt bluetoothGatt;
+    private static BluetoothGatt bluetoothGatt;
     boolean disconnectBeforeConnecting = false;
     ArrayList<BluetoothDevice> devicesDiscovered;
     int deviceIndexInput;
     ArrayList<BluetoothGattCharacteristic> acceleroChars = new ArrayList<>();
-    BluetoothGattCharacteristic spell;
-    BluetoothGattCharacteristic wizardID;
-    BluetoothGattCharacteristic gotHit;
+    private static BluetoothGattCharacteristic spell;
+    private static BluetoothGattCharacteristic wizardID;
+    private BluetoothGattCharacteristic gotHit;
     int charIndex = 0;
 
     Float[] waarden;
     int position;
-    int dummy;
     int aantal;
-    int training;
-    private int mData;
-    private List<Double>[] trainingsets;
-    private List<Integer> trainingTime;
     private List<Float[]> rlist;
     private List<Long> rlistTime;
     private double[] anglechange;
     private DTW dtw;
     private Trainingdata data;
-    byte gesture = 0;
-    int amount_training = 20;
 
     private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
 
@@ -213,7 +206,7 @@ public class BLEService extends Service {
     }
 
     public void addValue(float value) {
-        byte gesture = 0;
+        int gesture = 0;
         boolean gesturerecognised = false;
         waarden[position] = value ;
         if (value == 500f) {  //end the gesture detection
@@ -232,7 +225,7 @@ public class BLEService extends Service {
                 anglechange[i] = Math.sqrt(Math.pow(xchange,2) + Math.pow(ychange,2) + Math.pow(zchange,2));
             }
             Log.i("array", Arrays.toString(anglechange));
-            writeToFile(Arrays.toString(anglechange),this);
+            //writeToFile(Arrays.toString(anglechange),this);
             double[] error = new double[10];
             error[0] = dtw.computeDTWError(anglechange, data.getTrainingset1());
             error[1] = dtw.computeDTWError(anglechange, data.getTrainingset2());
@@ -253,7 +246,9 @@ public class BLEService extends Service {
 
             if (gesturerecognised) {
                 Log.i("recognised!", gesture + " " + error[0] + " " + error[1] + " " + error[2]);
+                sendGestureMessageToActivity(gesture);
                 sendGesture(gesture);
+
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);
@@ -275,7 +270,7 @@ public class BLEService extends Service {
         aantal++;
     }
 
-    public void addtValue() {
+    public void addtValue() { //this method gets the mean of multiple time series
         int total_samples = 20;
         /**
          * Make every time sample the same length
@@ -308,9 +303,6 @@ public class BLEService extends Service {
         }
         sum /= total_samples;
         Log.i("averageerroronoptimalsample", "" + sum);
-
-
-
     }
 
     @Override
@@ -332,31 +324,23 @@ public class BLEService extends Service {
         }
     }
 
-    public void sendGesture(byte gesture){
-        //sendGestureMessageToActivity(gesture);
+    public void sendGesture(int gesture) {
         spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
         boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
     }
 
     public void onCreate() {
-        training = 0;
         position = 0;
-        dummy = 0;
         aantal = 0;
         waarden = new Float[3];
         dtw = new DTW();
         data = new Trainingdata();
         rlist = new ArrayList<>(); //initialise recognition list
         rlistTime = new ArrayList<>();
-        trainingTime = new ArrayList<>();
-        trainingsets = new ArrayList[amount_training]; //initialise array of training sets
-        for (int i = 0; i < amount_training; i++) {
-            trainingsets[i] = new ArrayList<>();
-        }
-        addtValue();
+        //addtValue();    //this method is only needed when we want to compute an average of multiple time series
     }
 
-    private  void sendGestureMessageToActivity(byte b) {
+    private void sendGestureMessageToActivity(int b) {
         Intent intent = new Intent("GestureUpdate");
         intent.putExtra("gesture", b);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -366,6 +350,7 @@ public class BLEService extends Service {
     private  void sendHitMessageToActivity(int a) {
         Intent intent = new Intent("hitUpdate");
         intent.putExtra("hitCode", a);
+        Log.i("hitcode", ""+ a);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         Log.i("message", "message is send");
     }
