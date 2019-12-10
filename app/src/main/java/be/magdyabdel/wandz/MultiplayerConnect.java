@@ -318,7 +318,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
             }
             if (started) {
                 stopIt();
-                Intent intent = new Intent(MultiplayerConnect.this, Menu.class);
+                Intent intent = new Intent(MultiplayerConnect.this, MultiplayerBusy.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();

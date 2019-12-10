@@ -1,7 +1,6 @@
 package be.magdyabdel.wandz;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.widget.ImageView;
 
@@ -26,6 +25,15 @@ public class Profile implements Serializable {
     private int eye_color_array_id = 0;
     private int health = 1000;
     private Boolean demo = true;
+    private Boolean skip = false;
+
+    public Boolean getSkip() {
+        return skip;
+    }
+
+    public void setSkip(Boolean skip) {
+        this.skip = skip;
+    }
 
     public Boolean getDemo() {
         return demo;

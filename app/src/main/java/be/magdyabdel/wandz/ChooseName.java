@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ChooseName extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editText;
-    private Boolean skip;
+    private Profile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +25,12 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
         button.setOnClickListener(this);
 
         editText = findViewById(R.id.name_field);
-        skip = (Boolean) getIntent().getSerializableExtra("skip");
 
         editText.requestFocus();
         InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+        profile = (Profile) getIntent().getSerializableExtra("profile");
     }
 
     @Override
@@ -49,10 +50,10 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
             case R.id.enter:
 
                 if(!name.equals("")){
-                    Profile profile = new Profile(-1, name, 0000);
+                    profile.setName(name);
                     Intent intent;
-                    if (skip) {
-                        intent = new Intent(this, ChooseYourWand.class);
+                    if (profile.getSkip()) {
+                        intent = new Intent(this, Menu.class);
                         intent.putExtra("skip", true);
                     } else {
                         intent = new Intent(this, WandExplanation.class);

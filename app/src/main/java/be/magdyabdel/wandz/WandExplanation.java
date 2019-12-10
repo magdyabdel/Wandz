@@ -24,7 +24,6 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
     private TextView textView;
     private Profile profile;
     private Button practice;
-    private Boolean skip = false;
     private Button skipButton;
 
     @Override
@@ -50,16 +49,22 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
 
+        Intent intent;
+
         switch (view.getId()) {
             case R.id.practice:
+                intent = new Intent(this, LearnTheGestures.class);
                 break;
             case R.id.skip:
-                skip = true;
+                intent = new Intent(this, Menu.class);
+                profile.setSkip(true);
+                break;
+            default:
+                intent = new Intent(this, WandExplanation.class);
                 break;
         }
-        Intent intent = new Intent(this, ChooseYourWand.class);
+
         intent.putExtra("profile", profile);
-        intent.putExtra("skip", skip);
         startActivity(intent);
     }
 
@@ -93,7 +98,7 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                                     textView.setText(textToView);
                                 }
                             });
-                            if (skip) break;
+                            if (profile.getSkip()) break;
                             delay(100);
                         }
                     } else {
@@ -108,13 +113,13 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                         });
                         delay(100);
                     }
-                    if (skip) break;
+                    if (profile.getSkip()) break;
 
                 }
-                if (skip) break;
+                if (profile.getSkip()) break;
                 delay(1000);
             }
-            if (!skip) {
+            if (!profile.getSkip()) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -124,7 +129,6 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                         skipButton.setClickable(false);
                     }
                 });
-                //delay(100);
             }
         }
     }
