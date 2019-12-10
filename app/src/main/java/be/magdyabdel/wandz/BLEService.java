@@ -34,8 +34,7 @@ public class BLEService extends Service {
     private final IBinder binder = new LocalBinder();
     private static BluetoothGatt bluetoothGatt;
     boolean disconnectBeforeConnecting = false;
-    ArrayList<BluetoothDevice> devicesDiscovered;
-    int deviceIndexInput;
+    private static BluetoothDevice connectedDevice;
     ArrayList<BluetoothGattCharacteristic> acceleroChars = new ArrayList<>();
     private static BluetoothGattCharacteristic spell;
     private static BluetoothGattCharacteristic wizardID;
@@ -85,7 +84,7 @@ public class BLEService extends Service {
                     bluetoothGatt = null;
 
                     if (disconnectBeforeConnecting) {
-                        bluetoothGatt = devicesDiscovered.get(deviceIndexInput).connectGatt(BLEService.this, false, btleGattCallback);
+                        bluetoothGatt = connectedDevice.connectGatt(BLEService.this, false, btleGattCallback);
                     }
                     break;
                 case BluetoothProfile.STATE_CONNECTED:
@@ -150,13 +149,12 @@ public class BLEService extends Service {
     }
 
     public void connect(ArrayList<BluetoothDevice> devices, int device) {
-        devicesDiscovered = devices;
-        deviceIndexInput = device;
+        connectedDevice = devices.get(device);
         if ((bluetoothGatt != null)) {
             bluetoothGatt.disconnect();
             disconnectBeforeConnecting = true;
         } else {
-            bluetoothGatt = devices.get(device).connectGatt(this, false, btleGattCallback);
+            bluetoothGatt = connectedDevice.connectGatt(this, false, btleGattCallback);
         }
     }
 
@@ -381,6 +379,10 @@ public class BLEService extends Service {
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
         }
+    }
+
+    public String getDeviceName(){
+        return connectedDevice.getName();
     }
 }
 

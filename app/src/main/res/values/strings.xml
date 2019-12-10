@@ -95,4 +95,6 @@
 	<string name="results_second">2nd</string>
 	<string name="results_third">3rd</string>
     <string name="skip_the_intro">skip the intro</string>
+    <string name="choose_another">A Wizard Has Only One Wand! Disconnect From Your Current Wand To connect To Another.</string>
+	<string name="Disconnect">Disconnect</string>
 </resources>

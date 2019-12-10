@@ -76,6 +76,10 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
+            if (!profile.getDemo()){
+            TextView wandname = findViewById(R.id.WandName);
+            wandname.setText(mService.getDeviceName());
+            }
         }
 
         @Override
@@ -108,10 +112,11 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
         demo = findViewById(R.id.demo);
         demo.setOnClickListener(this);
 
+        Intent intent = new Intent(this, BLEService.class);
+        startService(intent);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
         if (profile.getDemo()) {
-            Intent intent = new Intent(this, BLEService.class);
-            startService(intent);
-            bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
             btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             btAdapter = btManager.getAdapter();
@@ -130,10 +135,11 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                 });
                 builder.show();
             }
+            else{
+                ChooseYourWand.ScanThread scanThread = new ChooseYourWand.ScanThread();
+                scanThread.start();
+            }
             checkEnable();
-
-            ChooseYourWand.ScanThread scanThread = new ChooseYourWand.ScanThread();
-            scanThread.start();
 
             devicesDiscovered = new ArrayList<>();
             RecyclerView recyclerview = findViewById(R.id.wand_recycler);
@@ -147,11 +153,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                             connectToDeviceSelected(position);
                             Intent intent;
                             if (profile.getSkip()) {
-                                if (profile.getDemo()) {
-                                    intent = new Intent(ChooseYourWand.this, ChooseName.class);
-                                } else {
-                                    intent = new Intent(ChooseYourWand.this, Menu.class);
-                                }
+                                intent = new Intent(ChooseYourWand.this, Menu.class);
                             } else {
                                 intent = new Intent(ChooseYourWand.this, Intro.class);
                             }
@@ -180,6 +182,9 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             Button menu = findViewById(R.id.menu);
             menu.setVisibility(View.VISIBLE);
             menu.setOnClickListener(this);
+            Button disconnect = findViewById(R.id.Disconnect);
+            disconnect.setVisibility(View.VISIBLE);
+            disconnect.setOnClickListener(this);
         }
     }
 
@@ -219,17 +224,9 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
         }
 
         if (!bluetooth_enabled) {
+            Log.i("hierzo?", "mja00");
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            /*new AlertDialog.Builder(this)
-                    .setMessage("Please enable your bluetooth!")
-                    .setPositiveButton("Open bluetooth settings", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                                    startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
-                                }
-                            }
-                    ).setNegativeButton("Cancel",null).show();*/
         }
     }
 
@@ -239,6 +236,8 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             case PERMISSION_REQUEST_COARSE_LOCATION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     System.out.println("coarse location permission granted");
+                    ChooseYourWand.ScanThread scanThread = new ChooseYourWand.ScanThread();
+                    scanThread.start();
                 } else {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Functionality limited");
@@ -255,6 +254,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
         }
+
     }
 
     @Override
@@ -316,7 +316,8 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
     }
 
     public void disconnectDeviceSelected() {
-        mService.disconnect();
+        if(mBound){
+        mService.disconnect();}
     }
 
     public void stopScanning() {
@@ -350,6 +351,11 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             case R.id.menu:
                 profile.setDemo(false);
                 intent = new Intent(ChooseYourWand.this, Menu.class);
+                break;
+            case R.id.Disconnect:
+                disconnectDeviceSelected();
+                profile.setDemo(true);
+                intent = new Intent(ChooseYourWand.this, ChooseYourWand.class);
                 break;
             default:
                 intent = new Intent(ChooseYourWand.this, ChooseYourWand.class);
