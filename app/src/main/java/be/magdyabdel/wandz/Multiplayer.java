@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -52,8 +54,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private TextView game_mode_value;
     private Boolean master;
     private TextView lastHit;
+    private ImageView gestureImage1;
+    private ImageView gestureImage2;
+    private ImageView gestureImage3;
+    ColorMatrixColorFilter grayscalefilter;
     private TextView lastHitBy;
-    private TextView notification;
     private Button stop;
     private Boolean dead = false;
     public static Boolean shoot = false;
@@ -81,16 +86,18 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 if (attackerID != profile.getId() && !dead) {
                     Log.i("attackerID", Integer.toString(attackerID));
                     Log.i("profileID", Integer.toString(profile.getId()));
-                    sendHit(attackerID, spell);
                     setHealth(spell);
                     mService.sendGesture((byte) 100);
                     if (health <= 0) {
                         new WriteThread("DEAD " + profile.getId() + " " + attackerID).start();
                     }
+                    else{
+                        sendHit(attackerID, spell);
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            lastHitBy.setText(getNameById(attackerID));
+                            lastHitBy.setText("Last hit by " + getNameById(attackerID));
                         }
                     });
                 }
@@ -163,6 +170,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 break;
             case 3:
                 health -= 200;
+                if (health <= 0) {
+                    new WriteThread("DEAD " + profile.getId() + " " + profile.getId()).start();
+                }
                 break;
             case 4:
                 health += 200;
@@ -171,9 +181,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 }
                 break;
         }
-        if (health <= 0) {
-            new WriteThread("DEAD " + profile.getId() + " " + profile.getId()).start();
-        }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -295,7 +303,14 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         lastHit.setText("Hit Somebody!");
         lastHitBy = findViewById(R.id.lastHitBy);
         lastHitBy.setText("Not Hit Yet!");
-        notification = findViewById(R.id.notifications);
+
+        //set filter for gesture images
+        gestureImage1 = (ImageView) findViewById(R.id.gesture_1);
+        gestureImage2 = (ImageView) findViewById(R.id.gesture_2);
+        gestureImage3 = (ImageView) findViewById(R.id.gesture_3);
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        grayscalefilter = new ColorMatrixColorFilter(matrix);
 
         profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
         master = (Boolean) getIntent().getSerializableExtra("master");
@@ -341,7 +356,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     private void sendHit(int player_id, int spell) {
-
         Multiplayer.WriteThread writeThreadHit = new Multiplayer.WriteThread("HIT " + player_id + " " + profile.getId() + " " + spell);
         writeThreadHit.start();
     }
@@ -453,7 +467,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                notification.setText(names + " Has Joined The Game!");
+                Toast.makeText(Multiplayer.this, names + " Has Joined The Game!", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -578,7 +592,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    notification.setText(splittedCommand[1] + " Has Left The Game!"); //
+                                    Toast.makeText(Multiplayer.this, splittedCommand[1] + " Has Left The Game!", Toast.LENGTH_LONG).show();
                                 }
                             });
                             break;
@@ -625,16 +639,17 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     @Override
                                     public void run() {
                                         lastHit.setText("Game Over! You're Dead!");
+                                        Toast.makeText(Multiplayer.this, "You have lost, wait for the end of the game!", Toast.LENGTH_LONG).show();
                                     }
                                 });
                             } else {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        notification.setText(getNameById(Integer.parseInt(splittedCommand[2])) + " Has Lost The Game!");
+                                        Toast.makeText(Multiplayer.this, getNameById(Integer.parseInt(splittedCommand[2])) + " got killed!", Toast.LENGTH_LONG).show();
                                     }
                                 });
-                                if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
                                     setScore();
                                     setScore();
                                     runOnUiThread(new Runnable() {
@@ -644,7 +659,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                         }
                                     });
                                 }
-                                removeProfile(Integer.parseInt(splittedCommand[1]));
                                 if (profiles.size() == 1) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -681,12 +695,33 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             power++;
                             energy_progressBar.setProgress(power);
                         }
+                        if(power<powerDamage){
+                            gestureImage1.setColorFilter(grayscalefilter);
+                            gestureImage2.setColorFilter(grayscalefilter);
+                            gestureImage3.setColorFilter(grayscalefilter);
+                        }
+                        else if(power<powerDamageMyHealth){
+                            gestureImage1.setColorFilter(null);
+                            gestureImage2.setColorFilter(grayscalefilter);
+                            gestureImage3.setColorFilter(grayscalefilter);
+                        }
+                        else if(power<powerDamageOtherHealth){
+                            gestureImage1.setColorFilter(null);
+                            gestureImage2.setColorFilter(null);
+                            gestureImage3.setColorFilter(grayscalefilter);
+                        }
+                        else{
+                            gestureImage1.setColorFilter(null);
+                            gestureImage2.setColorFilter(null);
+                            gestureImage3.setColorFilter(null);
+                        }
                     }
                 });
                 try {
                     Thread.sleep(250);
                 } catch (InterruptedException e) {
                 }
+
             }
             power = 0;
         }
