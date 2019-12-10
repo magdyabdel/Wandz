@@ -631,7 +631,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        notification.setText(getNameById(Integer.parseInt(splittedCommand[1])) + " Has Lost The Game!");
+                                        notification.setText(getNameById(Integer.parseInt(splittedCommand[2])) + " Has Lost The Game!");
                                     }
                                 });
                                 if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
@@ -640,7 +640,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            lastHit.setText("You've killed " + getNameById(Integer.parseInt(splittedCommand[1])));
+                                            lastHit.setText("You've killed " + getNameById(Integer.parseInt(splittedCommand[2])));
                                         }
                                     });
                                 }
