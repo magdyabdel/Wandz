@@ -27,5 +27,6 @@
 	<color name="wizardDarkerGreen">#316434</color>
 	<color name="wizardTransWhite">#E2FFFFFF</color>
 	<color name="score">#7EB5F0</color>
+	<color name="wizardYellow">#FFEE58</color>
 
 </resources>
