@@ -25,6 +25,36 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
     private Profile profile;
     private Button practice;
     private Button skipButton;
+    private Speed speed = Speed.NORMAL;
+
+    @Override
+    public void onClick(View view) {
+
+        Intent intent = null;
+
+        switch (view.getId()) {
+            case R.id.practice:
+                intent = new Intent(this, LearnTheGestures.class);
+                break;
+            case R.id.skip:
+                intent = new Intent(this, Menu.class);
+                profile.setSkip(true);
+                break;
+            case R.id.faster:
+                speed = Speed.FASTER;
+                break;
+            case R.id.slower:
+                speed = Speed.SLOWER;
+                break;
+            default:
+                intent = new Intent(this, WandExplanation.class);
+                break;
+        }
+        if (intent != null) {
+            intent.putExtra("profile", profile);
+            startActivity(intent);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,27 +76,7 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
         animThread.start();
     }
 
-    @Override
-    public void onClick(View view) {
-
-        Intent intent;
-
-        switch (view.getId()) {
-            case R.id.practice:
-                intent = new Intent(this, LearnTheGestures.class);
-                break;
-            case R.id.skip:
-                intent = new Intent(this, Menu.class);
-                profile.setSkip(true);
-                break;
-            default:
-                intent = new Intent(this, WandExplanation.class);
-                break;
-        }
-
-        intent.putExtra("profile", profile);
-        startActivity(intent);
-    }
+    private enum Speed {SLOWER, NORMAL, FASTER}
 
     private void delay(int delay) {
         try {
@@ -83,10 +93,13 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
         @Override
         public void run() {
             for (int i = 0; i < textViews.length; i++) {
+
+                if (i < 0) i = 0;
                 final int image = imageViews[i];
-                char[] splitString = textViews[i].toCharArray();
+                final String displayText = textViews[i];
+                char[] splitString = displayText.toCharArray();
                 String text = "";
-                for (int j = 0; j < splitString.length; j++) {
+                for (int j = 0; j < splitString.length && speed.equals(Speed.NORMAL); j++) {
                     if (splitString[j] == '&') {
                         char[] splitName = profile.getName().toCharArray();
                         for (int k = 0; k < splitName.length; k++) {
@@ -111,13 +124,27 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
                                 imageview.setImageResource(image);
                             }
                         });
-                        delay(100);
+                        delay(70);
                     }
                     if (profile.getSkip()) break;
 
                 }
                 if (profile.getSkip()) break;
-                delay(1000);
+                else if (speed.equals(Speed.FASTER)) {
+                    speed = Speed.NORMAL;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView.setText(displayText);
+                            imageview.setImageResource(image);
+                        }
+                    });
+                } else if (speed.equals(Speed.SLOWER)) {
+                    speed = Speed.NORMAL;
+                    i = i - 2;
+                } else {
+                    delay(1000);
+                }
             }
             if (!profile.getSkip()) {
                 runOnUiThread(new Runnable() {

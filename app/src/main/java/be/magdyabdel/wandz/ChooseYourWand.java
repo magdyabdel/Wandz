@@ -147,7 +147,11 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                             connectToDeviceSelected(position);
                             Intent intent;
                             if (profile.getSkip()) {
-                                intent = new Intent(ChooseYourWand.this, ChooseName.class);
+                                if (profile.getDemo()) {
+                                    intent = new Intent(ChooseYourWand.this, ChooseName.class);
+                                } else {
+                                    intent = new Intent(ChooseYourWand.this, Menu.class);
+                                }
                             } else {
                                 intent = new Intent(ChooseYourWand.this, Intro.class);
                             }

@@ -21,7 +21,8 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
     private TextView skipButton;
     private Profile profile;
     private ConstraintLayout faster;
-    private Boolean fastertext = false;
+    private ConstraintLayout slower;
+    private Speed speed = Speed.NORMAL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +45,8 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
         skipButton.setOnClickListener(this);
         faster = findViewById(R.id.faster);
         faster.setOnClickListener(this);
-
-
+        slower = findViewById(R.id.slower);
+        slower.setOnClickListener(this);
     }
 
     @Override
@@ -55,17 +56,24 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                 joined = true;
                 break;
             case R.id.skip:
-                profile.setSkip(true);
                 Intent intent = new Intent(Intro.this, ChooseName.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();
                 break;
             case R.id.faster:
-                fastertext = true;
+                speed = Speed.FASTER;
                 break;
+            case R.id.slower:
+                button.setClickable(false);
+                button.setVisibility(View.GONE);
+                skipButton.setClickable(true);
+                skipButton.setVisibility(View.VISIBLE);
+                speed = Speed.SLOWER;
         }
     }
+
+    private enum Speed {SLOWER, NORMAL, FASTER}
 
     private void delay(int delay) {
         try {
@@ -82,11 +90,13 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
         @Override
         public void run() {
             for (int i = 0; i < textViews.length; i++) {
-                fastertext = false;
+
+                if (i < 0) i = 0;
                 final int image = imageViews[i];
-                char[] splitString = textViews[i].toCharArray();
+                final String displayText = textViews[i];
+                char[] splitString = displayText.toCharArray();
                 String text = "";
-                for (int j = 0; j < splitString.length; j++) {
+                for (int j = 0; j < splitString.length && speed.equals(Speed.NORMAL); j++) {
                     if (profile.getSkip()) {
                         break;
                     }
@@ -101,7 +111,7 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                                 skipButton.setVisibility(View.GONE);
                             }
                         });
-                        while (!joined) {
+                        while (!joined && speed.equals(Speed.NORMAL)) {
                             delay(50);
                         }
                         runOnUiThread(new Runnable() {
@@ -122,16 +132,28 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                                 imageview.setImageResource(image);
                             }
                         });
-                        if (!fastertext) {
-                            delay(70);
-                        }
+                        delay(70);
                     }
-
                 }
                 if (profile.getSkip()) {
                     break;
+                } else if (speed.equals(Speed.FASTER)) {
+                    speed = Speed.NORMAL;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView.setText(displayText);
+                            imageview.setImageResource(image);
+                        }
+                    });
+                } else if (speed.equals(Speed.SLOWER)) {
+                    speed = Speed.NORMAL;
+                    i = i - 2;
+                } else {
+                    delay(1000);
                 }
-                delay(1000);
+
+
             }
             if (!profile.getSkip()) {
                 Intent intent = new Intent(Intro.this, ChooseName.class);

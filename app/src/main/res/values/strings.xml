@@ -94,4 +94,5 @@
 	<string name="results_mvp">MVP</string>
 	<string name="results_second">2nd</string>
 	<string name="results_third">3rd</string>
+    <string name="skip_the_intro">skip the intro</string>
 </resources>

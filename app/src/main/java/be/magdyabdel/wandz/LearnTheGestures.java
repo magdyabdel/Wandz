@@ -6,10 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -35,6 +31,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
     private Button showAgain;
     private Button next;
     private TextView well_done;
+    private Button previous;
 
     private Profile profile;
     private ImageView gestureImage;
@@ -87,6 +84,8 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
         next = findViewById(R.id.next);
         next.setOnClickListener(this);
+        previous = findViewById(R.id.previous);
+        previous.setOnClickListener(this);
 
         well_done = findViewById(R.id.well_done);
         well_done.setText("");
@@ -122,8 +121,22 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 LearnTheGestures.AnimThread animThread2 = new LearnTheGestures.AnimThread(gesture);
                 animThread2.start();
                 break;
+            case R.id.previous:
+                gesture--;
+                next.setText("Next");
+                if (gesture == 0) {
+                    previous.setText("Menu");
+                    new LearnTheGestures.AnimThread(gesture).start();
+                } else if (gesture < 0) {
+                    Intent intent = new Intent(this, Menu.class);
+                    intent.putExtra("profile", profile);
+                    startActivity(intent);
+                }
+
+                break;
             case R.id.next:
                 gesture++;
+                previous.setText("Previous");
                 if (gesture == 2) {
                     next.setText("Done");
                 }
@@ -138,8 +151,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                     intent.putExtra("profile", profile);
                     startActivity(intent);
                 } else {
-                    LearnTheGestures.AnimThread animThread = new LearnTheGestures.AnimThread(gesture);
-                    animThread.start();
+                    new LearnTheGestures.AnimThread(gesture).start();
                 }
                 break;
         }

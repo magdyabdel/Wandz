@@ -72,7 +72,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         @Override
         public void onReceive(Context context, Intent intent) {
             {
-                int gest = intent.getIntExtra("hitCode", (int) 0);
+                int gest = intent.getIntExtra("hitCode", 0);
                 int spell = (gest & 0x000000FF);
                 Log.i("spreuk", ""+spell);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
@@ -294,7 +294,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         lastHit = findViewById(R.id.lastHit);
         lastHit.setText("Hit Somebody!");
         lastHitBy = findViewById(R.id.lastHitBy);
-        lastHitBy.setText("Not Hitted Yet!");
+        lastHitBy.setText("Not Hit Yet!");
         notification = findViewById(R.id.notifications);
 
         profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
