@@ -7,6 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -28,7 +32,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Multiplayer extends AppCompatActivity implements View.OnClickListener {
+public class Multiplayer extends AppCompatActivity implements View.OnClickListener, SensorEventListener, StepListener {
 
     private Profile profile;
     private ConnectionManager connectionManager;
@@ -38,7 +42,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private int score = 0;
     private int power = 1000;
     private int health = 1000;
-    private int powerDamage = 100;
+    private int powerDamage = 150;
     private int powerDamageMyHealth = 200;
     private int powerDamageOtherHealth = 300;
     private ArrayList<Profile> profiles;
@@ -57,6 +61,12 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     BLEService mService;
     boolean mBound = false;
+
+    //pedometer
+    private StepDetector simpleStepDetector;
+    private SensorManager sensorManager;
+    private Sensor accel;
+    private static final String TEXT_NUM_STEPS = "Number of Steps: ";
 
     private BroadcastReceiver hitReceiver = new BroadcastReceiver() {
         @Override
@@ -156,6 +166,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 break;
             case 4:
                 health += 200;
+                if(health > 1000){
+                    health = 1000;
+                }
                 break;
         }
         if (health <= 0) {
@@ -173,14 +186,14 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private void setPower(int spell) {
         switch (spell) {
             case 1:
-                power -= 200;
+                power -= powerDamage;
                 break;
             case 2:
-                power -= 400;
+                power -= powerDamageMyHealth;
                 setHealth(3);
                 break;
             case 3:
-                power -= 100;
+                power -= powerDamageOtherHealth;
                 break;
         }
         if (power < 0) {
@@ -233,6 +246,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get an instance of the SensorManager
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        simpleStepDetector = new StepDetector();
+        simpleStepDetector.registerListener(this);
+        sensorManager.registerListener(Multiplayer.this, accel, SensorManager.SENSOR_DELAY_FASTEST);
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         hideSystemUI();
@@ -292,6 +312,21 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(hitReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            simpleStepDetector.updateAccel(
+                    event.timestamp, event.values[0], event.values[1], event.values[2]);
+        }
+    }
+
+    public void step(long timeNs) {
+        power+=15;
     }
 
     private String getNameById(int id) {
@@ -649,7 +684,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     }
                 });
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(250);
                 } catch (InterruptedException e) {
                 }
             }

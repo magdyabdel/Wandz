@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,7 +23,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class LearnTheGestures extends AppCompatActivity implements View.OnClickListener {
+public class LearnTheGestures extends AppCompatActivity implements View.OnClickListener{
 
     private int[] imagesRoundAnim = new int[]{R.drawable.ic_round1, R.drawable.ic_round2, R.drawable.ic_round3, R.drawable.ic_round4, R.drawable.ic_round5, R.drawable.ic_round6};
     private int[] imagesInfinityAnim = new int[]{R.drawable.ic_infinity1, R.drawable.ic_infinity2, R.drawable.ic_infinity3, R.drawable.ic_infinity4, R.drawable.ic_infinity5, R.drawable.ic_infinity6, R.drawable.ic_infinity7};
@@ -235,4 +239,6 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
             });
         }
     }
+
+
 }
