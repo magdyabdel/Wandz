@@ -40,7 +40,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_multiplayer_connect);
 
         profiles = new ArrayList<>();
-        RecyclerView recyclerview = findViewById(R.id.recycleViewer);
+        RecyclerView recyclerview = findViewById(R.id.score_recycleViewer);
         adapter = new ProfileAdapter(profiles, this);
         recyclerview.setAdapter(adapter);
         recyclerview.setLayoutManager(new LinearLayoutManager(this));

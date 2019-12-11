@@ -63,11 +63,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private Boolean dead = false;
     public static Boolean shoot = false;
     public static int id = 5;
+    private int playersInGame = 0;
 
     BLEService mService;
     boolean mBound = false;
 
-    //pedometer
     private StepDetector simpleStepDetector;
     private SensorManager sensorManager;
     private Sensor accel;
@@ -89,7 +89,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     setHealth(spell);
                     mService.sendGesture((byte) 100);
                     if (health <= 0) {
-                        new WriteThread("DEAD " + profile.getId() + " " + attackerID).start();
+                        profile.setScore(score);
+                        new WriteThread("DEAD " + profile.getId() + " " + attackerID + " " + score).start();
                     }
                     else{
                         sendHit(attackerID, spell);
@@ -171,7 +172,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             case 3:
                 health -= 200;
                 if (health <= 0) {
+                    profile.setScore(score);
                     new WriteThread("DEAD " + profile.getId() + " " + profile.getId()).start();
+                    dead = true;
                 }
                 break;
             case 4:
@@ -215,8 +218,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         });
     }
 
-
-
     @Override
     public void onWindowFocusChanged (boolean hasFocus){
         if (hasFocus) {
@@ -225,27 +226,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     private void hideSystemUI() {
-        // Enables regular immersive mode.
-        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
-        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        // Hide the nav bar and status bar
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // Allow this non-streaming activity to layout under notches.
-            //
-            // We should NOT do this for the Game activity unless
-            // the user specifically opts in, because it can obscure
-            // parts of the streaming surface.
             this.getWindow().getAttributes().layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
@@ -304,15 +293,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         lastHitBy = findViewById(R.id.lastHitBy);
         lastHitBy.setText("Not Hit Yet!");
 
-        //set filter for gesture images
-        gestureImage1 = (ImageView) findViewById(R.id.gesture_1);
-        gestureImage2 = (ImageView) findViewById(R.id.gesture_2);
-        gestureImage3 = (ImageView) findViewById(R.id.gesture_3);
+        gestureImage1 = findViewById(R.id.gesture_1);
+        gestureImage2 = findViewById(R.id.gesture_2);
+        gestureImage3 = findViewById(R.id.gesture_3);
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);
         grayscalefilter = new ColorMatrixColorFilter(matrix);
 
         profiles = (ArrayList<Profile>) getIntent().getSerializableExtra("profiles");
+        playersInGame = profiles.size();
         master = (Boolean) getIntent().getSerializableExtra("master");
 
         if (master) {
@@ -332,7 +321,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             simpleStepDetector.updateAccel(
@@ -344,15 +332,23 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         power+=15;
     }
 
-    private String getNameById(int id) {
+    private Profile getProfileById(int id) {
         Iterator iterator = profiles.iterator();
         while (iterator.hasNext()) {
             Profile currentProfile = (Profile) iterator.next();
             if (currentProfile.getId() == id) {
-                return currentProfile.getName();
+                return currentProfile;
             }
         }
-        return "Unknown Player";
+        return null;
+    }
+
+    private String getNameById(int id) {
+        try {
+            return getProfileById(id).getName();
+        } catch (NullPointerException e) {
+            return "Unknown Player";
+        }
     }
 
     private void sendHit(int player_id, int spell) {
@@ -388,7 +384,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     class WriteThread extends Thread {
 
         String message;
-
         WriteThread(String message) {
             this.message = message;
         }
@@ -441,7 +436,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             case R.id.multiplayer:
                 if (master) {
                     new Multiplayer.WriteThread("STOP").start();
-
                 }
                 break;
         }
@@ -467,7 +461,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Multiplayer.this, names + " Has Joined The Game!", Toast.LENGTH_LONG).show();
+                Toast.makeText(Multiplayer.this, names + " Has Joined The Game!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -585,6 +579,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
                     switch (splittedCommand[0]) {
                         case "PLAYERLEAVE":
+                            playersInGame--;
                             removeProfile(Integer.parseInt(splittedCommand[2]));
                             if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
                                 joined = false;
@@ -592,11 +587,12 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(Multiplayer.this, splittedCommand[1] + " Has Left The Game!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Multiplayer.this, splittedCommand[1] + " Has Left The Game!", Toast.LENGTH_SHORT).show();
                                 }
                             });
                             break;
                         case "PlAYERJOIN":
+                            playersInGame++;
                             addProfile(Integer.parseInt(splittedCommand[2]), splittedCommand[1], Integer.parseInt(splittedCommand[3]));
                             if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
                                 joined = true;
@@ -626,6 +622,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                 }
                             });
                             new WriteThread("LEAVE").start();
+
                             stopIt();
                             Intent intent = new Intent(Multiplayer.this, Menu.class);
                             intent.putExtra("profile", profile);
@@ -633,7 +630,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             finish();
                             break;
                         case "DEAD":
-                            if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                            if (Integer.parseInt(splittedCommand[1]) == profile.getId() && playersInGame > 1) {
                                 dead = true;
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -643,13 +640,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     }
                                 });
                             } else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(Multiplayer.this, getNameById(Integer.parseInt(splittedCommand[2])) + " got killed!", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                                if (Integer.parseInt(splittedCommand[2]) == profile.getId()) {
+
+                                if (Integer.parseInt(splittedCommand[1]) == profile.getId() && !dead) {
                                     setScore();
                                     setScore();
                                     runOnUiThread(new Runnable() {
@@ -658,15 +650,44 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                             lastHit.setText("You've killed " + getNameById(Integer.parseInt(splittedCommand[2])));
                                         }
                                     });
-                                }
-                                if (profiles.size() == 1) {
+                                } else {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            lastHit.setText("Winner!");
-                                            lastHitBy.setText("Winner!");
+                                            Toast.makeText(Multiplayer.this, getNameById(Integer.parseInt(splittedCommand[2])) + " Has Lost The Game!", Toast.LENGTH_SHORT).show();
                                         }
                                     });
+                                }
+
+                                playersInGame--;
+                                try {
+                                    getProfileById(Integer.parseInt(splittedCommand[2])).setScore(Integer.parseInt(splittedCommand[3]));
+                                } catch (NullPointerException e) {
+                                }
+
+                                if (playersInGame <= 1) {
+                                    if (!dead) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                lastHit.setText("Winner!");
+                                                lastHitBy.setText("Winner!");
+                                            }
+                                        });
+                                        try {
+                                            getProfileById(profile.getId()).setScore(score);
+                                        } catch (NullPointerException e) {
+                                        }
+                                        new WriteThread("DEAD " + profile.getId() + " " + profile.getId() + " " + score).start();
+                                    }
+                                    stopIt();
+                                    Intent intent2 = new Intent(Multiplayer.this, Gameover.class);
+                                    intent2.putExtra("profile", profile);
+                                    intent2.putExtra("profiles", profiles);
+                                    intent2.putExtra("master", master);
+                                    intent2.putExtra("conman", connectionManager);
+                                    startActivity(intent2);
+                                    finish();
                                 }
                             }
                             break;

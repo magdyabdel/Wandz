@@ -26,6 +26,15 @@ public class Profile implements Serializable {
     private int health = 1000;
     private Boolean demo = true;
     private Boolean skip = false;
+    private int score = 0;
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
 
     public Boolean getSkip() {
         return skip;

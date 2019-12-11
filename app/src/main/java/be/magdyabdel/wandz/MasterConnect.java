@@ -44,7 +44,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_master_connect);
 
         profiles = new ArrayList<>();
-        RecyclerView recyclerview = findViewById(R.id.recycleViewer);
+        RecyclerView recyclerview = findViewById(R.id.score_recycleViewer);
         adapter = new ProfileAdapter(profiles, this);
         recyclerview.setAdapter(adapter);
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
