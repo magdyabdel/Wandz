@@ -76,9 +76,13 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             BLEService.LocalBinder binder = (BLEService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
-            if (!profile.getDemo()){
+            if (mService.getDeviceName()!= null){
+                connected();
             TextView wandname = findViewById(R.id.WandName);
             wandname.setText(mService.getDeviceName());
+            }
+            else{
+                notconnected();
             }
         }
 
@@ -116,76 +120,78 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
-        if (profile.getDemo()) {
+    }
 
-            btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            btAdapter = btManager.getAdapter();
-            btScanner = btAdapter.getBluetoothLeScanner();
+    public void connected(){
+        demo.setClickable(false);
+        demo.setVisibility(View.GONE);
+        TextView already = findViewById(R.id.already);
+        already.setVisibility(View.VISIBLE);
+        Button menu = findViewById(R.id.menu);
+        menu.setVisibility(View.VISIBLE);
+        menu.setOnClickListener(this);
+        Button disconnect = findViewById(R.id.Disconnect);
+        disconnect.setVisibility(View.VISIBLE);
+        disconnect.setOnClickListener(this);
+    }
 
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("This app needs location access");
-                builder.setMessage("Please grant location access so this app can detect peripherals.");
-                builder.setPositiveButton(android.R.string.ok, null);
-                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-                    }
-                });
-                builder.show();
-            }
-            else{
-                ChooseYourWand.ScanThread scanThread = new ChooseYourWand.ScanThread();
-                scanThread.start();
-            }
-            checkEnable();
+    public void notconnected(){
+        btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        btAdapter = btManager.getAdapter();
+        btScanner = btAdapter.getBluetoothLeScanner();
 
-            devicesDiscovered = new ArrayList<>();
-            RecyclerView recyclerview = findViewById(R.id.wand_recycler);
-            adapter = new WandAdapter(devicesDiscovered, this);
-            recyclerview.setAdapter(adapter);
-            recyclerview.setLayoutManager(new LinearLayoutManager(this));
-            recyclerview.addOnItemTouchListener(
-                    new RecyclerItemClickListener(this, recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-                            connectToDeviceSelected(position);
-                            Intent intent;
-                            if (profile.getSkip()) {
-                                intent = new Intent(ChooseYourWand.this, Menu.class);
-                            } else {
-                                intent = new Intent(ChooseYourWand.this, Intro.class);
-                            }
-                            scanning = false;
-                            try {
-                                unbindService(connection);
-                            } catch (RuntimeException e) {
-                            }
-                            profile.setDemo(false);
-                            intent.putExtra("profile", profile);
-                            startActivity(intent);
-                            finish();
-                        }
-
-                        @Override
-                        public void onLongItemClick(View view, int position) {
-                            // do whatever
-                        }
-                    })
-            );
-        } else {
-            demo.setClickable(false);
-            demo.setVisibility(View.GONE);
-            TextView already = findViewById(R.id.already);
-            already.setVisibility(View.VISIBLE);
-            Button menu = findViewById(R.id.menu);
-            menu.setVisibility(View.VISIBLE);
-            menu.setOnClickListener(this);
-            Button disconnect = findViewById(R.id.Disconnect);
-            disconnect.setVisibility(View.VISIBLE);
-            disconnect.setOnClickListener(this);
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("This app needs location access");
+            builder.setMessage("Please grant location access so this app can detect peripherals.");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+                }
+            });
+            builder.show();
         }
+        else{
+            ChooseYourWand.ScanThread scanThread = new ChooseYourWand.ScanThread();
+            scanThread.start();
+        }
+        checkEnable();
+
+        devicesDiscovered = new ArrayList<>();
+        RecyclerView recyclerview = findViewById(R.id.wand_recycler);
+        adapter = new WandAdapter(devicesDiscovered, this);
+        recyclerview.setAdapter(adapter);
+        recyclerview.setLayoutManager(new LinearLayoutManager(this));
+        recyclerview.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        connectToDeviceSelected(position);
+                        Intent intent;
+                        if (profile.getSkip()) {
+                            intent = new Intent(ChooseYourWand.this, Menu.class);
+                        } else {
+                            intent = new Intent(ChooseYourWand.this, Intro.class);
+                        }
+                        scanning = false;
+                        try {
+                            unbindService(connection);
+                        } catch (RuntimeException e) {
+                        }
+                        profile.setDemo(false);
+                        intent.putExtra("profile", profile);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        // do whatever
+                    }
+                })
+        );
     }
 
     public void checkEnable() {

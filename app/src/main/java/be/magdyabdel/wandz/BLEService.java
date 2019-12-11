@@ -35,6 +35,7 @@ public class BLEService extends Service {
     private static BluetoothGatt bluetoothGatt;
     boolean disconnectBeforeConnecting = false;
     private static BluetoothDevice connectedDevice;
+    private static String deviceName;
     ArrayList<BluetoothGattCharacteristic> acceleroChars = new ArrayList<>();
     private static BluetoothGattCharacteristic spell;
     private static BluetoothGattCharacteristic wizardID;
@@ -82,14 +83,14 @@ public class BLEService extends Service {
                     bluetoothGatt.close();
                     acceleroChars.clear();
                     bluetoothGatt = null;
-
+                    deviceName = null;
                     if (disconnectBeforeConnecting) {
                         bluetoothGatt = connectedDevice.connectGatt(BLEService.this, false, btleGattCallback);
                     }
                     break;
                 case BluetoothProfile.STATE_CONNECTED:
+                    deviceName = connectedDevice.getName();
                     bluetoothGatt.discoverServices();
-
                     break;
             }
         }
@@ -385,7 +386,7 @@ public class BLEService extends Service {
     }
 
     public String getDeviceName(){
-        return connectedDevice.getName();
+            return deviceName;
     }
 }
 
