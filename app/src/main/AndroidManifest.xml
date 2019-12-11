@@ -64,7 +64,7 @@
 				android:screenOrientation="portrait"/>
 		<activity
 				android:name=".Multiplayer"
-				android:screenOrientation="landscape"/>
+				android:screenOrientation="sensorLandscape"/>
 		<activity
 				android:name=".ChooseName"
 				android:screenOrientation="portrait"/>

@@ -256,7 +256,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         simpleStepDetector.registerListener(this);
         sensorManager.registerListener(Multiplayer.this, accel, SensorManager.SENSOR_DELAY_FASTEST);
 
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         hideSystemUI();
 
         connectionManager = (ConnectionManager) getIntent().getSerializableExtra("conman");
@@ -415,7 +415,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             case R.id.training_mode:
                 if (connected) {
                     if (joined) {
+                        profile.setScore(score);
                         new WriteThread("LEAVE").start();
+                        new WriteThread("DEAD " + profile.getId() + " " + profile.getId() + " " + profile.getScore()).start();
                         int i = 0;
                         while (joined && i < 10) {
                             if (!getInternetAccess()) {

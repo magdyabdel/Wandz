@@ -78,7 +78,11 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             mBound = true;
             if (!profile.getDemo()){
             TextView wandname = findViewById(R.id.WandName);
-            wandname.setText(mService.getDeviceName());
+            try{
+            wandname.setText(mService.getDeviceName());}
+            catch(NullPointerException e){
+                wandname.setVisibility(View.GONE);
+            }
             }
         }
 
@@ -317,7 +321,11 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
 
     public void disconnectDeviceSelected() {
         if(mBound){
-        mService.disconnect();}
+            try{
+                mService.disconnect();
+            }
+            catch(NullPointerException e){}
+        }
     }
 
     public void stopScanning() {
