@@ -111,7 +111,12 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
             {
                 int gest = intent.getIntExtra("gesture", 0);
+                Log.i("testje", "" + gest);
+                if (gest == 0) {
+                    shoot = false;
+                }
                 if (gest != 0) {
+                    Log.i("hier?", "hallo");
                     shoot = false;
                     switch (gest) {
                         case 1:
@@ -124,7 +129,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             if (power > powerDamageOtherHealth) shoot = true;
                             break;
                     }
-                    if(shoot) {
+                    if (shoot && gest != 0) {
                         setPower(gest);
                         mService.sendGesture((byte) gest);
                     }

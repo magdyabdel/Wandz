@@ -21,16 +21,29 @@
 			android:supportsRtl="true"
 			android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
 			tools:ignore="GoogleAppIndexingWarning">
-		<activity android:name=".MultiplayerBusy">
+		<activity
+			android:name=".MultiplayerBusy"
+			android:screenOrientation="portrait">
 		</activity>
-		<activity android:name=".Gameover">
+		<activity
+			android:name=".Gameover"
+			android:screenOrientation="portrait">
 		</activity>
-		<activity android:name=".ChooseYourWand"/>
-		<activity android:name=".GameExplanation"/>
-		<activity android:name=".WandExplanation"/>
-		<activity android:name=".Intro"/>
-		<activity android:name=".LearnTheGestures"/>
-		
+		<activity
+			android:name=".ChooseYourWand"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".GameExplanation"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".WandExplanation"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".Intro"
+			android:screenOrientation="portrait" />
+		<activity
+			android:name=".LearnTheGestures"
+			android:screenOrientation="portrait" />
 		<service
 				android:name=".BLEService"
 			android:stopWithTask="false" />

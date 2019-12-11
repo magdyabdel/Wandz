@@ -248,7 +248,8 @@ public class BLEService extends Service {
                 //  toast = Toast.makeText(getApplicationContext(),"Gesture " + text + " with errors " + error[0] + " "+ error[1] + " "+error[2], Toast.LENGTH_SHORT);
             } else {
                 Log.i("NOT recognised!", error[0] + " " + error[1] + " " + error[2]);
-                sendGestureMessageToActivity((byte) 0);
+                Multiplayer.shoot = false;
+                sendGestureMessageToActivity(0);
                 // toast = Toast.makeText(getApplicationContext(),"No gesture was recogised " + error[0] + " "+ error[1] + " "+error[2] , Toast.LENGTH_SHORT);
             }
             // toast.show();
@@ -321,6 +322,9 @@ public class BLEService extends Service {
     }
 
     public void sendGesture(int gesture) {
+        if (gesture == 0) {
+            return;
+        }
         spell.setValue(gesture, FORMAT_UINT8, 0); //true if success
         boolean b = bluetoothGatt.writeCharacteristic(spell);           //true if success
     }
@@ -366,7 +370,6 @@ public class BLEService extends Service {
             return BLEService.this;
         }
     }
-
 
     private void writeToFile(String data, Context context) { //look in device file explorer, data/data/be.magdyabel.wandz/files
         try {
