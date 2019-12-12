@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.System.currentTimeMillis;
+
 public class ChooseYourWand extends AppCompatActivity implements View.OnClickListener {
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -53,19 +55,25 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
     BluetoothLeScanner btScanner;
     Boolean btScanning = false;
     ArrayList<BluetoothDevice> devicesDiscovered;
+    ArrayList<Long> discoveredDevicestime;
 
     private WandAdapter adapter;
     private Boolean scanning = true;
     private Profile profile;
     private Button demo;
 
+    TextView already;
+
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             if (!inList(result.getDevice().getName())) {
+                already.setVisibility(View.GONE);
                 devicesDiscovered.add(result.getDevice());
+                discoveredDevicestime.add(currentTimeMillis());
                 adapter.notifyDataSetChanged();
             }
+            discoveredDevicestime.set(devicesDiscovered.indexOf(result.getDevice()),currentTimeMillis());
         }
     };
 
@@ -129,7 +137,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
     public void connected(){
         demo.setClickable(false);
         demo.setVisibility(View.GONE);
-        TextView already = findViewById(R.id.already);
+        already = findViewById(R.id.already);
         already.setVisibility(View.VISIBLE);
         Button menu = findViewById(R.id.menu);
         menu.setVisibility(View.VISIBLE);
@@ -162,8 +170,15 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             scanThread.start();
         }
         checkEnable();
+        ChooseYourWand.timeoutThread timeoutThread = new ChooseYourWand.timeoutThread();
+        timeoutThread.start();
+
+        already = findViewById(R.id.already);
+        already.setText("No wand found yet, make sure there is one available!");
+        already.setVisibility(View.VISIBLE);
 
         devicesDiscovered = new ArrayList<>();
+        discoveredDevicestime = new ArrayList<>();
         RecyclerView recyclerview = findViewById(R.id.wand_recycler);
         adapter = new WandAdapter(devicesDiscovered, this);
         recyclerview.setAdapter(adapter);
@@ -412,6 +427,37 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                 }
             }
             stopScanning();
+        }
+    }
+
+    class timeoutThread extends Thread {
+
+        timeoutThread() {
+        }
+
+        @Override
+        public void run() {
+            while (scanning) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                int size = discoveredDevicestime.size();
+                for (int i = 0; i < size; i++) {
+                    if(discoveredDevicestime.get(i)+2500<currentTimeMillis()){
+                        discoveredDevicestime.remove(i);
+                        devicesDiscovered.remove(i);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                        size--;
+                        i--;
+                    }
+                }
+            }
         }
     }
 }

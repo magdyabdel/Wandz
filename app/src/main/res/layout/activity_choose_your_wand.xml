@@ -27,18 +27,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="64dp"
         android:fontFamily="@font/big_john"
         android:gravity="center"
         android:text="@string/choose_another"
         android:textColor="@color/wizardDarkBlue"
         android:textSize="20sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:textAlignment="center" />
     
     <Button
@@ -77,7 +77,7 @@
             app:layout_constraintEnd_toStartOf="@+id/Disconnect"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline2" android:stateListAnimator="@null"/>
-    
+
     <Button
             android:id="@+id/Disconnect"
             android:layout_width="0dp"
@@ -104,11 +104,11 @@
             app:layout_constraintGuide_percent="0.20"/>
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.80"/>
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.82" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wand_recycler"
