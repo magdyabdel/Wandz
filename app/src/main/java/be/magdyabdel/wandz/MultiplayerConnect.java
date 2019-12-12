@@ -60,7 +60,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
         if (!joined) {
                         new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
                         int i = 0;
-                        while (!joined && i < 5) {
+                        while (!joined && i < 10) {
                             if (!getInternetAccess()) {
                                 break;
                             }
@@ -120,7 +120,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                     if (joined) {
                         new WriteThread("LEAVE").start();
                         int i = 0;
-                        while (joined && i < 5) {
+                        while (joined && i < 10) {
                             if (!getInternetAccess()) {
                                 break;
                             }
@@ -303,7 +303,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
             new ReadThread().start();
 
             int i = 0;
-            while (started == null && i < 5) {
+            while (started == null && i < 10) {
                 try {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -322,7 +322,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 intent.putExtra("profile", profile);
                 startActivity(intent);
                 finish();
-            } else if (i != 5) {
+            } else if (i != 10) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -332,9 +332,9 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                 if (!joined) {
                     new WriteThread("JOIN " + profile.getName().replace(" ", "_") + " " + profile.getLayoutNumbers()).start();
                     int j = 0;
-                    while (!joined && j < 5) {
+                    while (!joined && j < 10) {
                         if (!getInternetAccess()) {
-                            j = 5;
+                            j = 10;
                             break;
                         }
                         try {
@@ -343,7 +343,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                         }
                         j++;
                     }
-                    if (j == 5) {
+                    if (j == 10) {
                         if (connected) {
                             runOnUiThread(new Runnable() {
                                 @Override

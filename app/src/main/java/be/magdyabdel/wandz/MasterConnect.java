@@ -117,9 +117,9 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.start:
 
-                while (!joined && i < 5) {
+                while (!joined && i < 10) {
                     if (!getInternetAccess()) {
-                        i = 5;
+                        i = 10;
                         break;
                     }
                     try {
@@ -128,16 +128,16 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                     }
                     i++;
                 }
-                if (i == 5) {
+                if (i == 10) {
                     Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not started!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (!started) {
                         new WriteThread("START").start();
 
                         i = 0;
-                        while (!started && i < 5) {
+                        while (!started && i < 10) {
                             if (!getInternetAccess()) {
-                                i = 5;
+                                i = 10;
                                 break;
                             }
                             try {
@@ -146,7 +146,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                             }
                             i++;
                         }
-                        if (i == 5) {
+                        if (i == 10) {
                             Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not started!", Toast.LENGTH_SHORT).show();
                         } else {
                             start.setClickable(false);
@@ -162,7 +162,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                     WriteThread writeThread3 = new WriteThread("STOP");
                     writeThread3.start();
                     i = 0;
-                    while (started && i < 5) {
+                    while (started && i < 10) {
                         if (!getInternetAccess()) {
                             break;
                         }
@@ -172,7 +172,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                         }
                         i++;
                     }
-                    if (i == 5) {
+                    if (i == 10) {
                         Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not stopped!", Toast.LENGTH_SHORT).show();
                     } else {
                         start.setClickable(true);
@@ -190,7 +190,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                 }
 
                 i = 0;
-                while (started && i < 5) {
+                while (started && i < 10) {
                     if (!getInternetAccess()) {
                         break;
                     }
@@ -200,14 +200,14 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                     }
                     i++;
                 }
-                if (i == 5) {
+                if (i == 10) {
                     Toast.makeText(MasterConnect.this, "Something went wrong with the connection to the server. Game not stopped!", Toast.LENGTH_SHORT).show();
                 }
                 if (connected) {
                     if (joined) {
                         new WriteThread("LEAVE").start();
                         i = 0;
-                        while (joined && i < 5) {
+                        while (joined && i < 10) {
                             if (!getInternetAccess()) {
                                 break;
                             }
@@ -422,7 +422,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
 
             busy = true;
             int i = 0;
-            while (connectionManager.connect() != 0 && i < 5) {
+            while (connectionManager.connect() != 0 && i < 10) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -437,14 +437,14 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
             }
             busy = false;
 
-            if (i != 5) {
+            if (i != 10) {
                 connected = true;
                 new ReadThread().start();
 
                 if (!joined) {
                     new WriteThread("JOIN " + profile.getName().replace(" ", "_") + "(master) " + profile.getLayoutNumbers()).start();
                     int j = 0;
-                    while (!joined && j < 5) {
+                    while (!joined && j < 10) {
                         if (!getInternetAccess()) {
                             break;
                         }
@@ -454,7 +454,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                         }
                         j++;
                     }
-                    if (j == 5) {
+                    if (j == 10) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

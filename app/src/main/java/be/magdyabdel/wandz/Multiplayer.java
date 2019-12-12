@@ -514,7 +514,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     getInternetAccess();
                 }
                 busy = false;
-                if (i == 5) {
+                if (i == 10) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
