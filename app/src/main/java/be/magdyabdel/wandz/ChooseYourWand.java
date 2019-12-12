@@ -497,7 +497,8 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            tryConnectText.setVisibility(View.GONE);
+                            tryConnectText.setText("Failed to connect to "+ tryConnectName + ", try again or choose another one!");
+
                         }
                     });
                 }

@@ -13,6 +13,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -34,6 +35,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static java.lang.System.currentTimeMillis;
+
 public class Multiplayer extends AppCompatActivity implements View.OnClickListener, SensorEventListener, StepListener {
 
     private Profile profile;
@@ -47,6 +50,10 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private int powerDamage = 150;
     private int powerDamageMyHealth = 200;
     private int powerDamageOtherHealth = 300;
+    private int healtSpell1 = -400;
+    private int healtSpell2 = -600;
+    private int healtSpell3 = -200;
+    private int healtSpell4 = 200;
     private ArrayList<Profile> profiles;
     private ProgressBar health_progressBar;
     private ProgressBar energy_progressBar;
@@ -71,8 +78,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private StepDetector simpleStepDetector;
     private SensorManager sensorManager;
     private Sensor accel;
-    private static final String TEXT_NUM_STEPS = "Number of Steps: ";
-
+    private long lastHitTime;
     private BroadcastReceiver hitReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -83,16 +89,20 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
                 Log.i("receivedID", "" + attackerID);
 
-                if (attackerID != profile.getId() && !dead) {
+                if (attackerID != profile.getId() && !dead && (currentTimeMillis()>(lastHitTime+2))) {
                     Log.i("attackerID", Integer.toString(attackerID));
                     Log.i("profileID", Integer.toString(profile.getId()));
                     setHealth(spell);
                     mService.sendGesture((byte) 100);
                     if (health <= 0) {
+                        MediaPlayer gameover = MediaPlayer.create(Multiplayer.this,R.raw.gameover);
+                        gameover.start();
                         profile.setScore(score);
                         new WriteThread("DEAD " + profile.getId() + " " + attackerID + " " + score).start();
                     }
                     else{
+                        MediaPlayer punch = MediaPlayer.create(Multiplayer.this,R.raw.punch);
+                        punch.start();
                         sendHit(attackerID, spell);
                     }
                     runOnUiThread(new Runnable() {
@@ -112,31 +122,38 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             {
                 int gest = intent.getIntExtra("gesture", 0);
                 Log.i("testje", "" + gest);
-                if (gest == 0) {
-                    shoot = false;
+                if (gest == 100) { //spell is fired
+                    MediaPlayer fire = MediaPlayer.create(Multiplayer.this,R.raw.spell1);
+                    fire.start();
                 }
-                if (gest != 0) {
+                else if(gest != 0) {
                     Log.i("hier?", "hallo");
                     shoot = false;
+                    MediaPlayer goodGesture = MediaPlayer.create(Multiplayer.this,R.raw.goodgesture);
+                    goodGesture.start();
                     switch (gest) {
                         case 1:
                             if (power > powerDamage) shoot = true;
+                            shoot(gest);
                             break;
                         case 2:
                             if (power > powerDamageMyHealth) shoot = true;
+                            shoot(gest);
                             break;
                         case 3:
                             if (power > powerDamageOtherHealth) shoot = true;
+                            shoot(gest);
                             break;
-                    }
-                    if (shoot && gest != 0) {
-                        setPower(gest);
-                        mService.sendGesture((byte) gest);
                     }
                 }
             }
         }
     };
+
+    private void shoot(int gest){
+        setPower(gest);
+        mService.sendGesture((byte) gest);
+    }
 
     private ServiceConnection connection = new ServiceConnection() {
 
@@ -169,13 +186,13 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private void setHealth(int spell) {
         switch (spell) {
             case 1:
-                health -= 400;
+                health -= healtSpell1;
                 break;
             case 2:
-                health -= 650;
+                health -= healtSpell2;
                 break;
             case 3:
-                health -= 200;
+                health -= healtSpell3;
                 if (health <= 0) {
                     profile.setScore(score);
                     new WriteThread("DEAD " + profile.getId() + " " + profile.getId()).start();
@@ -183,7 +200,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 }
                 break;
             case 4:
-                health += 200;
+                health += healtSpell4;
                 if(health > 1000){
                     health = 1000;
                 }
@@ -321,6 +338,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(hitReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
+        lastHitTime = currentTimeMillis();
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -674,6 +692,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
                                 if (playersInGame <= 1) {
                                     if (!dead) {
+                                        MediaPlayer win = MediaPlayer.create(Multiplayer.this,R.raw.epicwin);
+                                        win.start();
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -712,7 +732,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         PowerThread() {
         }
-
         @Override
         public void run() {
             while (connected && joined && !dead) {

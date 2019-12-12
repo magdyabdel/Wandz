@@ -36,6 +36,10 @@ public class Profile implements Serializable {
         this.score = score;
     }
 
+    public void addScore(int verhoogscore) {
+        this.score += verhoogscore;
+    }
+
     public Boolean getSkip() {
         return skip;
     }

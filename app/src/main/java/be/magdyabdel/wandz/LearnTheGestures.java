@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -60,10 +61,13 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 int gest = intent.getIntExtra("gesture", 0);
                 if (gest == (gesture + 1)) {
                     mService.sendGesture((byte) gest);
+                    MediaPlayer tadaa= MediaPlayer.create(LearnTheGestures.this,R.raw.tadaa);
+                    tadaa.start();
                     setCorrectOrNot(true);
                 } else {
                     setCorrectOrNot(false);
-
+                    MediaPlayer fail= MediaPlayer.create(LearnTheGestures.this,R.raw.fail);
+                    fail.start();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                     } else {
@@ -107,7 +111,6 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
     protected void onDestroy() {
         super.onDestroy();
         try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             unbindService(connection);
             mBound = false;
         } catch (RuntimeException e) {
@@ -131,6 +134,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 } else if (gesture < 0) {
                     Intent intent = new Intent(this, Menu.class);
                     intent.putExtra("profile", profile);
+                    LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
                     startActivity(intent);
                 }
 
@@ -151,12 +155,14 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                     if (profile.getSkip()) {
                         Intent intent = new Intent(this, Menu.class);
                         intent.putExtra("profile", profile);
+                        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
                         startActivity(intent);
                         finish();
                     } else {
                         Intent intent = new Intent(this, WandzExplanation_Activity.class);
                         intent.putExtra("animationstart", 12);
                         intent.putExtra("profile", profile);
+                        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
                         startActivity(intent);
                         finish();
                     }

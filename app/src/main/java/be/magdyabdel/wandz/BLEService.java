@@ -59,7 +59,13 @@ public class BLEService extends Service {
             byte[] val = characteristic.getValue();
             if (UUID.fromString("00004ad1-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
                 float x = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-                addValue(x);
+                if (x == 600) //spell is fired
+                {
+                    sendGestureMessageToActivity(100);
+                }
+                else {
+                    addValue(x);
+                }
             } else if (UUID.fromString("00004ad2-0000-1000-8000-00805f9b34fb").equals(characteristic.getUuid())) {
                 float y = ByteBuffer.wrap(val).order(ByteOrder.LITTLE_ENDIAN).getFloat();
                 addValue(y);
