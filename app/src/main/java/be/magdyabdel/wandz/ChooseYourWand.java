@@ -498,7 +498,6 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void run() {
                             tryConnectText.setVisibility(View.GONE);
-
                         }
                     });
                 }
