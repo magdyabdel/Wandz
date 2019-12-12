@@ -20,8 +20,8 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
             "Nice To Meet You &!", "Let's Start With The Tutorial.", "First Of All, Every Wizard Has It's Own Wand.",
             "You Hold This Wand Like This, At The Bottom", "Never Touch The Top Of The Wand Because Then The Magic Will Not Work!",
             "To Do A Gesture", "Press The Button.", "Don't Release The Button While Doing The Gesture", "When The Gesture Is Done", "Release The Button",
-            "You Will Notice That Your Wand Is Loaded When The Gesture Is Done Correctly.", "Lets Practice This!",
-            "stap 1", "stap 2", "stap 3", "stap 4", "stap 5", "stap 6"};
+            "Your wand lights up when its loaded", "Lets Practice This!",
+            "Each wizard has a wand", "get a higher score by killing opponents", "go hide yourself", "energy is generated over time", "standing still for too long lowers your health", "so move regularly, it generates energy faster too!"};
 
     private ImageView imageview;
     private TextView textView;
