@@ -62,7 +62,12 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
     private Profile profile;
     private Button demo;
 
+    TextView tryConnectText;
     TextView already;
+    private boolean tryconnect;
+    private int positie;
+    private long connectionTimeout;
+    private String tryConnectName;
 
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
@@ -74,6 +79,24 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                 adapter.notifyDataSetChanged();
             }
             discoveredDevicestime.set(devicesDiscovered.indexOf(result.getDevice()),currentTimeMillis());
+            if(tryconnect && devicesDiscovered.indexOf(result.getDevice())==positie){
+                connectToDeviceSelected(positie);
+                Intent intent;
+                if (profile.getSkip()) {
+                    intent = new Intent(ChooseYourWand.this, Menu.class);
+                } else {
+                    intent = new Intent(ChooseYourWand.this, Intro.class);
+                }
+                scanning = false;
+                try {
+                    unbindService(connection);
+                } catch (RuntimeException e) {
+                }
+                profile.setDemo(false);
+                intent.putExtra("profile", profile);
+                startActivity(intent);
+                finish();
+            }
         }
     };
 
@@ -176,6 +199,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
         already = findViewById(R.id.already);
         already.setText("No wand found yet, make sure there is one available!");
         already.setVisibility(View.VISIBLE);
+        tryconnect = false;
 
         devicesDiscovered = new ArrayList<>();
         discoveredDevicestime = new ArrayList<>();
@@ -187,22 +211,13 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                 new RecyclerItemClickListener(this, recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        connectToDeviceSelected(position);
-                        Intent intent;
-                        if (profile.getSkip()) {
-                            intent = new Intent(ChooseYourWand.this, Menu.class);
-                        } else {
-                            intent = new Intent(ChooseYourWand.this, Intro.class);
-                        }
-                        scanning = false;
-                        try {
-                            unbindService(connection);
-                        } catch (RuntimeException e) {
-                        }
-                        profile.setDemo(false);
-                        intent.putExtra("profile", profile);
-                        startActivity(intent);
-                        finish();
+                        tryconnect = true;
+                        positie = position;
+                        tryConnectName = devicesDiscovered.get(position).getName();
+                        tryConnectText = findViewById(R.id.tryingText);
+                        tryConnectText.setText("Trying to connect to "+ tryConnectName);
+                        tryConnectText.setVisibility(View.VISIBLE);
+                        connectionTimeout = currentTimeMillis();
                     }
 
                     @Override
@@ -437,14 +452,15 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
 
         @Override
         public void run() {
+            boolean removeText = false;
             while (scanning) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
                 int size = discoveredDevicestime.size();
                 for (int i = 0; i < size; i++) {
-                    if(discoveredDevicestime.get(i)+2500<currentTimeMillis()){
+                    if(discoveredDevicestime.get(i)+3500<currentTimeMillis()){
                         discoveredDevicestime.remove(i);
                         devicesDiscovered.remove(i);
                         runOnUiThread(new Runnable() {
@@ -456,6 +472,35 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                         size--;
                         i--;
                     }
+                }
+                if(size==0){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            already.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+                if (connectionTimeout + 4000 < currentTimeMillis() && tryconnect == true) {
+                    tryconnect = false;
+                    removeText = true;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tryConnectText.setText("Failed to connect to "+ tryConnectName + ", try again or choose another one!");
+
+                        }
+                    });
+                }
+                if (connectionTimeout + 9000 < currentTimeMillis() && removeText == true) {
+                    removeText = false;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tryConnectText.setVisibility(View.GONE);
+
+                        }
+                    });
                 }
             }
         }
