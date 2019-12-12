@@ -15,13 +15,13 @@ public class WandExplanation extends AppCompatActivity implements View.OnClickLi
             R.drawable.ic_the_wand, R.drawable.ic_dont_touch, R.drawable.ic_the_wand_button_zoom, R.drawable.ic_the_wand_button_zoom_pressed,
             R.drawable.ic_intro_small, R.drawable.ic_the_wand_button_zoom_pressed, R.drawable.ic_the_wand_button_zoom, R.drawable.ic_the_wand_without_hand,
             R.drawable.ic_profile_intro,
-            R.drawable.ic_multi_step1, R.drawable.ic_multi_step2, R.drawable.ic_multi_step3, R.drawable.ic_multi_step4, R.drawable.ic_multi_step5};
+            R.drawable.ic_multi_step1, R.drawable.ic_multi_step2, R.drawable.ic_multi_step3, R.drawable.ic_multi_step4, R.drawable.ic_multi_step5, R.drawable.ic_multi_step6};
     private String[] textViews = new String[]{
             "Nice To Meet You &!", "Let's Start With The Tutorial.", "First Of All, Every Wizard Has It's Own Wand.",
             "You Hold This Wand Like This, At The Bottom", "Never Touch The Top Of The Wand Because Then The Magic Will Not Work!",
             "To Do A Gesture", "Press The Button.", "Don't Release The Button While Doing The Gesture", "When The Gesture Is Done", "Release The Button",
             "You Will Notice That Your Wand Is Loaded When The Gesture Is Done Correctly.", "Lets Practice This!",
-            "stap 1", "stap 2", "stap 3", "stap 4", "stap 5"};
+            "stap 1", "stap 2", "stap 3", "stap 4", "stap 5", "stap 6"};
 
     private ImageView imageview;
     private TextView textView;
