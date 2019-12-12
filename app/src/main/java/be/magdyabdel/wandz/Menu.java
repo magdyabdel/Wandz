@@ -25,8 +25,12 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
 
         profile = (Profile) getIntent().getSerializableExtra("profile");
 
+        Button tutorial = findViewById(R.id.tutorial);
+        tutorial.setOnClickListener(this);
         Button training = findViewById(R.id.training);
         training.setOnClickListener(this);
+        Button spells = findViewById(R.id.spells);
+        spells.setOnClickListener(this);
         Button multiplayer = findViewById(R.id.multiplayer);
         multiplayer.setOnClickListener(this);
         Button wand = findViewById(R.id.setup_wand);
@@ -53,8 +57,16 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View view) {
         Intent intent = new Intent(this, Menu.class);
         switch (view.getId()) {
+            case R.id.tutorial:
+                intent = new Intent(this, WandExplanation.class);
+                profile.setSkip(false);
+                break;
             case R.id.training:
                 intent = new Intent(this, LearnTheGestures.class);
+                profile.setSkip(true);
+                break;
+            case R.id.spells:
+                intent = new Intent(this, SpellsActivity.class);
                 profile.setSkip(true);
                 break;
             case R.id.multiplayer:

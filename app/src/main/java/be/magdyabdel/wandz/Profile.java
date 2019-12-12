@@ -255,6 +255,7 @@ public class Profile implements Serializable {
                     }
                     break;
                 case R.id.random:
+                case R.id.randomButtonText:
                     outfit_color_array_id = new Random().nextInt(outfitColors.length);
                     skin_color_array_id = new Random().nextInt(skinColors.length);
                     hair_color_array_id = new Random().nextInt(hairColors.length);

@@ -45,6 +45,8 @@ public class ChangeProfileIcon extends AppCompatActivity implements View.OnClick
         ready.setOnClickListener(this);
         ImageView random = findViewById(R.id.random);
         random.setOnClickListener(this);
+        TextView randomText = findViewById(R.id.randomButtonText);
+        randomText.setOnClickListener(this);
 
         profile_image = findViewById(R.id.profile_vector);
         profile = (Profile) getIntent().getSerializableExtra("profile");
