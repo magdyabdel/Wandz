@@ -94,7 +94,21 @@
 	<string name="results_mvp">MVP</string>
 	<string name="results_second">2nd</string>
 	<string name="results_third">3rd</string>
-    <string name="skip_the_intro">skip the intro</string>
-    <string name="choose_another">A Wizard Has Only One Wand! Disconnect From Your Current Wand To connect To Another.</string>
+	<string name="skip_the_intro">skip the intro</string>
+	<string name="choose_another">A Wizard Has Only One Wand! Disconnect From Your Current Wand To connect To Another.
+	</string>
 	<string name="Disconnect">Disconnect</string>
+	<string name="spells">spells</string>
+	<string name="spellName1">spellie</string>
+	<string name="spellName2">spillie</string>
+	<string name="spellName3">spollie</string>
+	<string name="damage">damage</string>
+	<string name="damage1">200</string>
+	<string name="damage2">300</string>
+	<string name="damage3">100</string>
+	<string name="healthMin">health -</string>
+	<string name="healthPlus">health +</string>
+	<string name="spellsInfo">These are the spells you can conjure.\nThe inflicted damage to your opponent is the score you get.
+	</string>
+	<string name="tutorial">tutorial</string>
 </resources>
