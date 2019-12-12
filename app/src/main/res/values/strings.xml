@@ -111,4 +111,6 @@
 	<string name="spellsInfo">These are the spells you can conjure.\nThe inflicted damage to your opponent is the score you get.
 	</string>
 	<string name="tutorial">tutorial</string>
+    <string name="done">Done!</string>
+    <string name="menu">Menu</string>
 </resources>

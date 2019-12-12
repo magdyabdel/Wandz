@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context=".Trainingmode"
     tools:openDrawer="start">
 
     <ViewStub
@@ -107,13 +106,13 @@
                     app:layout_constraintBottom_toTopOf="@+id/training_mode"/>
             
             <Button
-                    android:id="@+id/multiplayer"
+                android:id="@+id/stop_game"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginBottom="8dp"
                     android:backgroundTint="@color/ButtonColor"
-                    android:text="@string/multiplayer"
+                android:text="@string/stop_the_game"
                     android:fontFamily="@font/big_john"
                     android:textColor="@color/ButtonTextColor"
                     android:textSize="20sp"

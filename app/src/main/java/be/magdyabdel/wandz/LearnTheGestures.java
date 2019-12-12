@@ -86,6 +86,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
         next.setOnClickListener(this);
         previous = findViewById(R.id.previous);
         previous.setOnClickListener(this);
+        previous.setText(R.string.menu);
 
         well_done = findViewById(R.id.well_done);
         well_done.setText("");
@@ -147,9 +148,18 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                         mBound = false;
                     } catch (RuntimeException e) {
                     }
-                    Intent intent = new Intent(this, Menu.class);
-                    intent.putExtra("profile", profile);
-                    startActivity(intent);
+                    if (profile.getSkip()) {
+                        Intent intent = new Intent(this, Menu.class);
+                        intent.putExtra("profile", profile);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(this, WandzExplanation_Activity.class);
+                        intent.putExtra("animationstart", 12);
+                        intent.putExtra("profile", profile);
+                        startActivity(intent);
+                        finish();
+                    }
                 } else {
                     new LearnTheGestures.AnimThread(gesture).start();
                 }

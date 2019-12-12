@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_background_gradient"
-    tools:context=".WandExplanation">
+    tools:context=".WandzExplanation_Activity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"
@@ -21,37 +21,48 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.33" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
     <Button
-            android:id="@+id/practice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/ButtonColor"
-            android:fontFamily="@font/big_john"
-            android:text="@string/practice"
-            android:textColor="@color/ButtonTextColor"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-    
+        android:id="@+id/practice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/ButtonColor"
+        android:fontFamily="@font/big_john"
+        android:stateListAnimator="@null"
+        android:text="@string/practice"
+        android:textColor="@color/ButtonTextColor"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3" />
+
     <Button
-            android:id="@+id/skip"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/ButtonColor"
-            android:fontFamily="@font/big_john"
-            android:text="@string/skip_the_tutorial"
-            android:textColor="@color/ButtonTextColor"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:stateListAnimator="@null"/>
+        android:id="@+id/skip"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/ButtonColor"
+        android:fontFamily="@font/big_john"
+        android:stateListAnimator="@null"
+        android:text="@string/skip_the_tutorial"
+        android:textColor="@color/ButtonTextColor"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
     <ImageView
             android:id="@+id/imageView"
@@ -93,7 +104,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:onClick="onClick"
-        app:layout_constraintBottom_toTopOf="@+id/practice"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline1"
         app:layout_constraintTop_toTopOf="parent">
@@ -107,7 +118,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:onClick="onClick"
-        app:layout_constraintBottom_toTopOf="@+id/practice"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

@@ -31,7 +31,7 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         training.setOnClickListener(this);
         Button spells = findViewById(R.id.spells);
         spells.setOnClickListener(this);
-        Button multiplayer = findViewById(R.id.multiplayer);
+        Button multiplayer = findViewById(R.id.stop_game);
         multiplayer.setOnClickListener(this);
         Button wand = findViewById(R.id.setup_wand);
         wand.setOnClickListener(this);
@@ -58,7 +58,7 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         Intent intent = new Intent(this, Menu.class);
         switch (view.getId()) {
             case R.id.tutorial:
-                intent = new Intent(this, WandExplanation.class);
+                intent = new Intent(this, WandzExplanation_Activity.class);
                 profile.setSkip(false);
                 break;
             case R.id.training:
@@ -69,7 +69,7 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
                 intent = new Intent(this, SpellsActivity.class);
                 profile.setSkip(true);
                 break;
-            case R.id.multiplayer:
+            case R.id.stop_game:
                 intent = new Intent(this, MultiplayerConnect.class);
                 break;
             case R.id.setup_wand:

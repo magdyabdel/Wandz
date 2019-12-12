@@ -271,7 +271,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         Button leaveGame = findViewById(R.id.training_mode);
         leaveGame.setOnClickListener(this);
         leaveGame.setText("Leave The Game");
-        stop = findViewById(R.id.multiplayer);
+        stop = findViewById(R.id.stop_game);
         stop.setText("Stop The Game");
         stop.setVisibility(View.GONE);
         /******* Navigation Drawer *******/
@@ -440,7 +440,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 startActivity(intent);
                 finish();
                 break;
-            case R.id.multiplayer:
+            case R.id.stop_game:
                 if (master) {
                     new Multiplayer.WriteThread("STOP").start();
                 }

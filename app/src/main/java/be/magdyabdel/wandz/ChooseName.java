@@ -56,7 +56,7 @@ public class ChooseName extends AppCompatActivity implements View.OnClickListene
                         intent = new Intent(this, Menu.class);
                         intent.putExtra("skip", true);
                     } else {
-                        intent = new Intent(this, WandExplanation.class);
+                        intent = new Intent(this, WandzExplanation_Activity.class);
                     }
                     intent.putExtra("profile", profile);
                     startActivity(intent);

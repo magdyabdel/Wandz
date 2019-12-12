@@ -97,7 +97,7 @@
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toEndOf="@+id/training"
     />
     <Button
-            android:id="@+id/multiplayer"
+        android:id="@+id/stop_game"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:backgroundTint="@color/ButtonColor"
