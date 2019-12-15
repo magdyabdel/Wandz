@@ -1,6 +1,7 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     private Boolean joined = false;
     private Boolean master = false;
     private Boolean started = null;
+    private MediaPlayer mediaplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,9 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                             Toast.makeText(MultiplayerConnect.this, "Something went wrong with the connection to the server. Try again!", Toast.LENGTH_SHORT).show();
                         }
                     }
+        mediaplayer = MediaPlayer.create(MultiplayerConnect.this,R.raw.intro);
+        mediaplayer.setLooping(true);
+        mediaplayer.start();
     }
 
     private void addProfile(int ids, String names, int layoutNumberss) {
@@ -186,10 +191,21 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
     }
 
     private void stopIt() {
+        releasemediaplayer();
         profile.setId(-1);
         connected = false;
         joined = false;
     }
+
+    public void releasemediaplayer(){
+        try {
+            mediaplayer.stop();
+            mediaplayer.release();
+            mediaplayer = null;
+        } catch (NullPointerException e) {
+        }
+    }
+
 
     class ReadThread extends Thread {
         ReadThread() {
@@ -256,6 +272,7 @@ public class MultiplayerConnect extends AppCompatActivity implements View.OnClic
                             if (joined) {
                                 connected = false;
                                 joined = false;
+                                releasemediaplayer();
                                 Intent intent = new Intent(MultiplayerConnect.this, Multiplayer.class);
                                 intent.putExtra("profile", profile);
                                 intent.putExtra("conman", connectionManager);

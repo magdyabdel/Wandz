@@ -80,22 +80,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
             }
             discoveredDevicestime.set(devicesDiscovered.indexOf(result.getDevice()),currentTimeMillis());
             if(tryconnect && devicesDiscovered.indexOf(result.getDevice())==positie){
-                connectToDeviceSelected(positie);
-                Intent intent;
-                if (profile.getSkip()) {
-                    intent = new Intent(ChooseYourWand.this, Menu.class);
-                } else {
-                    intent = new Intent(ChooseYourWand.this, Intro.class);
-                }
-                scanning = false;
-                try {
-                    unbindService(connection);
-                } catch (RuntimeException e) {
-                }
-                profile.setDemo(false);
-                intent.putExtra("profile", profile);
-                startActivity(intent);
-                finish();
+
             }
         }
     };
@@ -218,6 +203,22 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                         tryConnectText.setText("Trying to connect to "+ tryConnectName);
                         tryConnectText.setVisibility(View.VISIBLE);
                         connectionTimeout = currentTimeMillis();
+                        connectToDeviceSelected(positie);
+                        Intent intent;
+                        if (profile.getSkip()) {
+                            intent = new Intent(ChooseYourWand.this, Menu.class);
+                        } else {
+                            intent = new Intent(ChooseYourWand.this, Intro.class);
+                        }
+                        scanning = false;
+                        try {
+                            unbindService(connection);
+                        } catch (RuntimeException e) {
+                        }
+                        profile.setDemo(false);
+                        intent.putExtra("profile", profile);
+                        startActivity(intent);
+                        finish();
                     }
 
                     @Override

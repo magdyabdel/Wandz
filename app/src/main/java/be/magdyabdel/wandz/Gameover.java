@@ -1,7 +1,9 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +24,7 @@ public class Gameover extends AppCompatActivity implements View.OnClickListener 
     private Profile profile;
     private Boolean master;
     private ConnectionManager connectionManager;
+    private static MediaPlayer play;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +72,28 @@ public class Gameover extends AppCompatActivity implements View.OnClickListener 
         }
         Button menu = findViewById(R.id.menu);
         menu.setOnClickListener(this);
-        if (master) {
-            new StopThread().start();
+
+        Log.i("gameover ID's", ""+profile.getId() +" "+profiles.get(0).getId());
+        if(play == null){
+        if(profile.getId()==profiles.get(0).getId()){
+            play = MediaPlayer.create(Gameover.this,R.raw.epicwin);
         }
+        else{
+            play = MediaPlayer.create(Gameover.this,R.raw.lose);
+        }
+        play.setLooping(true);
+        play.start();}
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.menu:
-                Intent intent = new Intent(this, Menu.class);
+                play.stop();
+                play.reset();
+                play.release();
+                play = null;
+                Intent intent = new Intent(Gameover.this, Menu.class);
                 profile.setScore(0);
                 profile.setId(-1);
                 intent.putExtra("profile", profile);
@@ -88,14 +103,16 @@ public class Gameover extends AppCompatActivity implements View.OnClickListener 
         }
     }
 
-    class StopThread extends Thread {
-        StopThread() {
+    public boolean releasemediaplayer(){
+        try {
+            play.stop();
+            play.reset();
+            play.release();
+            play = null;
+            return true;
+        } catch (NullPointerException e) {
         }
-
-        @Override
-        public void run() {
-            connectionManager.sendData("STOP");
-        }
+        return false;
     }
 
     private class ScoreComparator implements Comparator<Profile> {

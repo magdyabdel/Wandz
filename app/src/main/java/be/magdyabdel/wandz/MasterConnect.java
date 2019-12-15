@@ -1,6 +1,7 @@
 package be.magdyabdel.wandz;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
     private String[] modes = new String[]{"ELIMINATION", "TEAMELIMINATION", "CORRUPTEDWIZARD", "SPIRALDEFENSE"};
     private int mode = 0;
     private boolean master = true;
+    private MediaPlayer mediaplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,9 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
         enter.setOnClickListener(this);
         Button next = findViewById(R.id.next);
         next.setOnClickListener(this);
+        mediaplayer = MediaPlayer.create(MasterConnect.this,R.raw.intro);
+        mediaplayer.setLooping(true);
+        mediaplayer.start();
     }
 
     private void addProfile(int ids, String names, int layoutNumberss) {
@@ -224,6 +229,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                 connected = false;
                 profile.setId(-1);
 
+                releasemediaplayer();
                 Intent intent = new Intent(this, Menu.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);
@@ -253,6 +259,12 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                 writeThread6.start();//TODO: check mode & Timeout
                 break;
         }
+    }
+
+    public void releasemediaplayer(){
+        mediaplayer.stop();
+        mediaplayer.release();
+        mediaplayer=null;
     }
 
     class ReadThread extends Thread {
@@ -332,6 +344,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                         case "START":
                             started = true;
                             connected = false;
+                            releasemediaplayer();
                             Intent intent = new Intent(MasterConnect.this, Multiplayer.class);
                             intent.putExtra("profile", profile);
                             intent.putExtra("conman", connectionManager);
@@ -464,6 +477,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                         connected = false;
                         joined = false;
                         profile.setId(-1);
+                        releasemediaplayer();
                         Intent intent = new Intent(MasterConnect.this, Menu.class);
                         intent.putExtra("profile", profile);
                         startActivity(intent);
@@ -512,6 +526,7 @@ public class MasterConnect extends AppCompatActivity implements View.OnClickList
                 connected = false;
                 joined = false;
                 profile.setId(-1);
+                releasemediaplayer();
                 Intent intent = new Intent(MasterConnect.this, Menu.class);
                 intent.putExtra("profile", profile);
                 startActivity(intent);

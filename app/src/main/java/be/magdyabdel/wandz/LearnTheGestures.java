@@ -39,6 +39,8 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
 
     private BLEService mService;
     private boolean mBound = false;
+    private MediaPlayer mediaplayer;
+
     private ServiceConnection connection = new ServiceConnection() {
 
         @Override
@@ -61,13 +63,13 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 int gest = intent.getIntExtra("gesture", 0);
                 if (gest == (gesture + 1)) {
                     mService.sendGesture((byte) gest);
-                    MediaPlayer tadaa= MediaPlayer.create(LearnTheGestures.this,R.raw.tadaa);
-                    tadaa.start();
+                    mediaplayer= MediaPlayer.create(LearnTheGestures.this,R.raw.tadaa);
+                    mediaplayer.start();
                     setCorrectOrNot(true);
                 } else {
                     setCorrectOrNot(false);
-                    MediaPlayer fail= MediaPlayer.create(LearnTheGestures.this,R.raw.fail);
-                    fail.start();
+                    mediaplayer = MediaPlayer.create(LearnTheGestures.this,R.raw.fail);
+                    mediaplayer.start();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                     } else {
@@ -132,6 +134,7 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                     previous.setText("Menu");
                     new LearnTheGestures.AnimThread(gesture).start();
                 } else if (gesture < 0) {
+                    releasemediaplayer();
                     Intent intent = new Intent(this, Menu.class);
                     intent.putExtra("profile", profile);
                     LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
@@ -153,12 +156,14 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                     } catch (RuntimeException e) {
                     }
                     if (profile.getSkip()) {
+                        releasemediaplayer();
                         Intent intent = new Intent(this, Menu.class);
                         intent.putExtra("profile", profile);
                         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
                         startActivity(intent);
                         finish();
                     } else {
+                        releasemediaplayer();
                         Intent intent = new Intent(this, WandzExplanation_Activity.class);
                         intent.putExtra("animationstart", 12);
                         intent.putExtra("profile", profile);
@@ -188,6 +193,15 @@ public class LearnTheGestures extends AppCompatActivity implements View.OnClickL
                 delayThread.start();
             }
         });
+    }
+
+    public void releasemediaplayer(){
+        try {
+            mediaplayer.stop();
+            mediaplayer.release();
+            mediaplayer = null;
+        } catch (NullPointerException e) {
+        }
     }
 
     class DelayThread extends Thread {
