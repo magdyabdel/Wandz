@@ -81,6 +81,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     private StepDetector simpleStepDetector;
     private SensorManager sensorManager;
+    private int amountsteps;
     private Sensor accel;
     private long lastHitTime;
     private BroadcastReceiver hitReceiver = new BroadcastReceiver() {
@@ -89,24 +90,24 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             {
                 int gest = intent.getIntExtra("hitCode", 0);
                 int spell = (gest & 0x000000FF);
-                Log.i("spreuk", ""+spell);
+                Log.i("spreuk", "" + spell);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
                 Log.i("receivedID", "" + attackerID);
 
-                if (attackerID != profile.getId() && !dead && (currentTimeMillis()>(lastHitTime+5))) {
+                if (attackerID != profile.getId() && !dead && (currentTimeMillis() > (lastHitTime + 5))) {
                     lastHitTime = currentTimeMillis();
                     Log.i("attackerID", Integer.toString(attackerID));
                     Log.i("profileID", Integer.toString(profile.getId()));
                     setHealth(spell);
                     mService.sendGesture((byte) 100);
                     if (health <= 0) {
-                        mediaplayer = MediaPlayer.create(Multiplayer.this,R.raw.gameover);
+                        mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.gameover);
                         mediaplayer.start();
                         sendHit(attackerID, spell);
                         new WriteThread("DEAD " + profile.getId() + " " + attackerID + " " + spell).start();
-                    }
-                    else{
-                        mediaplayer = MediaPlayer.create(Multiplayer.this,R.raw.punch);
+                        dead = true;
+                    } else {
+                        mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.punch);
                         mediaplayer.start();
                         sendHit(attackerID, spell);
                     }
@@ -128,13 +129,12 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 int gest = intent.getIntExtra("gesture", 0);
                 Log.i("testje", "" + gest);
                 if (gest == 100) { //spell is fired
-                    mediaplayer = MediaPlayer.create(Multiplayer.this,R.raw.spell1);
+                    mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.spell1);
                     mediaplayer.start();
-                }
-                else if(gest != 0) {
+                } else if (gest != 0) {
                     Log.i("hier?", "hallo");
                     shoot = false;
-                    mediaplayer = MediaPlayer.create(Multiplayer.this,R.raw.goodgesture);
+                    mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.goodgesture);
                     mediaplayer.start();
                     switch (gest) {
                         case 1:
@@ -155,7 +155,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         }
     };
 
-    private void shoot(int gest){
+    private void shoot(int gest) {
         setPower(gest);
         mService.sendGesture((byte) gest);
     }
@@ -179,7 +179,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     };
 
     private void addOwnScore(int spell) {
-        int addscore=0;
+        int addscore = 0;
         switch (spell) {
             case 1:
                 addscore = abs(healtSpell1);
@@ -191,7 +191,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 addscore = abs(healtSpell3);
                 break;
         }
-        Log.i("addscore", " "+addscore);
+        Log.i("addscore", " " + addscore);
         score += addscore;
         runOnUiThread(new Runnable() {
             @Override
@@ -203,7 +203,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
     private void setScore(int score, int ID) {
 
-        Log.i("setscore", " "+score);
+        Log.i("setscore", " " + score);
         getProfileById(ID).setScore(score);
     }
 
@@ -219,13 +219,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             case 3:
                 health -= healtSpell3;
                 if (health <= 0) {
-                    new WriteThread("DEAD " + profile.getId() + " " + profile.getId()+ " " + 4).start();
+                    mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.gameover);
+                    mediaplayer.start();
+                    new WriteThread("DEAD " + profile.getId() + " " + profile.getId() + " " + 4).start();
                     dead = true;
                 }
                 break;
             case 4:
                 health += healtSpell4;
-                if(health > 1000){
+                if (health > 1000) {
                     health = 1000;
                 }
                 break;
@@ -265,7 +267,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
-    public void onWindowFocusChanged (boolean hasFocus){
+    public void onWindowFocusChanged(boolean hasFocus) {
         if (hasFocus) {
             hideSystemUI();
         }
@@ -324,7 +326,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         profile.setProfileImage(this, profileImageView);
         profile.setProfileImage(this, profile_image_drawer);
         TextView multiplayer_name = findViewById(R.id.multiplayer_name);
-        multiplayer_name.setText(Integer.toString(profile.getId()));
+        multiplayer_name.setText(profile.getName());
 
         health_progressBar = findViewById(R.id.health_progressBar);
         health_progressBar.setProgress(health);
@@ -353,8 +355,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         if (master) {
             stop.setVisibility(View.VISIBLE);
             stop.setOnClickListener(this);
-        }
-        else{
+        } else {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -364,19 +365,21 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         power = 1000;
         new ConnectionThread().start();
 
-        mediaplayer = MediaPlayer.create(Multiplayer.this,R.raw.countdown);
+        mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.countdown);
         mediaplayer.start();
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
         }
+        new HealthThread().start();
+
         Intent intent1 = new Intent(this, BLEService.class);
         bindService(intent1, connection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(hitReceiver, new IntentFilter("hitUpdate")); //broadcast receiver
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(gestureReceiver, new IntentFilter("GestureUpdate"));
         lastHitTime = currentTimeMillis();
-
-        Log.i("amount profiles",""+ profiles.size());
+        amountsteps = 0;
+        Log.i("amount profiles", "" + profiles.size());
 
     }
 
@@ -391,14 +394,15 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     public void step(long timeNs) {
-        power+=15;
+        power += 15;
+        amountsteps++;
     }
 
     private Profile getProfileById(int id) {
         Iterator iterator = profiles.iterator();
         while (iterator.hasNext()) {
             Profile currentProfile = (Profile) iterator.next();
-            Log.i("ID's", ""+ currentProfile.getId() + " " + id);
+            Log.i("ID's", "" + currentProfile.getId() + " " + id);
             if (currentProfile.getId() == id) {
                 return currentProfile;
             }
@@ -447,6 +451,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     class WriteThread extends Thread {
 
         String message;
+
         WriteThread(String message) {
             this.message = message;
         }
@@ -474,7 +479,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 if (connected) {
                     if (joined) {
                         new WriteThread("LEAVE").start();
-                        new WriteThread("DEAD " + profile.getId() + " " + profile.getId() ).start();
+                        new WriteThread("DEAD " + profile.getId() + " " + profile.getId()).start();
                         int i = 0;
                         while (joined && i < 10) {
                             if (!getInternetAccess()) {
@@ -541,7 +546,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         return false;
     }
 
-    public void releasemediaplayer(){
+    public void releasemediaplayer() {
         mediaplayer.release();
         mediaplayer = null;
     }
@@ -586,10 +591,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     finish();
                 }
             }
-
             new ReadThread().start();
             new PowerThread().start();
-
 
             while (connected) {
                 while (busy) {
@@ -664,21 +667,21 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             }
                             break;
                         case "HIT":
-                                Log.i("HIT", ""+Integer.parseInt(splittedCommand[1])+Integer.parseInt(splittedCommand[2])+Integer.parseInt(splittedCommand[3]));
-                                if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
-                                    addOwnScore(Integer.parseInt(splittedCommand[3]));
-                                    mediaplayer = MediaPlayer.create(Multiplayer.this,R.raw.welldone);
-                                    mediaplayer.start();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
-                                            if(Integer.parseInt(splittedCommand[3]) == 3) {
-                                                setHealth(4);
-                                            }
+                            Log.i("HIT", "" + Integer.parseInt(splittedCommand[1]) + Integer.parseInt(splittedCommand[2]) + Integer.parseInt(splittedCommand[3]));
+                            if (Integer.parseInt(splittedCommand[1]) == profile.getId()) {
+                                addOwnScore(Integer.parseInt(splittedCommand[3]));
+                                mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.welldone);
+                                mediaplayer.start();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        lastHit.setText("Your Last Hit Is " + getNameById(Integer.parseInt(splittedCommand[2])));
+                                        if (Integer.parseInt(splittedCommand[3]) == 3) {
+                                            setHealth(4);
                                         }
-                                    });
-                                }
+                                    }
+                                });
+                            }
                             break;
                         case "SCORE":
                             runOnUiThread(new Runnable() {
@@ -687,14 +690,14 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                     stop.setText("Game Finished!");
                                 }
                             });
-                            if(startGetScores){
+                            if (startGetScores) {
                                 startGetScores = false;
                                 playersGotScore = profiles.size();
                             }
-                            Log.i("received",""+ Integer.parseInt(splittedCommand[1]));
+                            Log.i("received", "" + Integer.parseInt(splittedCommand[1]));
                             playersGotScore--;
-                            setScore(Integer.parseInt(splittedCommand[2]),Integer.parseInt(splittedCommand[1]));
-                            if(playersGotScore <=1) {
+                            setScore(Integer.parseInt(splittedCommand[2]), Integer.parseInt(splittedCommand[1]));
+                            if (playersGotScore <= 1) {
                                 stopIt();
                                 Intent intent2 = new Intent(Multiplayer.this, Gameover.class);
                                 intent2.putExtra("profile", profile);
@@ -732,24 +735,22 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                                         }
                                     });
                                 }
+                            }
+                            playersInGame--;
+                            if (playersInGame <= 1) {
+                                if (!dead) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            lastHit.setText("You are the only surviver!");
+                                            lastHitBy.setText("You are the only survivor                                                                              !");
+                                        }
+                                    });
                                 }
-                                playersInGame--;
-
-
-                                if (playersInGame <= 1) {
-                                    if (!dead) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                lastHit.setText("You are the only surviver!");
-                                                lastHitBy.setText("You are the only survivor                                                                              !");
-                                            }
-                                        });
-                                    }
-                                    if(master){
-                                        new Multiplayer.WriteThread("STOP").start();
-                                    }
+                                if (master) {
+                                    new Multiplayer.WriteThread("STOP").start();
                                 }
+                            }
 
                             break;
                     }
@@ -766,6 +767,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
 
         PowerThread() {
         }
+
         @Override
         public void run() {
             while (connected && joined && !dead) {
@@ -776,22 +778,19 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                             power++;
                             energy_progressBar.setProgress(power);
                         }
-                        if(power<powerDamage){
+                        if (power < powerDamage) {
                             gestureImage1.setColorFilter(grayscalefilter);
                             gestureImage2.setColorFilter(grayscalefilter);
                             gestureImage3.setColorFilter(grayscalefilter);
-                        }
-                        else if(power<powerDamageMyHealth){
+                        } else if (power < powerDamageMyHealth) {
                             gestureImage1.setColorFilter(null);
                             gestureImage2.setColorFilter(grayscalefilter);
                             gestureImage3.setColorFilter(grayscalefilter);
-                        }
-                        else if(power<powerDamageOtherHealth){
+                        } else if (power < powerDamageOtherHealth) {
                             gestureImage1.setColorFilter(null);
                             gestureImage2.setColorFilter(null);
                             gestureImage3.setColorFilter(grayscalefilter);
-                        }
-                        else{
+                        } else {
                             gestureImage1.setColorFilter(null);
                             gestureImage2.setColorFilter(null);
                             gestureImage3.setColorFilter(null);
@@ -807,4 +806,36 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             power = 0;
         }
     }
+
+    class HealthThread extends Thread {
+
+        HealthThread() {
+        }
+
+        @Override
+        public void run() {
+            while (connected && joined && !dead) {
+                try {
+                    Thread.sleep(7500);
+                } catch (InterruptedException e) {
+                }
+                if (amountsteps < 2) {
+                    health -= 30;
+                    amountsteps = 0;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        health_progressBar.setProgress(health);
+                        if (health <= 0) {
+                            mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.gameover);
+                            mediaplayer.start();
+                            new WriteThread("DEAD " + profile.getId() + " " + profile.getId() + " " + 5).start();
+                        }
+                    }
+                });
+            }
+        }
+    }
 }
+
