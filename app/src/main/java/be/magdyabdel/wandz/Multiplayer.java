@@ -816,11 +816,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         public void run() {
             while (connected && joined && !dead) {
                 try {
-                    Thread.sleep(7500);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                 }
                 if (amountsteps < 2) {
-                    health -= 30;
+                    health -= 40;
                     amountsteps = 0;
                 }
                 runOnUiThread(new Runnable() {
