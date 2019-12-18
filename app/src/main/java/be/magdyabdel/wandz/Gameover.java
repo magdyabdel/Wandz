@@ -76,10 +76,10 @@ public class Gameover extends AppCompatActivity implements View.OnClickListener 
         Log.i("gameover ID's", ""+profile.getId() +" "+profiles.get(0).getId());
         if(play == null){
         if(profile.getId()==profiles.get(0).getId()){
-            play = MediaPlayer.create(Gameover.this,R.raw.epicwin);
+            play = MediaPlayer.create(Gameover.this,R.raw.fanfare);
         }
         else{
-            play = MediaPlayer.create(Gameover.this,R.raw.lose);
+            play = MediaPlayer.create(Gameover.this,R.raw.game_over);
         }
         play.setLooping(true);
         play.start();}
