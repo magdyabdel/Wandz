@@ -137,20 +137,24 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 } else if (gest != 0) {
                     Log.i("hier?", "hallo");
                     shoot = false;
-                    mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.goodgesture);
-                    mediaplayer.start();
                     switch (gest) {
                         case 1:
-                            if (power > powerDamage) shoot = true;
-                            shoot(gest);
+                            if (power > powerDamage) {
+                                shoot = true;
+                                shoot(gest);
+                            }
                             break;
                         case 2:
-                            if (power > powerDamageMyHealth) shoot = true;
-                            shoot(gest);
+                            if (power > powerDamageMyHealth) {
+                                shoot = true;
+                                shoot(gest);
+                            }
                             break;
                         case 3:
-                            if (power > powerDamageOtherHealth) shoot = true;
-                            shoot(gest);
+                            if (power > powerDamageOtherHealth) {
+                                shoot = true;
+                                shoot(gest);
+                            }
                             break;
                     }
                 }
@@ -159,6 +163,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     };
 
     private void shoot(int gest) {
+        mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.goodgesture);
+        mediaplayer.start();
         setPower(gest);
         mService.sendGesture((byte) gest);
     }
