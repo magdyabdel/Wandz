@@ -1,5 +1,6 @@
 package be.magdyabdel.wandz;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.WindowManager;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
@@ -319,6 +322,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         stop.setVisibility(View.GONE);
         /******* Navigation Drawer *******/
 
+        ImageView navdraw_button = findViewById(R.id.navdraw_button);
+        navdraw_button.setOnClickListener(this);
+
         profile = (Profile) getIntent().getSerializableExtra("profile");
         id = profile.getId();
         yourNameTextView.setText(profile.getName());
@@ -470,11 +476,18 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     public void onClick(View view) {
 
         switch (view.getId()) {
+            case R.id.navdraw_button:
+                DrawerLayout navDrawer = findViewById(R.id.drawer_layout);
+                // If the navigation drawer is not open then open it, if its already open then close it.
+                if(!navDrawer.isDrawerOpen(Gravity.START)) navDrawer.openDrawer(Gravity.START);
+                else navDrawer.closeDrawer(Gravity.END);
 
+                break;
             case R.id.training_mode:
                 if (connected) {
                     if (joined) {
