@@ -63,7 +63,6 @@
 	<string name="enter_training_world">Training</string>
 	<string name="feel_the_magic">Feel The Magic!</string>
 	<string name="change_profile">Profile</string>
-	<string name="back_to_menu">Back To Menu</string>
 	<string name="click_here_if_you_re_the_gamemaster">Click Here If You\'re The GameMaster</string>
 	<string name="stop_the_game">Stop Game</string>
 	<string name="enter_the_secret_code_to_enter_master_mode">Enter the secret code to claim master</string>
@@ -113,4 +112,8 @@
 	<string name="tutorial">tutorial</string>
     <string name="done">Done!</string>
     <string name="menu">Menu</string>
+    <string name="spellName4">Stupefy</string>
+	<string name="spellName5">SectumSempra</string>
+	<string name="spellName6">Expecto Patronum</string>
+	<string name="back_to_menu">To Menu</string>
 </resources>

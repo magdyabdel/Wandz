@@ -48,8 +48,8 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     private int score = 0;
     private int power = 1000;
     private int health = 1000;
-    private int powerDamage = 150;
-    private int powerDamageMyHealth = 200;
+    private int powerDamage = 200;
+    private int powerDamageMyHealth = 150;
     private int powerDamageOtherHealth = 300;
     private int healtSpell1 = 200;
     private int healtSpell2 = 300;
@@ -218,7 +218,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 break;
             case 3:
                 health -= healtSpell3;
-                if (health <= 0) {
+                if (health <= 0 && !dead) {
                     mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.gameover);
                     mediaplayer.start();
                     new WriteThread("DEAD " + profile.getId() + " " + profile.getId() + " " + 4).start();
@@ -357,7 +357,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
             stop.setOnClickListener(this);
         } else {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(350);
             } catch (InterruptedException e) {
             }
         }
@@ -827,10 +827,11 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         health_progressBar.setProgress(health);
-                        if (health <= 0) {
+                        if (health <= 0 & !dead) {
                             mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.gameover);
                             mediaplayer.start();
                             new WriteThread("DEAD " + profile.getId() + " " + profile.getId() + " " + 5).start();
+                            dead=true;
                         }
                     }
                 });

@@ -185,7 +185,7 @@ public class WandzExplanation_Activity extends AppCompatActivity implements View
                             delay(50);
                         }
                         if (practice && speed.equals(Speed.NORMAL)) {
-                            Intent intent = new Intent(WandzExplanation_Activity.this, Menu.class);
+                            Intent intent = new Intent(WandzExplanation_Activity.this, SpellsActivity.class);
                             intent.putExtra("profile", profile);
                             startActivity(intent);
                             finish();
@@ -237,7 +237,7 @@ public class WandzExplanation_Activity extends AppCompatActivity implements View
                         delay(50);
                     }
                     if (practice && speed.equals(Speed.NORMAL)) {
-                        Intent intent = new Intent(WandzExplanation_Activity.this, Menu.class);
+                        Intent intent = new Intent(WandzExplanation_Activity.this, SpellsActivity.class);
                         intent.putExtra("profile", profile);
                         startActivity(intent);
                         finish();
