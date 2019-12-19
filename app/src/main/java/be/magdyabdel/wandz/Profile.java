@@ -27,6 +27,15 @@ public class Profile implements Serializable {
     private Boolean demo = true;
     private Boolean skip = false;
     private int score = 0;
+    private Boolean defaultOutfit = true;
+
+    public Boolean getDefaultOutfit() {
+        return defaultOutfit;
+    }
+
+    public void setDefaultOutfit(Boolean defaultOutfit) {
+        this.defaultOutfit = defaultOutfit;
+    }
 
     public int getScore() {
         return score;

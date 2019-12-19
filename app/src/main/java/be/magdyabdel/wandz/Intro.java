@@ -152,8 +152,6 @@ public class Intro extends AppCompatActivity implements View.OnClickListener {
                 } else {
                     delay(1000);
                 }
-
-
             }
             if (!profile.getSkip()) {
                 Intent intent = new Intent(Intro.this, ChooseName.class);

@@ -45,9 +45,13 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         ImageView closeApp = findViewById(R.id.app_close);
         closeApp.setOnClickListener(this);
 
-
         welcome.setText("Welcome " + profile.getName());
         profile.setProfileImage(this, profile_image);
+        if (profile.getDefaultOutfit()) {
+            profile.changeProfileByButton(R.id.random);
+            profile.setProfileImage(this, profile_image);
+            profile.setDefaultOutfit(false);
+        }
 
         multiplayer.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(profile.getOutfitColors()[profile.getOutfit_color_array_id()])));
         multiplayer.setTextColor(Color.parseColor(profile.getOutfitColorsTwo()[profile.getOutfit_color_array_id()]));
