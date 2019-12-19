@@ -407,7 +407,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
     }
 
     public void step(long timeNs) {
-        power += 15;
+        power += 25;
         amountsteps++;
     }
 
@@ -818,7 +818,7 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     }
                 });
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(150);
                 } catch (InterruptedException e) {
                 }
 
