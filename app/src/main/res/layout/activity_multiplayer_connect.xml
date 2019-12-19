@@ -104,6 +104,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/big_john"
+        android:gravity="center"
         android:text="Wait till the master starts the game!"
         android:textColor="@color/wizardGrey"
         android:textSize="14sp"

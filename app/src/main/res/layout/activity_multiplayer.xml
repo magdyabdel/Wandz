@@ -249,7 +249,9 @@
     
         <ImageView
                 android:layout_width="0dp"
-                android:layout_height="0dp" app:srcCompat="@drawable/ic_profile" android:id="@+id/imageView3"
+            android:id="@+id/profile_hit"
+            android:layout_height="0dp"
+            app:srcCompat="@drawable/ic_profile"
                 app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="32dp" app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="32dp"
@@ -258,7 +260,9 @@
                 android:text="@string/hitYou"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView14" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            android:id="@+id/text_hit"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
                 android:layout_marginBottom="16dp" app:layout_constraintBottom_toBottomOf="parent"
                 android:fontFamily="@font/big_john" android:textSize="24sp" android:textAlignment="center"

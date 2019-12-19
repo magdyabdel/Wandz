@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -96,13 +97,14 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                 Log.i("spreuk", "" + spell);
                 final int attackerID = (gest & 0x0000FF00) >>> 8;
                 Log.i("receivedID", "" + attackerID);
-
+                new HitThread(getProfileById(attackerID)).run();
                 if (attackerID != profile.getId() && !dead && (currentTimeMillis() > (lastHitTime + 5))) {
                     lastHitTime = currentTimeMillis();
                     Log.i("attackerID", Integer.toString(attackerID));
                     Log.i("profileID", Integer.toString(profile.getId()));
                     setHealth(spell);
                     mService.sendGesture((byte) 100);
+
                     if (health <= 0) {
                         mediaplayer = MediaPlayer.create(Multiplayer.this, R.raw.gameover);
                         mediaplayer.start();
@@ -215,7 +217,6 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         Log.i("setscore", " " + score);
         getProfileById(ID).setScore(score);
     }
-
 
     private void setHealth(int spell) {
         switch (spell) {
@@ -855,6 +856,34 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
                     }
                 });
             }
+        }
+    }
+
+    class HitThread extends Thread {
+
+        Profile hitProfile;
+
+        HitThread(Profile hitProfile) {
+            this.hitProfile = hitProfile;
+        }
+
+        @Override
+        public void run() {
+            ConstraintLayout background = findViewById(R.id.hityoulayout);
+            background.setVisibility(View.VISIBLE);
+
+            ImageView imageView = findViewById(R.id.profile_hit);
+            hitProfile.setProfileImage(Multiplayer.this, imageView);
+
+            TextView textView = findViewById(R.id.text_hit);
+            textView.setText("You're hit by " + hitProfile.getName());
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+
+            background.setVisibility(View.GONE);
         }
     }
 }
