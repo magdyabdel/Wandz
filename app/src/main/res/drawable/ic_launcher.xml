@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:height="512dp"
+        android:width="512dp"
+        android:viewportHeight="512"
+        android:viewportWidth="512"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#2b2b2b"
+        android:pathData="M0.5,0.5h512.41v510.57h-512.41z"
+        android:strokeColor="#000" android:strokeWidth="1"/>
+    <path android:fillColor="#f2f2f2" android:pathData="M426.99,73.37A40.61,40.61 0,0 0,422.7 75.79C405.5,86.79 361.28,124.07 361.28,124.07L97.91,359.49a8.36,8.36 0,0 0,-2.3 9.13c3.11,8.38 10.53,12.65 15.69,14.68a8.36,8.36 0,0 0,8.8 -1.69c21.67,-20.54 140,-132.92 253.78,-247.06 30.3,-30.43 46,-47.42 52.28,-55.57a32.66,32.66 0,0 0,2.72 -4C430.19,72.65 429.34,72.29 426.99,73.37Z"/>
+    <path android:fillColor="#e03b3b" android:pathData="M182.83,292.69a9.43,9.46 0,1 0,18.86 0a9.43,9.46 0,1 0,-18.86 0z"/>
+    <path android:fillColor="#fc3232" android:pathData="M182.75,291.91a8.57,8.59 0,1 0,17.14 0a8.57,8.59 0,1 0,-17.14 0z"/>
+    <path android:fillColor="#3fa9f5" android:pathData="M216.45,266.51a5.14,5.15 0,1 0,10.28 0a5.14,5.15 0,1 0,-10.28 0z"/>
+    <path android:fillColor="#fff" android:pathData="M163.18,432.48h-1.29l-20.68,-44.07h1.29l20,42.72 10.67,-23h1.29l10.78,23 19.86,-42.72h1.29l-20.51,44.07h-1.29l-10.78,-23Z"/>
+    <path android:fillColor="#fff" android:pathData="M207.36,432.48l20.51,-44.07h1.23l20.68,44.07L248.5,432.48l-6.68,-14.16L215.21,418.32L208.7,432.48ZM215.8,417.15h25.43l-12.72,-27.39Z"/>
+    <path android:fillColor="#fff" android:pathData="M257.87,389.59v42.89L256.7,432.48L256.7,388.41h1.93l33.93,42.9v-42.9L293.7,388.41v44.07h-1.82Z"/>
+    <path android:fillColor="#fff" android:pathData="M304.16,388.41L320.7,388.41a22,22 0,0 1,-0.06 44.07L304.16,432.48ZM320.51,389.59L305.34,389.59v41.72h15.17a20.86,20.86 0,1 0,0 -41.72Z"/>
+    <path android:fillColor="#fff" android:pathData="M352.39,432.48l24.67,-42.89L352.39,389.59v-1.18h26.72l-24.67,42.9h24.67v1.17Z"/>
+</vector>
