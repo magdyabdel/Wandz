@@ -238,5 +238,31 @@
             app:layout_constraintTop_toTopOf="@+id/gesture_2"
             app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_multi_gesture3"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@color/start_grad_end"
+            android:id="@+id/hityoulayout" android:visibility="visible">
+    
+        <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp" app:srcCompat="@drawable/ic_profile" android:id="@+id/imageView3"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="32dp" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="32dp"
+                android:layout_marginBottom="64dp" android:layout_marginStart="32dp"/>
+        <TextView
+                android:text="@string/hitYou"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView14" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                android:layout_marginBottom="16dp" app:layout_constraintBottom_toBottomOf="parent"
+                android:fontFamily="@font/big_john" android:textSize="24sp" android:textAlignment="center"
+                android:textColor="@color/wizardWhite"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
