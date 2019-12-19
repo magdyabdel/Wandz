@@ -2,9 +2,11 @@ package be.magdyabdel.wandz;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +38,20 @@ public class WandAdapter extends RecyclerView.Adapter<WandAdapter.ViewHolder> {
         BluetoothDevice bluetoothDevice = devices.get(position);
         TextView textView = viewHolder.deviceName;
         textView.setText(bluetoothDevice.getName());
+        ImageView afbeelding = viewHolder.deviceImage;
+        if(bluetoothDevice.getName().startsWith("I"))
+        {
+            afbeelding.setImageResource(R.drawable.ic_rood);//rood
+            textView.setTextColor(Color.parseColor("#fc3232"));
+        }
+        else if(bluetoothDevice.getName().startsWith("R")){
+            afbeelding.setImageResource(R.drawable.ic_blauw); //blauw
+            textView.setTextColor(Color.parseColor("#2d49c1"));
+        }
+        else if(bluetoothDevice.getName().startsWith("E")){
+            afbeelding.setImageResource(R.drawable.ic_groen); //groen
+            textView.setTextColor(Color.parseColor("#337f57"));
+        }
     }
 
     @Override
@@ -46,10 +62,12 @@ public class WandAdapter extends RecyclerView.Adapter<WandAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView deviceName;
+        private ImageView deviceImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
             deviceName = itemView.findViewById(R.id.name_wand);
+            deviceImage = itemView.findViewById(R.id.image_wand);
         }
     }
 }

@@ -461,7 +461,7 @@ public class ChooseYourWand extends AppCompatActivity implements View.OnClickLis
                 }
                 int size = discoveredDevicestime.size();
                 for (int i = 0; i < size; i++) {
-                    if(discoveredDevicestime.get(i)+3500<currentTimeMillis()){
+                    if(discoveredDevicestime.get(i)+4000<currentTimeMillis()){
                         discoveredDevicestime.remove(i);
                         devicesDiscovered.remove(i);
                         runOnUiThread(new Runnable() {
