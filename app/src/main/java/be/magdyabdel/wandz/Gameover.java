@@ -75,12 +75,7 @@ public class Gameover extends AppCompatActivity implements View.OnClickListener 
 
         Log.i("gameover ID's", ""+profile.getId() +" "+profiles.get(0).getId());
         if(play == null){
-        if(profile.getId()==profiles.get(0).getId()){
-            play = MediaPlayer.create(Gameover.this,R.raw.game_over); //sound have wrong name
-        }
-        else{
-            play = MediaPlayer.create(Gameover.this,R.raw.fanfare); //sound have wrong name
-        }
+        play = MediaPlayer.create(Gameover.this,R.raw.fanfare); //sound have wrong name
         play.setLooping(true);
         play.start();}
     }
