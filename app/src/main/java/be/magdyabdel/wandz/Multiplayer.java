@@ -393,6 +393,9 @@ public class Multiplayer extends AppCompatActivity implements View.OnClickListen
         amountsteps = 0;
         Log.i("amount profiles", "" + profiles.size());
 
+        ConstraintLayout background = findViewById(R.id.hityoulayout);
+        background.setVisibility(View.INVISIBLE);
+
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
